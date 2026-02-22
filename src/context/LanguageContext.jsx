@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import { t as translate } from '../utils/translate'
 
 const LanguageContext = createContext(null)
 
@@ -12,8 +13,11 @@ export const LanguageProvider = ({ children }) => {
         localStorage.setItem('language', lang)
     }
 
+    // Convenience helper — components can do: const { t } = useLanguage()
+    const t = (key) => translate(key, language)
+
     return (
-        <LanguageContext.Provider value={{ language, changeLanguage }}>
+        <LanguageContext.Provider value={{ language, changeLanguage, t }}>
             {children}
         </LanguageContext.Provider>
     )

@@ -21,6 +21,7 @@ const NAV_ITEMS = {
         { to: '/farmer/responses', label: 'My Responses' },
         { to: '/farmer/loans', label: 'View All Loans' },
         { to: '/farmer/articles', label: 'Explore Farming Content' },
+        { to: '/farmer/marketplace', label: 'Sell My Produce' },
     ],
     expert: [
         { to: '/expert', label: 'My Home' },
@@ -43,7 +44,12 @@ const NAV_ITEMS = {
     ],
 }
 
-const LANGUAGES = ['English', 'Telugu', 'Hindi', 'Marathi', 'Tamil', 'French']
+const LANGUAGES = [
+    { label: 'English', code: 'en' },
+    { label: 'Telugu', code: 'te' },
+    { label: 'Hindi', code: 'hi' },
+    { label: 'Spanish', code: 'es' },
+]
 
 const Navbar = ({ role: roleProp, publicNav }) => {
     const { user, role: authRole, logout } = useAuth()
@@ -97,21 +103,19 @@ const Navbar = ({ role: roleProp, publicNav }) => {
                                     zIndex: 700, overflow: 'hidden',
                                 }}>
                                     {LANGUAGES.map(lang => (
-                                        <div key={lang}
-                                            onClick={() => { changeLanguage(lang.toLowerCase().slice(0, 2)); setLangOpen(false) }}
+                                        <div key={lang.code}
+                                            onClick={() => { changeLanguage(lang.code); setLangOpen(false) }}
                                             style={{
                                                 padding: '10px 16px',
-                                                fontWeight: language === lang.toLowerCase().slice(0, 2) ? 700 : 400,
-                                                background: language === lang.toLowerCase().slice(0, 2) ? '#4caf50' : 'transparent',
-                                                color: language === lang.toLowerCase().slice(0, 2) ? '#fff' : '#111',
+                                                fontWeight: language === lang.code ? 700 : 400,
+                                                background: language === lang.code ? '#4caf50' : 'transparent',
+                                                color: language === lang.code ? '#fff' : '#111',
                                                 cursor: 'pointer',
                                                 borderBottom: '1px solid #eee',
                                                 transition: 'background 0.15s',
                                             }}
-                                            onMouseEnter={e => { if (language !== lang.toLowerCase().slice(0, 2)) e.target.style.background = '#f5f5f5' }}
-                                            onMouseLeave={e => { if (language !== lang.toLowerCase().slice(0, 2)) e.target.style.background = 'transparent' }}
                                         >
-                                            {lang}
+                                            {lang.label}
                                         </div>
                                     ))}
                                 </div>

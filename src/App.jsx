@@ -6,8 +6,10 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 // Auth Pages
 import Login from './pages/auth/Login'
+import SignupSelector from './pages/auth/SignupSelector'
 import FarmerRegister from './pages/auth/FarmerRegister'
 import ExpertSignup from './pages/auth/ExpertSignup'
+import FinancierSignup from './pages/auth/FinancierSignup'
 import ForgotPassword from './pages/auth/ForgotPassword'
 
 // Public Pages
@@ -62,8 +64,10 @@ function App() {
 
                         {/* Auth Routes */}
                         <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<SignupSelector />} />
                         <Route path="/register/farmer" element={<FarmerRegister />} />
                         <Route path="/register/expert" element={<ExpertSignup />} />
+                        <Route path="/register/financier" element={<FinancierSignup />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
 
                         {/* Admin Routes */}

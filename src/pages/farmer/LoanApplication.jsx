@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Navbar from '../../components/Navbar'
+import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
-
-const BG = 'https://images.unsplash.com/photo-1509099863731-ef4bff19e808?w=1400&auto=format&fit=crop&q=80'
+import { useLanguage } from '../../context/LanguageContext'
 
 const LoanApplication = () => {
+    const { t } = useLanguage()
     const { loanId } = useParams()
     const navigate = useNavigate()
     const [loan, setLoan] = useState(null)
@@ -13,6 +13,7 @@ const LoanApplication = () => {
     const [files, setFiles] = useState([])
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [applied, setApplied] = useState(false)
 
     useEffect(() => {
         if (loanId) {
@@ -32,7 +33,8 @@ const LoanApplication = () => {
             data.append('contactNumber', form.contactNumber)
             files.forEach(f => data.append('documents', f))
             await API.post('/loans/apply', data, { headers: { 'Content-Type': 'multipart/form-data' } })
-            navigate('/farmer/loans')
+            setApplied(true)
+            setTimeout(() => navigate('/farmer/loans'), 2400)
         } catch (err) {
             setError(err.response?.data?.message || 'Application failed.')
         } finally {
@@ -40,85 +42,120 @@ const LoanApplication = () => {
         }
     }
 
+    const inp = {
+        width: '100%', padding: '10px 14px',
+        background: 'rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        borderRadius: 6, color: '#fff', fontSize: '0.9rem',
+        outline: 'none', boxSizing: 'border-box', marginBottom: 16,
+        fontFamily: "'Inter', sans-serif",
+    }
+    const lbl = { display: 'block', color: '#bbb', fontSize: '0.8rem', fontWeight: 600, marginBottom: 6, letterSpacing: '0.04em', textTransform: 'uppercase' }
+
     return (
-        <div style={{ minHeight: '100vh', background: '#000', position: 'relative' }}>
-            <img src={BG} alt="farm"
-                style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.32)', zIndex: 0 }} />
-            <Navbar role="farmer" />
-            <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', padding: '90px 20px 40px' }}>
-                <h2 style={{
-                    fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800,
-                    fontSize: '2rem', color: '#fff', textTransform: 'uppercase',
-                    letterSpacing: '0.06em', textAlign: 'center', marginBottom: 24,
-                    textShadow: '0 2px 12px rgba(0,0,0,0.8)',
-                }}>Apply for Loan</h2>
-
-                {loan && (
-                    <div style={{
-                        background: 'rgba(220,220,215,0.15)', backdropFilter: 'blur(6px)',
-                        border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8,
-                        padding: '16px 24px', maxWidth: 900, margin: '0 auto 28px',
-                        color: '#fff', fontSize: '0.95rem', lineHeight: 1.7,
-                        textAlign: 'center',
-                    }}>
-                        You are applying for a loan of type{' '}
-                        <strong style={{ color: '#4caf50' }}>{loan.loanType?.charAt(0).toUpperCase() + loan.loanType?.slice(1)} Loan</strong>,
-                        with an interest rate of{' '}
-                        <strong style={{ color: '#4caf50' }}>{loan.interestRate}%</strong>.
-                        The maximum amount is{' '}
-                        <strong style={{ color: '#4caf50' }}>₹{loan.maxAmount?.toLocaleString()}</strong>,
-                        and the repayment period is{' '}
-                        <strong style={{ color: '#4caf50' }}>{loan.tenure}</strong> months.
-                    </div>
-                )}
-
+        <PageLayout role="farmer" title={t('applyforloan')}>
+            {/* Loan summary banner */}
+            {loan && (
                 <div style={{
-                    display: 'flex', justifyContent: 'center',
+                    maxWidth: 720, marginBottom: 28,
+                    background: 'rgba(34,197,94,0.08)',
+                    border: '1px solid rgba(34,197,94,0.25)',
+                    borderRadius: 10, padding: '16px 24px',
+                    color: '#ccc', fontSize: '0.9rem', lineHeight: 1.8,
                 }}>
-                    <div style={{
-                        background: 'rgba(220,220,215,0.85)', backdropFilter: 'blur(4px)',
-                        borderRadius: 8, padding: '32px 36px', width: '100%', maxWidth: 440,
-                        color: '#1a1a1a',
-                    }}>
-                        <form onSubmit={handleSubmit}>
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.87rem', marginBottom: 5 }}>Applicant Name</label>
-                            <input type="text" placeholder="Your full name" value={form.applicantName}
-                                onChange={e => setForm({ ...form, applicantName: e.target.value })} required
-                                style={{ width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid #ccc', borderRadius: 4, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: 16, outline: 'none' }} />
+                    <span>{t('applyingforloantype')} </span>
+                    <strong style={{ color: '#4ade80' }}>{loan.loanType?.charAt(0).toUpperCase() + loan.loanType?.slice(1)} Loan</strong>
+                    {' • '}
+                    <span>{t('withinterestrate')} </span>
+                    <strong style={{ color: '#4ade80' }}>{loan.interestRate}%</strong>
+                    {' • '}
+                    <span>{t('maximumamountis')} </span>
+                    <strong style={{ color: '#4ade80' }}>₹{loan.maxAmount?.toLocaleString()}</strong>
+                    {' • '}
+                    <span>{t('repaymentperiodis')} </span>
+                    <strong style={{ color: '#4ade80' }}>{loan.tenure} {t('months')}</strong>
+                </div>
+            )}
 
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.87rem', marginBottom: 5 }}>Email</label>
-                            <input type="email" placeholder="your@email.com" value={form.email}
-                                onChange={e => setForm({ ...form, email: e.target.value })} required
-                                style={{ width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid #ccc', borderRadius: 4, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: 16, outline: 'none' }} />
+            {/* Application form */}
+            <div style={{ maxWidth: 520 }}>
+                <div style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 14, padding: '32px 30px',
+                    boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+                }}>
+                    <form onSubmit={handleSubmit}>
+                        <label style={lbl}>{t('applicantname')} *</label>
+                        <input type="text" placeholder="Your full name" value={form.applicantName}
+                            onChange={e => setForm({ ...form, applicantName: e.target.value })} required style={inp} />
 
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.87rem', marginBottom: 5 }}>Contact Number</label>
-                            <input type="tel" placeholder="10-digit mobile number" value={form.contactNumber}
-                                onChange={e => setForm({ ...form, contactNumber: e.target.value })} required
-                                style={{ width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid #ccc', borderRadius: 4, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: 16, outline: 'none' }} />
+                        <label style={lbl}>{t('email')} *</label>
+                        <input type="email" placeholder="your@email.com" value={form.email}
+                            onChange={e => setForm({ ...form, email: e.target.value })} required style={inp} />
 
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.87rem', marginBottom: 5 }}>Upload Documents</label>
-                            <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={e => setFiles(Array.from(e.target.files))}
-                                style={{ width: '100%', padding: '8px', background: '#fff', border: '1px solid #ccc', borderRadius: 4, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: 16 }} />
+                        <label style={lbl}>{t('contactnumber')} *</label>
+                        <input type="tel" placeholder="10-digit mobile number" value={form.contactNumber}
+                            onChange={e => setForm({ ...form, contactNumber: e.target.value })} required style={inp} />
 
-                            {error && <p style={{ color: '#e02020', fontSize: '0.85rem', marginBottom: 10 }}>{error}</p>}
+                        <label style={lbl}>{t('uploaddocuments')}</label>
+                        <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={e => setFiles(Array.from(e.target.files))}
+                            style={{ ...inp, padding: '8px 14px', cursor: 'pointer' }} />
 
-                            <button type="submit" disabled={loading} style={{
-                                width: '100%', padding: '13px', background: '#4caf50', color: '#fff',
-                                border: 'none', borderRadius: 4, fontFamily: "'Inter', sans-serif",
-                                fontWeight: 600, fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer',
-                                transition: 'background 0.2s',
-                            }}
-                                onMouseEnter={e => { if (!loading) e.target.style.background = '#388e3c' }}
-                                onMouseLeave={e => { if (!loading) e.target.style.background = '#4caf50' }}
-                            >
-                                {loading ? 'Submitting…' : 'Submit Application'}
-                            </button>
-                        </form>
-                    </div>
+                        {files.length > 0 && (
+                            <p style={{ fontSize: '0.78rem', color: '#4ade80', marginBottom: 12, marginTop: -8 }}>
+                                {files.length} file{files.length > 1 ? 's' : ''} selected
+                            </p>
+                        )}
+
+                        {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginBottom: 12 }}>{error}</p>}
+
+                        <button type="submit" disabled={loading} style={{
+                            width: '100%', padding: '13px 0', marginTop: 6,
+                            background: loading ? '#166534' : 'linear-gradient(135deg,#16a34a,#22c55e)',
+                            color: '#fff', fontWeight: 700, fontSize: '0.95rem',
+                            border: 'none', borderRadius: 6, cursor: loading ? 'not-allowed' : 'pointer',
+                            textTransform: 'uppercase', letterSpacing: '0.08em',
+                            boxShadow: '0 4px 16px rgba(34,197,94,0.3)',
+                            fontFamily: "'Barlow Condensed', sans-serif",
+                        }}>
+                            {loading ? t('loading') : t('submitapplication')}
+                        </button>
+                    </form>
                 </div>
             </div>
-        </div>
+
+            {/* Success modal */}
+            {applied && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 900,
+                    background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                    <div style={{
+                        background: 'rgba(5,25,10,0.97)',
+                        border: '1px solid rgba(34,197,94,0.4)',
+                        borderRadius: 16, padding: '52px 56px',
+                        textAlign: 'center', maxWidth: 420,
+                        boxShadow: '0 0 80px rgba(34,197,94,0.2)',
+                        animation: 'popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+                    }}>
+                        <div style={{ fontSize: '4rem', marginBottom: 20 }}>🎉</div>
+                        <h3 style={{ color: '#22c55e', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.8rem', letterSpacing: '0.05em', marginBottom: 14 }}>{t('successfullyapplied')}</h3>
+                        <p style={{ color: '#888', fontSize: '0.88rem' }}>Redirecting you back to loans…</p>
+                    </div>
+                </div>
+            )}
+
+            <style>{`
+                @keyframes popIn {
+                    from { opacity: 0; transform: scale(0.8); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+            `}</style>
+        </PageLayout>
     )
 }
 

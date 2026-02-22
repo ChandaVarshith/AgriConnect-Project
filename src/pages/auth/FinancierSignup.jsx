@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
 
-const BG = 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1400&auto=format&fit=crop&q=80'
+const BG = 'https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?w=1400&auto=format&fit=crop&q=80'
 
 const inputStyle = {
     width: '100%', padding: '10px 14px',
@@ -16,8 +16,8 @@ const labelStyle = {
     fontWeight: 600, marginBottom: 5, letterSpacing: '0.03em',
 }
 
-const ExpertSignup = () => {
-    const [form, setForm] = useState({ name: '', email: '', password: '', specialization: '' })
+const FinancierSignup = () => {
+    const [form, setForm] = useState({ orgName: '', email: '', password: '', contact: '' })
     const [otpSent, setOtpSent] = useState(false)
     const [otpLoading, setOtpLoading] = useState(false)
     const [otp, setOtp] = useState('')
@@ -50,18 +50,18 @@ const ExpertSignup = () => {
         try {
             await authService.verifyOTP(form.email, otp)
             setEmailVerified(true)
-            setOtpSent(false) // hide OTP box, show verified badge
+            setOtpSent(false)
         } catch (err) {
             setOtpError(err.response?.data?.message || 'Invalid or expired OTP.')
         } finally { setVerifyLoading(false) }
     }
 
-    // ── Step 3: Send Request to Admin ─────────────────────────
+    // ── Step 3: Register Financier ────────────────────────────
     const handleSubmit = async (e) => {
         e.preventDefault()
         setSubmitError(''); setSubmitLoading(true)
         try {
-            await authService.registerExpert(form)
+            await authService.registerFinancier(form)
             setSuccess(true)
             setTimeout(() => navigate('/login'), 3500)
         } catch (err) {
@@ -71,7 +71,7 @@ const ExpertSignup = () => {
 
     return (
         <div style={{ minHeight: '100vh', position: 'relative' }}>
-            <img src={BG} alt="farm bg" style={{
+            <img src={BG} alt="finance bg" style={{
                 position: 'fixed', inset: 0, width: '100%', height: '100%',
                 objectFit: 'cover', filter: 'brightness(0.35)', zIndex: 0,
             }} />
@@ -110,8 +110,8 @@ const ExpertSignup = () => {
                                 fontSize: '2rem', fontWeight: 800, marginBottom: 10,
                             }}>Request Sent!</h2>
                             <p style={{ color: '#ccc', fontSize: '0.92rem', lineHeight: 1.6 }}>
-                                Your expert registration request has been sent to the admin.<br />
-                                You'll be able to login once the admin <strong style={{ color: '#4caf50' }}>approves your account</strong>.
+                                Your financier registration request has been sent to the admin.<br />
+                                You'll be able to login once the admin <strong style={{ color: '#f59e0b' }}>approves your account</strong>.
                             </p>
                             <p style={{ color: '#888', fontSize: '0.8rem', marginTop: 18 }}>Redirecting to login…</p>
                         </div>
@@ -122,16 +122,16 @@ const ExpertSignup = () => {
                                 fontFamily: "'Barlow Condensed',sans-serif",
                                 fontSize: '1.9rem', fontWeight: 800, marginBottom: 24, letterSpacing: '0.04em',
                             }}>
-                                Expert Sign Up
+                                Financier Sign Up
                             </h2>
 
                             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-                                {/* Full Name */}
+                                {/* Organisation Name */}
                                 <div>
-                                    <label style={labelStyle}>Full Name</label>
-                                    <input type="text" placeholder="Dr. / Prof. Full Name" value={form.name}
-                                        onChange={e => setForm({ ...form, name: e.target.value })} required style={inputStyle} />
+                                    <label style={labelStyle}>Organisation Name</label>
+                                    <input type="text" placeholder="e.g. AgriBank Ltd." value={form.orgName}
+                                        onChange={e => setForm({ ...form, orgName: e.target.value })} required style={inputStyle} />
                                 </div>
 
                                 {/* Email + Send OTP inline */}
@@ -140,7 +140,7 @@ const ExpertSignup = () => {
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <input
                                             type="email"
-                                            placeholder="your@email.com"
+                                            placeholder="official@organisation.com"
                                             value={form.email}
                                             onChange={e => {
                                                 setForm({ ...form, email: e.target.value })
@@ -169,9 +169,11 @@ const ExpertSignup = () => {
                                                 onClick={handleSendOtp}
                                                 disabled={otpLoading || !form.email}
                                                 style={{
-                                                    padding: '0 14px', background: otpLoading ? '#1a50cc' : '#3b82f6',
-                                                    color: '#fff', fontWeight: 700, fontSize: '0.78rem',
-                                                    border: 'none', borderRadius: 6, cursor: otpLoading ? 'not-allowed' : 'pointer',
+                                                    padding: '0 14px',
+                                                    background: otpLoading ? '#b06a00' : '#f59e0b',
+                                                    color: '#000', fontWeight: 700, fontSize: '0.78rem',
+                                                    border: 'none', borderRadius: 6,
+                                                    cursor: otpLoading ? 'not-allowed' : 'pointer',
                                                     whiteSpace: 'nowrap', letterSpacing: '0.04em',
                                                     textTransform: 'uppercase', minWidth: 90,
                                                 }}
@@ -181,16 +183,16 @@ const ExpertSignup = () => {
                                         )}
                                     </div>
 
-                                    {/* OTP Input – appears after OTP is sent */}
+                                    {/* OTP Input – slides in after OTP is sent */}
                                     {otpSent && !emailVerified && (
                                         <div style={{
                                             marginTop: 10,
-                                            background: 'rgba(59,130,246,0.1)',
-                                            border: '1px solid rgba(59,130,246,0.35)',
+                                            background: 'rgba(245,158,11,0.08)',
+                                            border: '1px solid rgba(245,158,11,0.35)',
                                             borderRadius: 8, padding: '14px 14px 12px',
                                             animation: 'fadeSlideIn 0.25s ease',
                                         }}>
-                                            <p style={{ color: '#93c5fd', fontSize: '0.8rem', marginBottom: 10, margin: '0 0 10px' }}>
+                                            <p style={{ color: '#fbbf24', fontSize: '0.8rem', margin: '0 0 10px' }}>
                                                 📧 OTP sent to <strong style={{ color: '#fff' }}>{form.email}</strong>
                                             </p>
                                             <div style={{ display: 'flex', gap: 8 }}>
@@ -212,7 +214,7 @@ const ExpertSignup = () => {
                                                     disabled={verifyLoading || otp.length < 4}
                                                     style={{
                                                         padding: '0 14px',
-                                                        background: verifyLoading ? '#15803d' : '#16a34a',
+                                                        background: verifyLoading ? '#b06a00' : '#d97706',
                                                         color: '#fff', fontWeight: 700, fontSize: '0.78rem',
                                                         border: 'none', borderRadius: 6,
                                                         cursor: verifyLoading ? 'not-allowed' : 'pointer',
@@ -237,15 +239,15 @@ const ExpertSignup = () => {
                                 {/* Password */}
                                 <div>
                                     <label style={labelStyle}>Password</label>
-                                    <input type="password" placeholder="Create a password" value={form.password}
+                                    <input type="password" placeholder="Create a strong password" value={form.password}
                                         onChange={e => setForm({ ...form, password: e.target.value })} required style={inputStyle} />
                                 </div>
 
-                                {/* Specialization */}
+                                {/* Contact */}
                                 <div>
-                                    <label style={labelStyle}>Specialization</label>
-                                    <input type="text" placeholder="e.g. Soil Science, Agronomy" value={form.specialization}
-                                        onChange={e => setForm({ ...form, specialization: e.target.value })} required style={inputStyle} />
+                                    <label style={labelStyle}>Contact Number</label>
+                                    <input type="tel" placeholder="10-digit contact number" value={form.contact}
+                                        onChange={e => setForm({ ...form, contact: e.target.value })} style={inputStyle} />
                                 </div>
 
                                 {/* Submit error */}
@@ -264,8 +266,8 @@ const ExpertSignup = () => {
                                         width: '100%', padding: '13px 0',
                                         background: !emailVerified
                                             ? 'rgba(100,100,100,0.4)'
-                                            : submitLoading ? '#15803d' : '#16a34a',
-                                        color: emailVerified ? '#fff' : '#888',
+                                            : submitLoading ? '#b06a00' : '#f59e0b',
+                                        color: emailVerified ? '#000' : '#888',
                                         fontWeight: 700, fontSize: '1rem',
                                         border: 'none', borderRadius: 6,
                                         cursor: !emailVerified || submitLoading ? 'not-allowed' : 'pointer',
@@ -291,7 +293,7 @@ const ExpertSignup = () => {
                         <Link to="/login" style={{ color: '#e02020', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
                     </p>
                     <p style={{ textAlign: 'center', marginTop: 8, fontSize: '0.85rem', color: '#ccc' }}>
-                        Not an expert?{' '}
+                        Not a financier?{' '}
                         <Link to="/register" style={{ color: '#f59e0b', fontWeight: 600, textDecoration: 'none' }}>Choose a different role</Link>
                     </p>
                 </div>
@@ -307,4 +309,4 @@ const ExpertSignup = () => {
     )
 }
 
-export default ExpertSignup
+export default FinancierSignup

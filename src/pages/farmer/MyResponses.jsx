@@ -1,55 +1,119 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../components/Navbar'
+import PageLayout from '../../components/PageLayout'
 import queryService from '../../services/queryService'
+import { useLanguage } from '../../context/LanguageContext'
 
-const MyResponses = () => {
+const MyResponsesFarmer = () => {
+    const { t } = useLanguage()
     const [queries, setQ] = useState([])
     const [loading, setL] = useState(true)
-    const [expanded, setE] = useState(null)
 
     useEffect(() => {
-        queryService.getMyQueries().then(r => setQ(r.data)).finally(() => setL(false))
+        queryService.getMyQueries().then(r => setQ(r.data)).catch(() => { }).finally(() => setL(false))
     }, [])
 
+    const thStyle = {
+        padding: '12px 18px',
+        background: 'rgba(220,38,38,0.85)',
+        color: '#fff',
+        fontFamily: "'Barlow Condensed', sans-serif",
+        fontWeight: 700, fontSize: '0.85rem',
+        letterSpacing: '0.08em', textTransform: 'uppercase',
+        textAlign: 'left', whiteSpace: 'nowrap',
+    }
+    const tdStyle = {
+        padding: '14px 18px',
+        color: '#ccc',
+        fontSize: '0.875rem',
+        lineHeight: 1.5,
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        verticalAlign: 'top',
+    }
+
     return (
-        <div style={{ minHeight: '100vh', background: '#0a0a0a' }}>
-            <Navbar role="farmer" />
-            <div className="content-page">
-                <div className="section-title">My Responses</div>
-                {loading ? <p className="text-muted">Loading…</p> : (
-                    <div style={{ display: 'grid', gap: 14 }}>
-                        {queries.map(q => (
-                            <div key={q._id} className="info-card"
-                                style={{ borderLeft: `4px solid ${q.status === 'resolved' ? '#4caf50' : '#f39c12'}`, cursor: 'pointer' }}
-                                onClick={() => setE(expanded === q._id ? null : q._id)}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                                    <div>
-                                        <h4>{q.cropType}</h4>
-                                        <p style={{ fontSize: '0.82rem', color: '#bbb', marginTop: 4 }}>{q.description?.substring(0, 100)}…</p>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                                        <span className={`badge ${q.status === 'resolved' ? 'badge-success' : 'badge-warning'}`}>{q.status}</span>
-                                        <span style={{ color: '#666', fontSize: '0.8rem' }}>{expanded === q._id ? '▲' : '▼'}</span>
-                                    </div>
-                                </div>
-                                {expanded === q._id && (
-                                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                                        <p style={{ fontSize: '0.82rem', color: '#ccc', marginBottom: 10 }}><strong>Your Query:</strong> {q.description}</p>
-                                        {q.response
-                                            ? <p style={{ fontSize: '0.82rem', color: '#4caf50' }}><strong>Expert Response:</strong> {q.response}</p>
-                                            : <p style={{ fontSize: '0.82rem', color: '#999' }}>⏳ Awaiting expert response…</p>
-                                        }
-                                        <p style={{ fontSize: '0.75rem', color: '#555', marginTop: 10 }}>📅 {new Date(q.createdAt).toLocaleDateString()}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                        {queries.length === 0 && <p className="text-muted">No queries submitted yet.</p>}
+        <PageLayout role="farmer" title={t('allresponses')}>
+            {loading ? (
+                <p style={{ color: '#aaa', padding: 24 }}>{t('loading')}</p>
+            ) : queries.length === 0 ? (
+                <div style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 12, padding: '48px 24px',
+                    textAlign: 'center', maxWidth: 480,
+                }}>
+                    <div style={{ fontSize: '2.5rem', marginBottom: 14 }}>📭</div>
+                    <p style={{ color: '#888', fontSize: '0.95rem' }}>{t('noqueriesyet')}</p>
+                </div>
+            ) : (
+                <div style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 14, overflow: 'hidden',
+                    boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+                    maxWidth: 960,
+                }}>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 600 }}>
+                            <thead>
+                                <tr>
+                                    <th style={thStyle}>{t('croptype')}</th>
+                                    <th style={thStyle}>{t('expertemail')}</th>
+                                    <th style={thStyle}>{t('responsedetails')}</th>
+                                    <th style={thStyle}>{t('status')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {queries.map(q => (
+                                    <tr key={q._id} style={{ transition: 'background 0.15s' }}
+                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                        <td style={{ ...tdStyle, color: '#fff', fontWeight: 600 }}>
+                                            {q.cropType}
+                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: 3 }}>
+                                                {q.location || '—'}
+                                            </div>
+                                        </td>
+                                        <td style={tdStyle}>
+                                            {q.status === 'resolved'
+                                                ? <span style={{ color: '#4ade80', fontSize: '0.82rem' }}>{q.expertEmail || q.respondedBy || '—'}</span>
+                                                : <span style={{ color: '#555', fontStyle: 'italic', fontSize: '0.82rem' }}>{t('pending')}</span>
+                                            }
+                                        </td>
+                                        <td style={{ ...tdStyle, maxWidth: 340 }}>
+                                            {q.response
+                                                ? <span style={{ color: '#ccc' }}>{q.response}</span>
+                                                : <span style={{ color: '#555', fontStyle: 'italic', fontSize: '0.82rem' }}>⏳ {t('awaitingresponse')}</span>
+                                            }
+                                        </td>
+                                        <td style={tdStyle}>
+                                            <span style={{
+                                                display: 'inline-block',
+                                                padding: '4px 12px',
+                                                borderRadius: 50,
+                                                fontSize: '0.72rem',
+                                                fontWeight: 700,
+                                                letterSpacing: '0.06em',
+                                                textTransform: 'uppercase',
+                                                background: q.status === 'resolved'
+                                                    ? 'rgba(74,222,128,0.15)'
+                                                    : 'rgba(251,191,36,0.15)',
+                                                color: q.status === 'resolved' ? '#4ade80' : '#fbbf24',
+                                                border: `1px solid ${q.status === 'resolved' ? '#4ade80' : '#fbbf24'}`,
+                                            }}>
+                                                {t(q.status) || q.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                )}
-            </div>
-        </div>
+                </div>
+            )}
+        </PageLayout>
     )
 }
 
-export default MyResponses
+export default MyResponsesFarmer
