@@ -7,7 +7,9 @@ export const marketplaceService = {
     updateListing: (id, d) => API.put(`/marketplace/${id}`, d),
     deleteListing: (id) => API.delete(`/marketplace/${id}`),
     purchaseProduce: (id, d) => API.post(`/marketplace/${id}/purchase`, d),
-    getMyListings: () => API.get('/marketplace/mine'),
+    getMyListings: () => API.get('/marketplace/mine/listings'),
+    // Get all listings visible to a farmer (approved + own pending)
+    getAllForFarmer: () => API.get('/marketplace/farmer/all'),
 }
 
 export default marketplaceService

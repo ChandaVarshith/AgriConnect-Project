@@ -6,6 +6,7 @@ const ArticleSchema = new Schema({
     title: { type: String, required: true, trim: true },
     content: { type: String, required: true },
     tags: [String],
+    category: { type: String, default: 'General' },
     imageUrl: { type: String },
     isPublished: { type: Boolean, default: false },
     publishedAt: { type: Date },

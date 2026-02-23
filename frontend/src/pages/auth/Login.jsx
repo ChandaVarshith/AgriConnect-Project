@@ -11,7 +11,9 @@ const ROLES = [
     { value: 'expert', label: 'Expert' },
     { value: 'financier', label: 'Financier' },
     { value: 'admin', label: 'Admin' },
+    { value: 'public', label: 'Public User' },
 ]
+
 
 const Login = () => {
     const [role, setRole] = useState('farmer')
@@ -22,6 +24,7 @@ const Login = () => {
     const { login } = useAuth()
     const navigate = useNavigate()
 
+    const roleHome = { farmer: '/farmer', expert: '/expert', admin: '/admin', financier: '/financier', public: '/public/home' }
     const isPhone = role === 'farmer'
 
     const handleSubmit = async (e) => {
@@ -31,7 +34,7 @@ const Login = () => {
         try {
             const res = await authService.login(role, identifier, password)
             login(res.data.user, res.data.token, role)
-            navigate(`/${role}`)
+            navigate(roleHome[role] || `/${role}`)
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Check credentials.')
         } finally {

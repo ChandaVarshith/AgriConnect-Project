@@ -8,7 +8,7 @@ const ExploreUs = () => {
     const [loading, setL] = useState(true)
 
     useEffect(() => {
-        articleService.getAllArticles().then(r => setA(r.data)).finally(() => setL(false))
+        articleService.getArticles().then(r => setA(r.data)).finally(() => setL(false))
     }, [])
 
     const cats = ['all', ...new Set(articles.map(a => a.category).filter(Boolean))]

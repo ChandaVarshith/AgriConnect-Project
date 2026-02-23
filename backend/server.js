@@ -9,6 +9,15 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
+// Log key startup info
+console.log(`
+Starting AgriConnect backend
+NODE_ENV=${process.env.NODE_ENV || 'development'}
+PORT=${PORT}
+CLIENT_URL=${process.env.CLIENT_URL || 'not-set'}
+MONGO_URI_SET=${process.env.MONGO_URI ? 'yes' : 'no'}
+`)
+
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }))
 app.use(express.json())
@@ -17,6 +26,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // ── Database Connection ───────────────────────────────────────────────────────
 require('./config/db')()
+
+// Global handlers for uncaught errors to aid debugging
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err && err.stack ? err.stack : err)
+    // In production you might want to exit; for development keep process alive for inspection
+    if (process.env.NODE_ENV === 'production') process.exit(1)
+})
+
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled Promise Rejection:', reason)
+    if (process.env.NODE_ENV === 'production') process.exit(1)
+})
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth.routes'))

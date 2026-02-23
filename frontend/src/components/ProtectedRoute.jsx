@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 /**
  * Wraps a page component and verifies:
  * 1. User is authenticated (has a token)
- * 2. User's role matches the required role
+ * 2. User's role matches the required role (if specified)
  */
 const ProtectedRoute = ({ children, role }) => {
     const { token, role: userRole } = useAuth()
@@ -21,6 +21,7 @@ const ProtectedRoute = ({ children, role }) => {
             farmer: '/farmer',
             expert: '/expert',
             financier: '/financier',
+            public: '/public/home',
         }
         return <Navigate to={roleHome[userRole] || '/'} replace />
     }

@@ -10,14 +10,21 @@ import SignupSelector from './pages/auth/SignupSelector'
 import FarmerRegister from './pages/auth/FarmerRegister'
 import ExpertSignup from './pages/auth/ExpertSignup'
 import FinancierSignup from './pages/auth/FinancierSignup'
+import PublicRegister from './pages/auth/PublicRegister'
 import ForgotPassword from './pages/auth/ForgotPassword'
 
-// Public Pages
+// Pre-auth Public Pages (landing)
 import PublicHome from './pages/public/PublicHome'
 import ExploreUs from './pages/public/ExploreUs'
 import Community from './pages/public/Community'
 import Marketplace from './pages/public/Marketplace'
 import FarmVisit from './pages/public/FarmVisit'
+
+// Authenticated Public User Pages
+import PublicUserHome from './pages/public/PublicUserHome'
+import PublicContent from './pages/public/PublicContent'
+import PublicLearnFarming from './pages/public/PublicLearnFarming'
+import PublicBuyResources from './pages/public/PublicBuyResources'
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -40,6 +47,8 @@ import FarmerRequests from './pages/expert/FarmerRequests'
 import RespondToQuery from './pages/expert/RespondToQuery'
 import MyResponsesExpert from './pages/expert/MyResponses'
 import CreateArticle from './pages/expert/CreateArticle'
+import ExpertAllContent from './pages/expert/ExpertAllContent'
+import ExpertMarketplace from './pages/expert/ExpertMarketplace'
 import CropSuitabilityMap from './pages/expert/CropSuitabilityMap'
 import GeminiAssistance from './pages/expert/GeminiAssistance'
 
@@ -48,6 +57,7 @@ import FinancierHome from './pages/financier/FinancierHome'
 import AddLoan from './pages/financier/AddLoan'
 import LoanRequests from './pages/financier/LoanRequests'
 import AllLoans from './pages/financier/AllLoans'
+import FarmerLoans from './pages/financier/FarmerLoans'
 
 function App() {
     return (
@@ -55,7 +65,7 @@ function App() {
             <LanguageProvider>
                 <Router>
                     <Routes>
-                        {/* Public Routes */}
+                        {/* Pre-auth Landing Pages */}
                         <Route path="/" element={<PublicHome />} />
                         <Route path="/explore" element={<ExploreUs />} />
                         <Route path="/community" element={<Community />} />
@@ -68,6 +78,7 @@ function App() {
                         <Route path="/register/farmer" element={<FarmerRegister />} />
                         <Route path="/register/expert" element={<ExpertSignup />} />
                         <Route path="/register/financier" element={<FinancierSignup />} />
+                        <Route path="/register/public" element={<PublicRegister />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
 
                         {/* Admin Routes */}
@@ -90,7 +101,9 @@ function App() {
                         <Route path="/expert/requests" element={<ProtectedRoute role="expert"><FarmerRequests /></ProtectedRoute>} />
                         <Route path="/expert/respond/:queryId" element={<ProtectedRoute role="expert"><RespondToQuery /></ProtectedRoute>} />
                         <Route path="/expert/responses" element={<ProtectedRoute role="expert"><MyResponsesExpert /></ProtectedRoute>} />
+                        <Route path="/expert/content" element={<ProtectedRoute role="expert"><ExpertAllContent /></ProtectedRoute>} />
                         <Route path="/expert/article/create" element={<ProtectedRoute role="expert"><CreateArticle /></ProtectedRoute>} />
+                        <Route path="/expert/marketplace" element={<ProtectedRoute role="expert"><ExpertMarketplace /></ProtectedRoute>} />
                         <Route path="/expert/crop-map" element={<ProtectedRoute role="expert"><CropSuitabilityMap /></ProtectedRoute>} />
                         <Route path="/expert/gemini" element={<ProtectedRoute role="expert"><GeminiAssistance /></ProtectedRoute>} />
 
@@ -99,6 +112,13 @@ function App() {
                         <Route path="/financier/add-loan" element={<ProtectedRoute role="financier"><AddLoan /></ProtectedRoute>} />
                         <Route path="/financier/loan-requests" element={<ProtectedRoute role="financier"><LoanRequests /></ProtectedRoute>} />
                         <Route path="/financier/all-loans" element={<ProtectedRoute role="financier"><AllLoans /></ProtectedRoute>} />
+                        <Route path="/financier/farmer-loans" element={<ProtectedRoute role="financier"><FarmerLoans /></ProtectedRoute>} />
+
+                        {/* Authenticated Public User Routes */}
+                        <Route path="/public/home" element={<ProtectedRoute role="public"><PublicUserHome /></ProtectedRoute>} />
+                        <Route path="/public/content" element={<ProtectedRoute role="public"><PublicContent /></ProtectedRoute>} />
+                        <Route path="/public/learn" element={<ProtectedRoute role="public"><PublicLearnFarming /></ProtectedRoute>} />
+                        <Route path="/public/buy" element={<ProtectedRoute role="public"><PublicBuyResources /></ProtectedRoute>} />
 
                         {/* Fallback */}
                         <Route path="*" element={<Navigate to="/" replace />} />

@@ -29,7 +29,16 @@ const ROLES = [
         path: '/register/financier',
         accent: '#f59e0b',
     },
+    {
+        id: 'public',
+        emoji: '👤',
+        title: 'Public User',
+        desc: 'Explore farming content, learn agriculture, and buy fresh produce.',
+        path: '/register/public',
+        accent: '#a855f7',
+    },
 ]
+
 
 const SignupSelector = () => {
     const navigate = useNavigate()

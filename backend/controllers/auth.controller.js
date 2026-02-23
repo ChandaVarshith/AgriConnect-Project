@@ -2,6 +2,7 @@ const Farmer = require('../models/Farmer.model')
 const Expert = require('../models/Expert.model')
 const Admin = require('../models/Admin.model')
 const Financier = require('../models/Financier.model')
+const PublicUser = require('../models/PublicUser.model')
 const OTP = require('../models/OTP.model')
 const bcrypt = require('bcryptjs')
 const { generateToken } = require('../utils/generateToken')
@@ -50,6 +51,21 @@ exports.registerFinancier = async (req, res) => {
     }
 }
 
+// ── Public User Registration ─
+exports.registerPublicUser = async (req, res) => {
+    try {
+        const { name, email, password } = req.body
+        if (!name || !email || !password) return res.status(400).json({ message: 'All fields are required.' })
+        const exists = await PublicUser.findOne({ email })
+        if (exists) return res.status(400).json({ message: 'Email already registered.' })
+        const hashed = await bcrypt.hash(password, 10)
+        const user = await PublicUser.create({ name, email, password: hashed })
+        res.status(201).json({ message: 'Account created successfully.', user })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
 // ── Login Helpers ─────────
 const loginHelper = async (Model, identifier, identifierField, password, role, res) => {
     const user = await Model.findOne({ [identifierField]: identifier })
@@ -72,6 +88,7 @@ exports.loginExpert = async (req, res) => {
 }
 exports.loginAdmin = (req, res) => loginHelper(Admin, req.body.identifier, 'email', req.body.password, 'admin', res)
 exports.loginFinancier = (req, res) => loginHelper(Financier, req.body.identifier, 'email', req.body.password, 'financier', res)
+exports.loginPublicUser = (req, res) => loginHelper(PublicUser, req.body.identifier, 'email', req.body.password, 'public', res)
 
 // ── OTP ───────────────────
 exports.sendOTP = async (req, res) => {
@@ -97,7 +114,6 @@ exports.verifyOTP = async (req, res) => {
             await OTP.findByIdAndDelete(record._id)
             return res.status(400).json({ message: 'OTP has expired.' })
         }
-        // OTP is valid — do NOT delete yet so registerExpert/Financier can proceed
         res.json({ message: 'OTP verified.' })
     } catch (err) {
         res.status(500).json({ message: err.message })

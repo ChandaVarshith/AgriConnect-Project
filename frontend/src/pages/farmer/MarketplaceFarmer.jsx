@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import marketplaceService from '../../services/marketplaceService'
 import { useLanguage } from '../../context/LanguageContext'
+import { useAuth } from '../../context/AuthContext'
 
 const CATEGORIES = ['vegetables', 'fruits', 'grains', 'dairy']
 
 const MarketplaceFarmer = () => {
     const { t } = useLanguage()
+    const { user } = useAuth()
     const [listings, setListings] = useState([])
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState({
@@ -15,10 +17,21 @@ const MarketplaceFarmer = () => {
     })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-    const [confirmId, setConfirmId] = useState(null)  // id of listing pending delete confirm
+    const [confirmId, setConfirmId] = useState(null)
 
-    const loadListings = () => {
-        marketplaceService.getMyListings().then(res => setListings(res.data)).catch(() => { })
+    const currentUserId = user?._id || user?.id || ''
+
+    const loadListings = async () => {
+        try {
+            const res = await marketplaceService.getAllForFarmer()
+            setListings(res.data)
+        } catch {
+            // Fallback: if endpoint doesn't exist, try getMyListings
+            try {
+                const res = await marketplaceService.getMyListings()
+                setListings(res.data)
+            } catch { }
+        }
     }
     useEffect(() => { loadListings() }, [])
 
@@ -33,22 +46,26 @@ const MarketplaceFarmer = () => {
         finally { setLoading(false) }
     }
 
-    const handleDelete = (id) => {
-        setConfirmId(id)    // enter confirm mode for this card
-    }
+    const handleDelete = (id) => setConfirmId(id)
 
     const confirmDelete = async (id) => {
-        // Optimistic update — remove card from UI immediately
         setListings(prev => prev.filter(l => l._id !== id))
         setConfirmId(null)
         try {
             await marketplaceService.deleteListing(id)
         } catch (err) {
             console.error('Delete failed:', err)
-            // If server call fails, re-fetch to restore correct state
             loadListings()
         }
     }
+
+    // Check if current farmer owns a listing
+    const isOwner = (listing) => {
+        const fId = listing.farmerId?._id || listing.farmerId
+        return fId === currentUserId || String(fId) === String(currentUserId)
+    }
+
+    const myCount = listings.filter(l => isOwner(l)).length
 
     const inp = {
         width: '100%', padding: '10px 14px',
@@ -65,7 +82,8 @@ const MarketplaceFarmer = () => {
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
                 <h3 style={{ color: '#bbb', fontWeight: 400, fontSize: '0.9rem', fontFamily: "'Inter', sans-serif", textTransform: 'none', letterSpacing: 0 }}>
-                    {listings.length} listing{listings.length !== 1 ? 's' : ''} active
+                    {listings.length} listing{listings.length !== 1 ? 's' : ''} in marketplace
+                    {myCount > 0 && <span style={{ color: '#4ade80' }}> · {myCount} yours</span>}
                 </h3>
                 <button onClick={() => setShowForm(v => !v)} style={{
                     padding: '10px 24px',
@@ -179,78 +197,121 @@ const MarketplaceFarmer = () => {
                         <div style={{ fontSize: '2.5rem', marginBottom: 14 }}>🌾</div>
                         <p style={{ color: '#888', fontSize: '0.95rem' }}>{t('nolistingsyet')}</p>
                     </div>
-                ) : listings.map(l => (
-                    <div key={l._id} style={{
-                        background: 'rgba(255,255,255,0.06)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderTop: '3px solid #22c55e',
-                        borderRadius: 12, padding: '20px 20px',
-                        transition: 'transform 0.2s',
-                    }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                        {/* Category badge */}
-                        {l.category && (
-                            <span style={{
-                                display: 'inline-block', padding: '2px 10px', borderRadius: 50,
-                                fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase',
-                                letterSpacing: '0.06em', marginBottom: 10,
-                                background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)',
-                            }}>{t(l.category) || l.category}</span>
-                        )}
-                        <h4 style={{ color: '#fff', marginBottom: 10, fontSize: '1rem' }}>{l.name}</h4>
-                        <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: 4 }}>
-                            {t('quantity')}: <strong style={{ color: '#fff' }}>{l.quantity} {l.unit}</strong>
-                        </p>
-                        <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: l.description ? 8 : 16 }}>
-                            {t('price')}: <strong style={{ color: '#22c55e' }}>₹{l.price}/{l.unit}</strong>
-                        </p>
-                        {l.description && (
-                            <p style={{ fontSize: '0.78rem', color: '#777', marginBottom: 16, lineHeight: 1.5 }}>
-                                {l.description.substring(0, 80)}{l.description.length > 80 ? '…' : ''}
+                ) : listings.map(l => {
+                    const mine = isOwner(l)
+                    const farmerName = l.farmerId?.name || l.farmerName || 'Farmer'
+
+                    return (
+                        <div key={l._id} style={{
+                            background: 'rgba(255,255,255,0.06)',
+                            backdropFilter: 'blur(12px)',
+                            border: mine ? '1px solid rgba(34,197,94,0.35)' : '1px solid rgba(255,255,255,0.1)',
+                            borderTop: mine ? '3px solid #22c55e' : '3px solid rgba(255,255,255,0.2)',
+                            borderRadius: 12, padding: '20px 20px',
+                            transition: 'transform 0.2s',
+                            position: 'relative',
+                        }}
+                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+                            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                        >
+                            {/* Owner badge */}
+                            {mine && (
+                                <span style={{
+                                    position: 'absolute', top: 10, right: 12,
+                                    padding: '2px 8px', borderRadius: 50,
+                                    fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase',
+                                    letterSpacing: '0.06em',
+                                    background: 'rgba(34,197,94,0.2)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.4)',
+                                }}>Your listing</span>
+                            )}
+
+                            {/* Category badge */}
+                            {l.category && (
+                                <span style={{
+                                    display: 'inline-block', padding: '2px 10px', borderRadius: 50,
+                                    fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase',
+                                    letterSpacing: '0.06em', marginBottom: 10,
+                                    background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)',
+                                }}>{t(l.category) || l.category}</span>
+                            )}
+
+                            {/* Status badge for pending/rejected (only owner sees) */}
+                            {mine && l.status !== 'approved' && (
+                                <span style={{
+                                    display: 'inline-block', padding: '2px 10px', borderRadius: 50,
+                                    fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase',
+                                    letterSpacing: '0.06em', marginLeft: 6,
+                                    background: l.status === 'pending' ? 'rgba(251,191,36,0.15)' : 'rgba(220,38,38,0.15)',
+                                    color: l.status === 'pending' ? '#fbbf24' : '#f87171',
+                                    border: `1px solid ${l.status === 'pending' ? 'rgba(251,191,36,0.3)' : 'rgba(220,38,38,0.3)'}`,
+                                }}>{l.status}</span>
+                            )}
+
+                            <h4 style={{ color: '#fff', marginBottom: 10, fontSize: '1rem' }}>{l.name}</h4>
+
+                            {/* Farmer name (for other farmers' listings) */}
+                            {!mine && (
+                                <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: 8, fontStyle: 'italic' }}>
+                                    by {farmerName}
+                                </p>
+                            )}
+
+                            <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: 4 }}>
+                                {t('quantity')}: <strong style={{ color: '#fff' }}>{l.quantity} {l.unit}</strong>
                             </p>
-                        )}
-                        {/* Delete — inline confirm instead of window.confirm */}
-                        {confirmId === l._id ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                                <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontFamily: "'Inter', sans-serif" }}>Sure?</span>
-                                <button onClick={() => confirmDelete(l._id)} style={{
-                                    padding: '6px 14px',
-                                    background: 'rgba(220,38,38,0.85)',
-                                    color: '#fff', border: 'none',
-                                    fontWeight: 700, fontSize: '0.75rem',
-                                    borderRadius: 5, cursor: 'pointer',
-                                    textTransform: 'uppercase', letterSpacing: '0.04em',
-                                    fontFamily: "'Barlow Condensed', sans-serif",
-                                }}>Yes, Remove</button>
-                                <button onClick={() => setConfirmId(null)} style={{
-                                    padding: '6px 12px',
-                                    background: 'rgba(255,255,255,0.1)',
-                                    color: '#ccc', border: '1px solid rgba(255,255,255,0.2)',
-                                    fontWeight: 600, fontSize: '0.75rem',
-                                    borderRadius: 5, cursor: 'pointer',
-                                    fontFamily: "'Barlow Condensed', sans-serif",
-                                }}>Cancel</button>
-                            </div>
-                        ) : (
-                            <button onClick={() => handleDelete(l._id)} style={{
-                                padding: '7px 16px',
-                                background: 'rgba(220,38,38,0.15)',
-                                color: '#f87171', border: '1px solid rgba(220,38,38,0.3)',
-                                fontWeight: 700, fontSize: '0.78rem',
-                                borderRadius: 5, cursor: 'pointer',
-                                textTransform: 'uppercase', letterSpacing: '0.04em',
-                                fontFamily: "'Barlow Condensed', sans-serif",
-                                transition: 'background 0.15s',
-                            }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,38,38,0.3)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(220,38,38,0.15)'}
-                            >{t('remove')}</button>
-                        )}
-                    </div>
-                ))}
+                            <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: l.description ? 8 : 16 }}>
+                                {t('price')}: <strong style={{ color: '#22c55e' }}>₹{l.price}/{l.unit}</strong>
+                            </p>
+                            {l.description && (
+                                <p style={{ fontSize: '0.78rem', color: '#777', marginBottom: 16, lineHeight: 1.5 }}>
+                                    {l.description.substring(0, 80)}{l.description.length > 80 ? '…' : ''}
+                                </p>
+                            )}
+
+                            {/* Remove button — ONLY for owner */}
+                            {mine && (
+                                <>
+                                    {confirmId === l._id ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                                            <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontFamily: "'Inter', sans-serif" }}>Sure?</span>
+                                            <button onClick={() => confirmDelete(l._id)} style={{
+                                                padding: '6px 14px',
+                                                background: 'rgba(220,38,38,0.85)',
+                                                color: '#fff', border: 'none',
+                                                fontWeight: 700, fontSize: '0.75rem',
+                                                borderRadius: 5, cursor: 'pointer',
+                                                textTransform: 'uppercase', letterSpacing: '0.04em',
+                                                fontFamily: "'Barlow Condensed', sans-serif",
+                                            }}>Yes, Remove</button>
+                                            <button onClick={() => setConfirmId(null)} style={{
+                                                padding: '6px 12px',
+                                                background: 'rgba(255,255,255,0.1)',
+                                                color: '#ccc', border: '1px solid rgba(255,255,255,0.2)',
+                                                fontWeight: 600, fontSize: '0.75rem',
+                                                borderRadius: 5, cursor: 'pointer',
+                                                fontFamily: "'Barlow Condensed', sans-serif",
+                                            }}>Cancel</button>
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => handleDelete(l._id)} style={{
+                                            padding: '7px 16px',
+                                            background: 'rgba(220,38,38,0.15)',
+                                            color: '#f87171', border: '1px solid rgba(220,38,38,0.3)',
+                                            fontWeight: 700, fontSize: '0.78rem',
+                                            borderRadius: 5, cursor: 'pointer',
+                                            textTransform: 'uppercase', letterSpacing: '0.04em',
+                                            fontFamily: "'Barlow Condensed', sans-serif",
+                                            transition: 'background 0.15s',
+                                        }}
+                                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,38,38,0.3)'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(220,38,38,0.15)'}
+                                        >{t('remove')}</button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
 
             <style>{`

@@ -22,9 +22,16 @@ exports.getArticleById = async (req, res) => {
 
 exports.createArticle = async (req, res) => {
     try {
-        const { title, content, tags } = req.body
+        const { title, content, tags, category } = req.body
         const imageUrl = req.file ? `/uploads/article-images/${req.file.filename}` : null
-        const article = await Article.create({ expertId: req.user.id, title, content, tags: tags?.split(','), imageUrl })
+        const article = await Article.create({
+            expertId: req.user.id, title, content,
+            tags: tags?.split(',').map(t => t.trim()),
+            category: category || 'General',
+            imageUrl,
+            isPublished: true,
+            publishedAt: new Date(),
+        })
         res.status(201).json(article)
     } catch (err) {
         res.status(500).json({ message: err.message })

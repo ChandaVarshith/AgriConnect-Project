@@ -5,15 +5,10 @@ import { useLanguage } from '../context/LanguageContext'
 
 const NAV_ITEMS = {
     admin: [
-        { to: '/admin', label: 'Admin Home' },
-        { to: '/admin/farmers', label: 'Add Farmer' },
-        { to: '/admin/farmers', label: 'View All Farmers' },
-        { to: '/admin/experts', label: 'Add Expert' },
-        { to: '/admin/experts', label: 'Approve Experts' },
-        { to: '/admin/experts', label: 'View All Experts' },
-        { to: '/admin/financiers', label: 'Add Financier' },
-        { to: '/admin/financiers', label: 'View All Financiers' },
         { to: '/admin', label: 'Admin Dashboard' },
+        { to: '/admin/farmers', label: 'Manage Farmers' },
+        { to: '/admin/experts', label: 'Manage Experts' },
+        { to: '/admin/financiers', label: 'View All Sectors' },
     ],
     farmer: [
         { to: '/farmer', label: 'My Home' },
@@ -27,7 +22,9 @@ const NAV_ITEMS = {
         { to: '/expert', label: 'My Home' },
         { to: '/expert/requests', label: 'Farmer Incoming Requests' },
         { to: '/expert/responses', label: 'My Responses' },
+        { to: '/expert/content', label: 'All Content' },
         { to: '/expert/article/create', label: 'Create Content' },
+        { to: '/expert/marketplace', label: 'Marketplace Management' },
         { to: '/expert/gemini', label: 'Get Gemini Assistance' },
         { to: '/expert/crop-map', label: 'Explore Interactive Map' },
     ],
@@ -36,13 +33,21 @@ const NAV_ITEMS = {
         { to: '/financier/add-loan', label: 'Add Loan' },
         { to: '/financier/loan-requests', label: 'All Loan Requests' },
         { to: '/financier/all-loans', label: 'View All Loans' },
+        { to: '/financier/farmer-loans', label: 'Farmer Loan Portfolio' },
     ],
     public: [
+        { to: '/public/home', label: 'My Home' },
+        { to: '/public/content', label: 'Explore Content' },
+        { to: '/public/learn', label: 'Learn Farming' },
+        { to: '/public/buy', label: 'Buy Resources' },
+    ],
+    _landing: [
         { to: '/', label: 'Home' },
         { to: '/login', label: 'Sign In' },
         { to: '/explore', label: 'Explore' },
     ],
 }
+
 
 const LANGUAGES = [
     { label: 'English', code: 'en' },
@@ -55,7 +60,7 @@ const Navbar = ({ role: roleProp, publicNav }) => {
     const { user, role: authRole, logout } = useAuth()
     const { language, changeLanguage } = useLanguage()
     const navigate = useNavigate()
-    const role = roleProp || authRole || (publicNav ? 'public' : null)
+    const role = publicNav ? '_landing' : (roleProp || authRole || null)
 
     const [menuOpen, setMenuOpen] = useState(false)
     const [langOpen, setLangOpen] = useState(false)

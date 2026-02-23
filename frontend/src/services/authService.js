@@ -1,28 +1,28 @@
-import API from './api'
+import api from './api'
 
-export const authService = {
-    // ── Unified login dispatcher ───────────────────────────────────────
+const endpoints = {
+    farmer: '/auth/login/farmer',
+    expert: '/auth/login/expert',
+    admin: '/auth/login/admin',
+    financier: '/auth/login/financier',
+    public: '/auth/login/public',
+}
+
+const authService = {
     login: (role, identifier, password) => {
-        const endpoints = {
-            farmer: '/auth/login/farmer',
-            expert: '/auth/login/expert',
-            admin: '/auth/login/admin',
-            financier: '/auth/login/financier',
-        }
         const url = endpoints[role]
-        if (!url) return Promise.reject(new Error(`Unknown role: ${role}`))
-        return API.post(url, { identifier, password })
+        if (!url) throw new Error(`Unknown role: ${role}`)
+        return api.post(url, { identifier, password })
     },
 
-    // ── Per-role register ──────────────────────────────────────────────
-    registerFarmer: (data) => API.post('/auth/register/farmer', data),
-    registerExpert: (data) => API.post('/auth/register/expert', data),
-    registerFinancier: (data) => API.post('/auth/register/financier', data),
+    registerFarmer: (data) => api.post('/auth/register/farmer', data),
+    registerExpert: (data) => api.post('/auth/register/expert', data),
+    registerFinancier: (data) => api.post('/auth/register/financier', data),
+    registerPublic: (name, email, password) => api.post('/auth/register/public', { name, email, password }),
 
-    // ── OTP helpers ───────────────────────────────────────────────────
-    sendOTP: (email) => API.post('/auth/send-otp', { email }),
-    verifyOTP: (email, otp) => API.post('/auth/verify-otp', { email, otp }),
-    resetPassword: (data) => API.post('/auth/reset-password', data),
+    sendOTP: (email) => api.post('/auth/send-otp', { email }),
+    verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
+    resetPassword: (email, otp, newPassword) => api.post('/auth/reset-password', { email, otp, newPassword }),
 }
 
 export default authService

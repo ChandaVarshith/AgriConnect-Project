@@ -2,190 +2,158 @@ import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
 
-const cardStyle = {
-    background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '18px 20px',
-    transition: 'border 0.2s',
-}
+const inputStyle = { padding: '9px 13px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.87rem', outline: 'none', width: '100%', boxSizing: 'border-box' }
+const labelStyle = { display: 'block', color: '#ccc', fontSize: '0.78rem', fontWeight: 600, marginBottom: 4 }
+const EMPTY = { name: '', email: '', password: '', phone: '', experience: '', specialization: '', qualification: '', languagesSpoken: '', certifications: '' }
+
+const STATUS_COLORS = { pending: { bg: '#f59e0b22', color: '#f59e0b' }, approved: { bg: '#22c55e22', color: '#22c55e' }, rejected: { bg: '#ef444422', color: '#ef4444' } }
 
 const ManageExperts = () => {
     const [experts, setExperts] = useState([])
-    const [filter, setFilter] = useState('pending')
+    const [filter, setFilter] = useState('all')
     const [loading, setLoading] = useState(true)
+    const [showForm, setShowForm] = useState(false)
+    const [form, setForm] = useState(EMPTY)
+    const [saving, setSaving] = useState(false)
+    const [toast, setToast] = useState('')
 
-    const load = () => {
+    const fetchExperts = () => {
         setLoading(true)
-        API.get('/admin/experts')
-            .then(r => setExperts(r.data))
-            .catch(() => { })
-            .finally(() => setLoading(false))
+        API.get('/admin/experts').then(r => setExperts(r.data)).catch(() => { }).finally(() => setLoading(false))
     }
-    useEffect(() => { load() }, [])
+    useEffect(() => { fetchExperts() }, [])
 
-    const approve = async (id) => {
-        try { await API.put(`/admin/experts/${id}/approve`); load() } catch (e) { alert('Error approving expert.') }
-    }
-    const reject = async (id) => {
-        try { await API.put(`/admin/experts/${id}/reject`); load() } catch (e) { alert('Error rejecting expert.') }
-    }
-    const remove = async (id) => {
-        if (!window.confirm('Permanently remove this expert?')) return
-        try { await API.delete(`/admin/experts/${id}`); load() } catch (e) { alert('Error removing expert.') }
+    const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            await API.patch(`/admin/experts/${id}`, { status })
+            fetchExperts()
+        } catch { }
     }
 
-    const pendingCount = experts.filter(e => e.status === 'pending').length
-    const filtered = experts.filter(e => filter === 'all' ? true : e.status === filter)
-
-    const statusColor = (s) => {
-        if (s === 'approved') return '#4caf50'
-        if (s === 'rejected') return '#e02020'
-        return '#f39c12'
+    const handleDelete = async (id) => {
+        if (!window.confirm('Remove this expert?')) return
+        try {
+            await API.delete(`/admin/experts/${id}`)
+            fetchExperts()
+        } catch { }
     }
+
+    const handleAdd = async (e) => {
+        e.preventDefault()
+        setSaving(true)
+        try {
+            await API.post('/admin/experts', form)
+            setToast('✅ Expert added and approved!')
+            setForm(EMPTY)
+            setShowForm(false)
+            fetchExperts()
+            setTimeout(() => setToast(''), 3000)
+        } catch (err) {
+            setToast('❌ ' + (err.response?.data?.message || 'Failed to add expert.'))
+            setTimeout(() => setToast(''), 3500)
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const filtered = filter === 'all' ? experts : experts.filter(e => e.status === filter)
+    const pending = experts.filter(e => e.status === 'pending')
 
     return (
         <PageLayout role="admin" title="Manage Experts">
-
-            {/* Pending Requests Banner */}
-            {pendingCount > 0 && (
-                <div style={{
-                    background: 'rgba(243,156,18,0.15)',
-                    border: '1px solid rgba(243,156,18,0.4)',
-                    borderRadius: 8, padding: '12px 18px',
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    marginBottom: 20,
-                }}>
-                    <span style={{ fontSize: '1.4rem' }}>🔔</span>
-                    <div>
-                        <p style={{ color: '#f39c12', fontWeight: 700, margin: 0, fontSize: '0.95rem' }}>
-                            {pendingCount} Pending Expert Request{pendingCount > 1 ? 's' : ''}
-                        </p>
-                        <p style={{ color: '#ccc', margin: 0, fontSize: '0.8rem', marginTop: 2 }}>
-                            Review and approve or reject expert registration requests below.
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => setFilter('pending')}
-                        style={{
-                            marginLeft: 'auto', padding: '6px 14px', background: '#f39c12',
-                            color: '#000', fontWeight: 700, fontSize: '0.8rem',
-                            border: 'none', borderRadius: 6, cursor: 'pointer',
-                        }}
-                    >
-                        View Pending
-                    </button>
+            {pending.length > 0 && (
+                <div style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid #f59e0b', borderRadius: 8, padding: '12px 18px', marginBottom: 20, color: '#f59e0b', fontSize: '0.88rem' }}>
+                    🔔 {pending.length} expert{pending.length > 1 ? 's' : ''} awaiting approval.
+                </div>
+            )}
+            {toast && (
+                <div style={{ background: toast.startsWith('✅') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', border: `1px solid ${toast.startsWith('✅') ? '#22c55e' : '#ef4444'}`, borderRadius: 8, padding: '12px 18px', marginBottom: 20, color: '#fff', fontSize: '0.88rem' }}>
+                    {toast}
                 </div>
             )}
 
-            {/* Filter Tabs */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-                {['pending', 'approved', 'rejected', 'all'].map(s => (
-                    <button key={s} onClick={() => setFilter(s)} style={{
-                        padding: '6px 18px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                        background: filter === s ? '#e02020' : 'rgba(255,255,255,0.1)',
-                        color: '#fff', fontSize: '0.82rem', fontWeight: 600,
-                        textTransform: 'capitalize', position: 'relative',
-                    }}>
-                        {s}
-                        {s === 'pending' && pendingCount > 0 && (
-                            <span style={{
-                                position: 'absolute', top: -6, right: -6,
-                                background: '#f39c12', color: '#000',
-                                borderRadius: '50%', width: 18, height: 18,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.65rem', fontWeight: 800,
-                            }}>{pendingCount}</span>
-                        )}
-                    </button>
-                ))}
-                <span style={{ marginLeft: 'auto', color: '#888', fontSize: '0.8rem' }}>
-                    {filtered.length} expert{filtered.length !== 1 ? 's' : ''}
-                </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                    {['all', 'pending', 'approved', 'rejected'].map(s => (
+                        <button key={s} onClick={() => setFilter(s)} style={{
+                            background: filter === s ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+                            color: '#fff', border: 'none', borderRadius: 6, padding: '8px 16px',
+                            fontSize: '0.82rem', fontWeight: filter === s ? 700 : 400, cursor: 'pointer', textTransform: 'capitalize',
+                        }}>{s}</button>
+                    ))}
+                </div>
+                <button onClick={() => setShowForm(!showForm)} style={{
+                    background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 6,
+                    padding: '10px 22px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
+                }}>{showForm ? '✕ Cancel' : '+ Add Expert'}</button>
             </div>
 
-            {/* Cards */}
-            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : (
-                <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                    {filtered.length === 0 && <p style={{ color: '#888' }}>No experts found.</p>}
-                    {filtered.map(e => (
-                        <div key={e._id} style={{
-                            ...cardStyle,
-                            borderColor: e.status === 'pending'
-                                ? 'rgba(243,156,18,0.35)'
-                                : e.status === 'approved'
-                                    ? 'rgba(76,175,80,0.3)'
-                                    : 'rgba(255,255,255,0.12)',
-                        }}>
-                            {/* Status badge + name */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                                <h4 style={{ color: '#fff', margin: 0, fontSize: '1rem' }}>{e.name}</h4>
-                                <span style={{
-                                    padding: '3px 10px', borderRadius: 50, fontSize: '0.7rem', fontWeight: 700,
-                                    background: statusColor(e.status) + '33',
-                                    color: statusColor(e.status),
-                                    border: `1px solid ${statusColor(e.status)}55`,
-                                }}>
-                                    {e.status === 'pending' ? '⏳ Pending' : e.status === 'approved' ? '✅ Approved' : '❌ Rejected'}
-                                </span>
+            {showForm && (
+                <form onSubmit={handleAdd} style={{
+                    background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: 12, padding: '24px 28px', marginBottom: 28,
+                }}>
+                    <h3 style={{ color: '#fff', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.3rem', margin: '0 0 20px' }}>Add New Expert (Auto-Approved)</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px 20px', marginBottom: 20 }}>
+                        {[
+                            { key: 'name', label: 'Full Name *', type: 'text', required: true },
+                            { key: 'email', label: 'Email *', type: 'email', required: true },
+                            { key: 'password', label: 'Password *', type: 'password', required: true },
+                            { key: 'phone', label: 'Phone', type: 'tel' },
+                            { key: 'specialization', label: 'Field of Specialization *', type: 'text', required: true },
+                            { key: 'experience', label: 'Years of Experience', type: 'number' },
+                            { key: 'qualification', label: 'Qualification', type: 'text' },
+                            { key: 'languagesSpoken', label: 'Languages Spoken', type: 'text' },
+                            { key: 'certifications', label: 'Certifications', type: 'text' },
+                        ].map(f => (
+                            <div key={f.key}>
+                                <label style={labelStyle}>{f.label}</label>
+                                <input type={f.type} value={form[f.key]} onChange={set(f.key)} required={f.required} style={inputStyle} placeholder={f.label.replace(' *', '')} />
                             </div>
+                        ))}
+                    </div>
+                    <button type="submit" disabled={saving} style={{
+                        background: saving ? '#1e40af' : '#3b82f6', color: '#fff', border: 'none',
+                        borderRadius: 6, padding: '10px 28px', fontWeight: 700, fontSize: '0.9rem',
+                        cursor: saving ? 'not-allowed' : 'pointer',
+                    }}>{saving ? 'Saving…' : 'Add Expert'}</button>
+                </form>
+            )}
 
-                            <p style={{ fontSize: '0.82rem', color: '#93c5fd', margin: '2px 0' }}>{e.email}</p>
-                            <p style={{ fontSize: '0.82rem', color: '#ccc', margin: '6px 0 0' }}>
-                                <span style={{ color: '#888' }}>Specialization: </span>{e.specialization}
-                            </p>
-                            {e.createdAt && (
-                                <p style={{ fontSize: '0.75rem', color: '#666', margin: '4px 0 0' }}>
-                                    Requested: {new Date(e.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </p>
-                            )}
-
-                            {/* Action buttons */}
-                            <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
-                                {e.status === 'pending' && (
-                                    <>
-                                        <button onClick={() => approve(e._id)} style={{
-                                            flex: 1, padding: '7px 0', background: '#4caf50',
-                                            color: '#fff', fontWeight: 700, fontSize: '0.78rem',
-                                            border: 'none', borderRadius: 6, cursor: 'pointer',
-                                        }}>
-                                            ✅ Approve
-                                        </button>
-                                        <button onClick={() => reject(e._id)} style={{
-                                            flex: 1, padding: '7px 0', background: 'rgba(224,32,32,0.15)',
-                                            color: '#e02020', fontWeight: 700, fontSize: '0.78rem',
-                                            border: '1px solid rgba(224,32,32,0.4)', borderRadius: 6, cursor: 'pointer',
-                                        }}>
-                                            ❌ Reject
-                                        </button>
-                                    </>
-                                )}
-                                {e.status === 'approved' && (
-                                    <button onClick={() => reject(e._id)} style={{
-                                        padding: '7px 14px', background: 'rgba(224,32,32,0.15)',
-                                        color: '#e02020', fontWeight: 700, fontSize: '0.78rem',
-                                        border: '1px solid rgba(224,32,32,0.4)', borderRadius: 6, cursor: 'pointer',
-                                    }}>
-                                        Revoke Approval
-                                    </button>
-                                )}
-                                {e.status === 'rejected' && (
-                                    <button onClick={() => approve(e._id)} style={{
-                                        padding: '7px 14px', background: 'rgba(76,175,80,0.15)',
-                                        color: '#4caf50', fontWeight: 700, fontSize: '0.78rem',
-                                        border: '1px solid rgba(76,175,80,0.4)', borderRadius: 6, cursor: 'pointer',
-                                    }}>
-                                        Re-Approve
-                                    </button>
-                                )}
-                                <button onClick={() => remove(e._id)} style={{
-                                    padding: '7px 12px', background: 'transparent',
-                                    color: '#666', fontWeight: 600, fontSize: '0.78rem',
-                                    border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, cursor: 'pointer',
-                                }}>
-                                    🗑 Remove
-                                </button>
+            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : filtered.length === 0 ? (
+                <p style={{ color: '#aaa' }}>No experts found.</p>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {filtered.map(e => {
+                        const sc = STATUS_COLORS[e.status] || STATUS_COLORS.pending
+                        return (
+                            <div key={e._id} style={{
+                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: 10, padding: '18px 22px',
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12,
+                            }}>
+                                <div style={{ flex: 1, minWidth: 200 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                                        <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.98rem' }}>{e.name}</span>
+                                        <span style={{ background: sc.bg, color: sc.color, padding: '2px 10px', borderRadius: 50, fontSize: '0.72rem', fontWeight: 700 }}>{e.status}</span>
+                                    </div>
+                                    <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{e.email}</div>
+                                    <div style={{ color: '#bbb', fontSize: '0.8rem' }}>{e.specialization}{e.experience ? ` · ${e.experience}yrs` : ''}</div>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                    {e.status !== 'approved' && (
+                                        <button onClick={() => handleStatusUpdate(e._id, 'approved')} style={{ background: '#22c55e', color: '#000', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Approve</button>
+                                    )}
+                                    {e.status !== 'rejected' && (
+                                        <button onClick={() => handleStatusUpdate(e._id, 'rejected')} style={{ background: '#f59e0b', color: '#000', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Reject</button>
+                                    )}
+                                    <button onClick={() => handleDelete(e._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Remove</button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             )}
         </PageLayout>

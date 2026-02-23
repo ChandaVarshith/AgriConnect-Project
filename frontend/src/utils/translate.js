@@ -116,6 +116,49 @@ const TRANSLATIONS = {
         creating: 'Creating…',
         remove: 'Remove',
         nolistingsyet: 'No listings yet. Add your produce above!',
+
+        // Expert Section
+        welcomeexpert: 'Welcome, Expert!',
+        farmerrequests: 'Farmer Requests',
+        myresponses: 'My Responses',
+        allcontent: 'All Content',
+        createarticle: 'Create Article',
+        marketplacemanagement: 'Marketplace Management',
+        geminiassistance: 'Gemini AI Assistance',
+        cropmap: 'Crop Suitability Map',
+        pendingapproval: 'Pending Approval',
+        activelistings: 'Active Listings',
+        approve: 'Approve',
+        reject: 'Reject',
+
+        // Financier Section
+        welcomefinancier: 'Welcome, Financier!',
+        addloan: 'Add Loan',
+        loanrequests: 'Loan Requests',
+        allloans: 'All Loans',
+        farmerloanportfolio: 'Farmer Loan Portfolio',
+        accept: 'Accept',
+        removeloan: 'Remove Loan',
+
+        // Admin Section
+        admindashboard: 'Admin Dashboard',
+        managefarmers: 'Manage Farmers',
+        manageexperts: 'Manage Experts',
+        viewallsectors: 'View All Sectors',
+        addfarmer: 'Add Farmer',
+        addexpert: 'Add Expert',
+        addfinancier: 'Add Financier',
+        totalfarmers: 'Total Farmers',
+        activeexperts: 'Active Experts',
+        totalqueries: 'Total Queries',
+
+        // Public User Section
+        welcomeuser: 'Welcome, Explorer!',
+        explorecontent: 'Explore Content',
+        learnfarming: 'Learn Farming',
+        buyresources: 'Buy Resources',
+        contactfarmer: 'Contact Farmer',
+        farmercontactrevealed: 'Farmer Contact Revealed',
     },
 
     hi: {
@@ -231,6 +274,49 @@ const TRANSLATIONS = {
         creating: 'बनाया जा रहा है…',
         remove: 'हटाएं',
         nolistingsyet: 'अभी कोई सूची नहीं। ऊपर अपनी उपज जोड़ें!',
+
+        // Expert
+        welcomeexpert: 'स्वागत है, विशेषज्ञ!',
+        farmerrequests: 'किसान अनुरोध',
+        myresponses: 'मेरे उत्तर',
+        allcontent: 'सभी सामग्री',
+        createarticle: 'लेख बनाएं',
+        marketplacemanagement: 'बाज़ार प्रबंधन',
+        geminiassistance: 'जेमिनी AI सहायता',
+        cropmap: 'फसल उपयुक्तता नक्शा',
+        pendingapproval: 'अनुमोदन लंबित',
+        activelistings: 'सक्रिय सूचियां',
+        approve: 'स्वीकृत करें',
+        reject: 'अस्वीकार करें',
+
+        // Financier
+        welcomefinancier: 'स्वागत है, वित्तपोषक!',
+        addloan: 'ऋण जोड़ें',
+        loanrequests: 'ऋण अनुरोध',
+        allloans: 'सभी ऋण',
+        farmerloanportfolio: 'किसान ऋण पोर्टफोलियो',
+        accept: 'स्वीकार करें',
+        removeloan: 'ऋण हटाएं',
+
+        // Admin
+        admindashboard: 'व्यवस्थापक डैशबोर्ड',
+        managefarmers: 'किसान प्रबंधन',
+        manageexperts: 'विशेषज्ञ प्रबंधन',
+        viewallsectors: 'सभी क्षेत्र देखें',
+        addfarmer: 'किसान जोड़ें',
+        addexpert: 'विशेषज्ञ जोड़ें',
+        addfinancier: 'वित्तपोषक जोड़ें',
+        totalfarmers: 'कुल किसान',
+        activeexperts: 'सक्रिय विशेषज्ञ',
+        totalqueries: 'कुल प्रश्न',
+
+        // Public
+        welcomeuser: 'स्वागत है, अन्वेषक!',
+        explorecontent: 'सामग्री देखें',
+        learnfarming: 'खेती सीखें',
+        buyresources: 'संसाधन खरीदें',
+        contactfarmer: 'किसान से संपर्क',
+        farmercontactrevealed: 'किसान संपर्क प्रकट',
     },
 
     te: {
@@ -346,6 +432,49 @@ const TRANSLATIONS = {
         creating: 'సృష్టిస్తోంది…',
         remove: 'తొలగించు',
         nolistingsyet: 'ఇంకా జాబితాలు లేవు. పైన మీ ఉత్పత్తి జోడించండి!',
+
+        // Expert
+        welcomeexpert: 'స్వాగతం, నిపుణుడా!',
+        farmerrequests: 'రైతు అభ్యర్థనలు',
+        myresponses: 'నా స్పందనలు',
+        allcontent: 'మొత్తం కంటెంట్',
+        createarticle: 'వ్యాసం సృష్టించు',
+        marketplacemanagement: 'మార్కెట్ నిర్వహణ',
+        geminiassistance: 'జెమిని AI సహాయం',
+        cropmap: 'పంట అనుకూలత మ్యాప్',
+        pendingapproval: 'ఆమోదం పెండింగ్‌లో ఉంది',
+        activelistings: 'యాక్టివ్ జాబితాలు',
+        approve: 'ఆమోదించు',
+        reject: 'తిరస్కరించు',
+
+        // Financier
+        welcomefinancier: 'స్వాగతం, ఫైనాన్సియర్!',
+        addloan: 'రుణం జోడించు',
+        loanrequests: 'రుణ అభ్యర్థనలు',
+        allloans: 'అన్ని రుణాలు',
+        farmerloanportfolio: 'రైతు రుణ పోర్ట్‌ఫోలియో',
+        accept: 'అంగీకరించు',
+        removeloan: 'రుణం తొలగించు',
+
+        // Admin
+        admindashboard: 'అడ్మిన్ డాష్‌బోర్డ్',
+        managefarmers: 'రైతులను నిర్వహించు',
+        manageexperts: 'నిపుణులను నిర్వహించు',
+        viewallsectors: 'అన్ని రంగాలు చూడు',
+        addfarmer: 'రైతును జోడించు',
+        addexpert: 'నిపుణుడిని జోడించు',
+        addfinancier: 'ఫైనాన్సియర్‌ని జోడించు',
+        totalfarmers: 'మొత్తం రైతులు',
+        activeexperts: 'యాక్టివ్ నిపుణులు',
+        totalqueries: 'మొత్తం ప్రశ్నలు',
+
+        // Public
+        welcomeuser: 'స్వాగతం, అన్వేషకుడా!',
+        explorecontent: 'కంటెంట్ అన్వేషించు',
+        learnfarming: 'వ్యవసాయం నేర్చుకో',
+        buyresources: 'వనరులు కొనుగోలు',
+        contactfarmer: 'రైతును సంప్రదించు',
+        farmercontactrevealed: 'రైతు సంప్రదింపు వెల్లడైంది',
     },
 
     es: {
@@ -461,6 +590,49 @@ const TRANSLATIONS = {
         creating: 'Creando…',
         remove: 'Eliminar',
         nolistingsyet: '¡Aún no hay publicaciones. Añade tu producción arriba!',
+
+        // Expert
+        welcomeexpert: '¡Bienvenido, Experto!',
+        farmerrequests: 'Solicitudes de Agricultores',
+        myresponses: 'Mis Respuestas',
+        allcontent: 'Todo el Contenido',
+        createarticle: 'Crear Artículo',
+        marketplacemanagement: 'Gestión del Mercado',
+        geminiassistance: 'Asistencia Gemini AI',
+        cropmap: 'Mapa de Cultivos',
+        pendingapproval: 'Aprobación Pendiente',
+        activelistings: 'Listados Activos',
+        approve: 'Aprobar',
+        reject: 'Rechazar',
+
+        // Financier
+        welcomefinancier: '¡Bienvenido, Financiero!',
+        addloan: 'Agregar Préstamo',
+        loanrequests: 'Solicitudes de Préstamo',
+        allloans: 'Todos los Préstamos',
+        farmerloanportfolio: 'Portafolio de Préstamos',
+        accept: 'Aceptar',
+        removeloan: 'Eliminar Préstamo',
+
+        // Admin
+        admindashboard: 'Panel de Administrador',
+        managefarmers: 'Gestionar Agricultores',
+        manageexperts: 'Gestionar Expertos',
+        viewallsectors: 'Ver Todos los Sectores',
+        addfarmer: 'Agregar Agricultor',
+        addexpert: 'Agregar Experto',
+        addfinancier: 'Agregar Financiero',
+        totalfarmers: 'Total Agricultores',
+        activeexperts: 'Expertos Activos',
+        totalqueries: 'Total Consultas',
+
+        // Public
+        welcomeuser: '¡Bienvenido, Explorador!',
+        explorecontent: 'Explorar Contenido',
+        learnfarming: 'Aprender Agricultura',
+        buyresources: 'Comprar Recursos',
+        contactfarmer: 'Contactar Agricultor',
+        farmercontactrevealed: 'Contacto del Agricultor Revelado',
     },
 }
 

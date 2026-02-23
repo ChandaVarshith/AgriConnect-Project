@@ -25,7 +25,8 @@ exports.getLoanById = async (req, res) => {
 
 exports.addLoan = async (req, res) => {
     try {
-        const loan = await Loan.create({ ...req.body, financierId: req.user.id })
+        const { title, type, amount, interestRate, tenure, eligibility, documentsRequired } = req.body
+        const loan = await Loan.create({ title, type, amount, interestRate, tenure, eligibility, documentsRequired, financierId: req.user.id })
         res.status(201).json(loan)
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -41,10 +42,22 @@ exports.updateLoan = async (req, res) => {
     }
 }
 
+// Soft-delete: set isActive false
 exports.deleteLoan = async (req, res) => {
     try {
         await Loan.findByIdAndUpdate(req.params.id, { isActive: false })
-        res.json({ message: 'Loan deactivated.' })
+        res.json({ message: 'Loan removed.' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+// Hard-delete: permanently remove (used by financier "Remove" button)
+exports.removeLoan = async (req, res) => {
+    try {
+        const loan = await Loan.findOneAndDelete({ _id: req.params.id, financierId: req.user.id })
+        if (!loan) return res.status(404).json({ message: 'Loan not found or not yours.' })
+        res.json({ message: 'Loan permanently removed.' })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
