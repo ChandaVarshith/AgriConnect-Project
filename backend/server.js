@@ -57,6 +57,13 @@ app.use('/api/weather', require('./routes/weather.routes'))
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'AgriConnect API is running ✅' }))
 
+// ── Root route (silences browser 404 on /) ───────────────────────────────────
+app.get('/', (req, res) => res.json({ name: 'AgriConnect API', status: 'running', version: '1.0.0' }))
+
+// ── Chrome DevTools well-known handler (silences CSP console noise) ───────────
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.json({}))
+
+
 // ── Global Error Handler ──────────────────────────────────────────────────────
 app.use(require('./middleware/error.middleware'))
 

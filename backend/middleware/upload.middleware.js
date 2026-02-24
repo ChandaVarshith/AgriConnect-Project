@@ -28,4 +28,20 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 })
 
+// Article image upload — saves to uploads/article-images/
+const articleUpload = multer({
+    storage: storageFn('article-images'),
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 },
+})
+
+// Produce image upload — saves to uploads/produce-images/
+const produceUpload = multer({
+    storage: storageFn('produce-images'),
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 },
+})
+
 module.exports = upload
+module.exports.articleUpload = articleUpload
+module.exports.produceUpload = produceUpload

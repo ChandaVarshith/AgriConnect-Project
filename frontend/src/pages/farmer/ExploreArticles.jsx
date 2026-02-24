@@ -5,6 +5,9 @@ import { useLanguage } from '../../context/LanguageContext'
 
 const ExploreArticles = () => {
     const { t } = useLanguage()
+    // Backend serves /uploads/ static files on port 5000, not Vite's port 3000
+    const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '')
+    const imgSrc = (url) => url ? (url.startsWith('http') ? url : `${BACKEND_URL}${url}`) : null
     const [articles, setA] = useState([])
     const [search, setS] = useState('')
     const [page, setPage] = useState(1)
@@ -50,19 +53,19 @@ const ExploreArticles = () => {
             }}>
                 {pageItems.map(a => (
                     <div key={a._id} style={{
-                        background: 'rgba(255,255,255,0.06)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'rgba(10,18,10,0.88)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1px solid rgba(255,255,255,0.12)',
                         borderRadius: 12, overflow: 'hidden',
                         display: 'flex', flexDirection: 'column',
                         transition: 'transform 0.2s, box-shadow 0.2s',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.6)',
                     }}
                         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.5)'; }}
                         onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)'; }}
                     >
-                        {a.imageUrl ? (
-                            <img src={a.imageUrl} alt={a.title}
+                        {imgSrc(a.imageUrl) ? (
+                            <img src={imgSrc(a.imageUrl)} alt={a.title}
                                 style={{ width: '100%', height: 160, objectFit: 'cover', filter: 'brightness(0.85)' }} />
                         ) : (
                             <div style={{ width: '100%', height: 120, background: 'linear-gradient(135deg, rgba(22,163,74,0.15), rgba(5,150,105,0.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>
@@ -136,8 +139,8 @@ const ExploreArticles = () => {
                         boxShadow: '0 20px 80px rgba(0,0,0,0.8)',
                         animation: 'slideUp 0.3s ease',
                     }} onClick={e => e.stopPropagation()}>
-                        {selected.imageUrl && (
-                            <img src={selected.imageUrl} alt={selected.title}
+                        {imgSrc(selected.imageUrl) && (
+                            <img src={imgSrc(selected.imageUrl)} alt={selected.title}
                                 style={{ width: '100%', height: 260, objectFit: 'cover', borderRadius: '16px 16px 0 0', filter: 'brightness(0.8)' }} />
                         )}
                         <div style={{ padding: '28px 32px' }}>

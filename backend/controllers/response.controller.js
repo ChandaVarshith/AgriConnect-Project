@@ -28,7 +28,10 @@ exports.getQueryResponses = async (req, res) => {
 exports.getExpertResponses = async (req, res) => {
     try {
         const responses = await Response.find({ expertId: req.user.id })
-            .populate('queryId')
+            .populate({
+                path: 'queryId',
+                populate: { path: 'farmerId', select: 'name phone email' }
+            })
             .sort({ createdAt: -1 })
         res.json(responses)
     } catch (err) {

@@ -28,14 +28,14 @@ const BrowseLoans = () => {
         if (search.trim()) {
             const q = search.toLowerCase()
             result = result.filter(l =>
-                l.loanType?.toLowerCase().includes(q) ||
-                l.heading?.toLowerCase().includes(q)
+                l.type?.toLowerCase().includes(q) ||
+                l.title?.toLowerCase().includes(q)
             )
         }
 
         // Loan type sort
         if (loanTypeSort) {
-            result = [...result].sort((a, b) => (a.loanType ?? '').localeCompare(b.loanType ?? ''))
+            result = [...result].sort((a, b) => (a.type ?? '').localeCompare(b.type ?? ''))
         }
 
         // Interest rate sort
@@ -43,8 +43,8 @@ const BrowseLoans = () => {
         if (interestSort === 'desc') result = [...result].sort((a, b) => (b.interestRate ?? 0) - (a.interestRate ?? 0))
 
         // Max amount sort
-        if (amountSort === 'asc') result = [...result].sort((a, b) => (a.maxAmount ?? 0) - (b.maxAmount ?? 0))
-        if (amountSort === 'desc') result = [...result].sort((a, b) => (b.maxAmount ?? 0) - (a.maxAmount ?? 0))
+        if (amountSort === 'asc') result = [...result].sort((a, b) => (a.amount ?? 0) - (b.amount ?? 0))
+        if (amountSort === 'desc') result = [...result].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0))
 
         return result
     }
@@ -138,13 +138,13 @@ const BrowseLoans = () => {
                                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)'; }}
                             >
                                 <h4 style={{ color: '#22c55e', marginBottom: 14, textTransform: 'capitalize', fontSize: '1.1rem', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.04em' }}>
-                                    {loan.loanType || loan.heading || 'Loan'}
+                                    {loan.title || loan.type || 'Loan'}
                                 </h4>
 
                                 {[
                                     { label: t('loanid'), val: loan._id?.slice(-8).toUpperCase(), color: '#888', mono: true },
                                     { label: t('interestrate'), val: `${loan.interestRate ?? 0}%`, color: '#fbbf24' },
-                                    { label: t('maxamount'), val: `₹${(loan.maxAmount ?? 0).toLocaleString()}`, color: '#4ade80' },
+                                    { label: t('maxamount'), val: `₹${(loan.amount ?? 0).toLocaleString()}`, color: '#4ade80' },
                                     { label: t('repaymentperiod'), val: `${loan.tenure ?? '—'} ${t('months')}`, color: '#fff' },
                                 ].map(row => (
                                     <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>

@@ -13,9 +13,30 @@ exports.createQuery = async (req, res) => {
 exports.getMyQueries = async (req, res) => {
     try {
         const queries = await Query.find({ farmerId: req.user.id })
-            .populate('expertId', 'name')
+            .populate('expertId', 'name email')
             .sort({ createdAt: -1 })
-        res.json(queries)
+
+        // Attach responseText from Response collection for resolved queries
+        const Response = require('../models/Response.model')
+        const Expert = require('../models/Expert.model')
+        const queryIds = queries.map(q => q._id)
+        const responses = await Response.find({ queryId: { $in: queryIds } })
+            .populate('expertId', 'name email')
+
+        // Map queryId -> response
+        const responseMap = {}
+        responses.forEach(r => { responseMap[r.queryId.toString()] = r })
+
+        const enriched = queries.map(q => {
+            const resp = responseMap[q._id.toString()]
+            return {
+                ...q.toObject(),
+                responseText: resp?.responseText || null,
+                expertEmail: resp?.expertId?.email || q.expertId?.email || null,
+            }
+        })
+
+        res.json(enriched)
     } catch (err) {
         res.status(500).json({ message: err.message })
     }

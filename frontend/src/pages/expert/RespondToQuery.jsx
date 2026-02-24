@@ -180,44 +180,78 @@ const RespondToQuery = () => {
                         </p>
                     </div>
 
-                    {/* Response form */}
-                    <div style={{
-                        background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        borderRadius: 10, padding: '20px 24px',
-                    }}>
-                        <h4 style={{ color: '#fff', marginBottom: 16 }}>📝 Enter Your Response Here</h4>
-                        <form onSubmit={handleSubmit}>
-                            <textarea rows={6} placeholder="Enter your response here…" value={response}
-                                onChange={e => setResponse(e.target.value)} required
-                                style={{
-                                    width: '100%', padding: '12px 14px',
-                                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                                    borderRadius: 4, color: '#fff', fontSize: '0.9rem',
-                                    outline: 'none', resize: 'vertical', marginBottom: 16,
-                                }} />
-                            {error && <p style={{ color: '#e02020', fontSize: '0.85rem', marginBottom: 10 }}>{error}</p>}
-                            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                                <button type="submit" disabled={loading} style={{
-                                    padding: '10px 24px', background: '#4caf50', color: '#fff',
-                                    border: 'none', borderRadius: 4, fontWeight: 700, fontSize: '0.9rem',
-                                    cursor: loading ? 'not-allowed' : 'pointer', textTransform: 'uppercase',
-                                }}>
-                                    {loading ? 'Submitting…' : '📤 Submit Response'}
-                                </button>
-                                <button type="button" onClick={() => { setWeatherSearch(query.location || ''); setShowWeather(true) }} style={{
-                                    padding: '10px 24px', background: '#3b82f6', color: '#fff',
-                                    border: 'none', borderRadius: 4, fontWeight: 700, fontSize: '0.9rem',
-                                    cursor: 'pointer', textTransform: 'uppercase',
-                                }}>🌤 Check Weather</button>
-                                <button type="button" onClick={() => navigate(-1)} style={{
-                                    padding: '10px 24px', background: 'transparent', color: '#aaa',
-                                    border: '1px solid rgba(255,255,255,0.2)', borderRadius: 4,
-                                    fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
-                                }}>Cancel</button>
+                    {/* Response form — only shown for PENDING queries */}
+                    {query.status === 'resolved' ? (
+                        <div style={{
+                            background: 'rgba(34,197,94,0.08)',
+                            border: '1px solid rgba(34,197,94,0.3)',
+                            borderLeft: '4px solid #22c55e',
+                            borderRadius: 10, padding: '20px 24px',
+                            display: 'flex', alignItems: 'center', gap: 16,
+                        }}>
+                            <span style={{ fontSize: '2rem' }}>✅</span>
+                            <div>
+                                <h4 style={{ color: '#4ade80', margin: '0 0 6px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.1rem' }}>
+                                    Query Already Resolved
+                                </h4>
+                                <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0 }}>
+                                    A response has been submitted for this query. No further action is needed.
+                                </p>
                             </div>
-                        </form>
-                    </div>
+                            <button
+                                onClick={() => navigate('/expert/requests')}
+                                style={{
+                                    marginLeft: 'auto', padding: '8px 20px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    color: '#fff', borderRadius: 6,
+                                    fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                ← Back
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={{
+                            background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            borderRadius: 10, padding: '20px 24px',
+                        }}>
+                            <h4 style={{ color: '#fff', marginBottom: 16 }}>📝 Enter Your Response Here</h4>
+                            <form onSubmit={handleSubmit}>
+                                <textarea rows={6} placeholder="Enter your response here…" value={response}
+                                    onChange={e => setResponse(e.target.value)} required
+                                    style={{
+                                        width: '100%', padding: '12px 14px',
+                                        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                                        borderRadius: 4, color: '#fff', fontSize: '0.9rem',
+                                        outline: 'none', resize: 'vertical', marginBottom: 16,
+                                        boxSizing: 'border-box',
+                                    }} />
+                                {error && <p style={{ color: '#e02020', fontSize: '0.85rem', marginBottom: 10 }}>{error}</p>}
+                                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                                    <button type="submit" disabled={loading} style={{
+                                        padding: '10px 24px', background: '#4caf50', color: '#fff',
+                                        border: 'none', borderRadius: 4, fontWeight: 700, fontSize: '0.9rem',
+                                        cursor: loading ? 'not-allowed' : 'pointer', textTransform: 'uppercase',
+                                    }}>
+                                        {loading ? 'Submitting…' : '📤 Submit Response'}
+                                    </button>
+                                    <button type="button" onClick={() => { setWeatherSearch(query.location || ''); setShowWeather(true) }} style={{
+                                        padding: '10px 24px', background: '#3b82f6', color: '#fff',
+                                        border: 'none', borderRadius: 4, fontWeight: 700, fontSize: '0.9rem',
+                                        cursor: 'pointer', textTransform: 'uppercase',
+                                    }}>🌤 Check Weather</button>
+                                    <button type="button" onClick={() => navigate(-1)} style={{
+                                        padding: '10px 24px', background: 'transparent', color: '#aaa',
+                                        border: '1px solid rgba(255,255,255,0.2)', borderRadius: 4,
+                                        fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
+                                    }}>Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
                 </div>
             )}
         </PageLayout>

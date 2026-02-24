@@ -16,7 +16,7 @@ exports.geminiAssist = async (req, res) => {
         if (!apiKey) {
             return res.status(400).json({ message: 'GEMINI_API_KEY not configured on server.' })
         }
-        const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
+        const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
         const response = await axios.post(GEMINI_URL, {
             contents: [{ parts: [{ text: prompt }] }]
         })

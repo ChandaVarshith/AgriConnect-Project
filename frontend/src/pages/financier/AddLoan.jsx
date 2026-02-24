@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import PageLayout from '../../components/PageLayout'
 import loanService from '../../services/loanService'
 
+const LOAN_TYPES = ['crop', 'equipment', 'kisan', 'agri']
+
 const AddLoan = () => {
     const [form, setForm] = useState({
-        loanType: '', maxAmount: '', interestRate: '', tenure: '', description: '', eligibility: '',
+        title: '', type: '', amount: '', interestRate: '', tenure: '', eligibility: '', description: '',
     })
     const [error, setError] = useState('')
     const [success, setS] = useState('')
@@ -15,7 +17,15 @@ const AddLoan = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); setError(''); setL(true)
         try {
-            await loanService.addLoan(form)
+            await loanService.addLoan({
+                title: form.title,
+                type: form.type,
+                amount: Number(form.amount),
+                interestRate: Number(form.interestRate),
+                tenure: Number(form.tenure),
+                eligibility: form.eligibility,
+                description: form.description,
+            })
             setS('Loan product created successfully!')
             setTimeout(() => navigate('/financier/all-loans'), 1500)
         } catch (err) { setError(err.response?.data?.message || 'Failed to create loan.') }
@@ -41,11 +51,15 @@ const AddLoan = () => {
                     borderRadius: 12, padding: '32px 30px',
                 }}>
                     <form onSubmit={handleSubmit}>
+                        <label style={lbl}>Loan Title</label>
+                        <input style={inp} type="text" placeholder="e.g. Kisan Crop Loan 2025"
+                            value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+
                         <label style={lbl}>Loan Type</label>
                         <select style={{ ...inp, appearance: 'auto', cursor: 'pointer' }}
-                            value={form.loanType} onChange={e => setForm({ ...form, loanType: e.target.value })} required>
+                            value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} required>
                             <option value="">Select type…</option>
-                            {['crop', 'equipment', 'land', 'irrigation', 'storage'].map(t => (
+                            {LOAN_TYPES.map(t => (
                                 <option key={t} value={t} style={{ background: '#1a1a1a' }}>
                                     {t.charAt(0).toUpperCase() + t.slice(1)} Loan
                                 </option>
@@ -54,7 +68,7 @@ const AddLoan = () => {
 
                         <label style={lbl}>Max Amount (₹)</label>
                         <input style={inp} type="number" placeholder="e.g. 500000"
-                            value={form.maxAmount} onChange={e => setForm({ ...form, maxAmount: e.target.value })} required />
+                            value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} required />
 
                         <label style={lbl}>Interest Rate (%)</label>
                         <input style={inp} type="number" step="0.1" placeholder="e.g. 8.5"

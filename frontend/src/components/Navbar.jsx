@@ -136,8 +136,8 @@ const Navbar = ({ role: roleProp, publicNav }) => {
                         <span /><span /><span />
                     </button>
 
-                    {/* Logout */}
-                    {user && (
+                    {/* Logout — only inside dashboards, not on landing page */}
+                    {user && role !== '_landing' && (
                         <button className="btn-logout" onClick={handleLogout}>Logout</button>
                     )}
                 </div>
