@@ -16,7 +16,7 @@ const ROLE_BG = {
  * Now uses the shared Navbar component (with hamburger + nav links)
  * instead of a custom minimal top bar.
  */
-const PageLayout = ({ role, bgUrl, title, children }) => {
+const PageLayout = ({ role, bgUrl, title, publicNav, children }) => {
     const bg = bgUrl || ROLE_BG[role] || ROLE_BG.farmer
 
     return (
@@ -36,7 +36,7 @@ const PageLayout = ({ role, bgUrl, title, children }) => {
             />
 
             {/* ── Shared Navbar (hamburger contains all nav items) ── */}
-            <Navbar role={role} />
+            <Navbar role={role} publicNav={publicNav} />
 
             {/* ── Scrollable content below the top bar ─────────────── */}
             <div style={{

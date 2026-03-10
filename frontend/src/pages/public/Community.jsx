@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from '../../components/Navbar'
+import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
+import './Community.css'
 
 const Community = () => {
     const [posts, setPosts] = useState([])
@@ -22,10 +23,8 @@ const Community = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-            <Navbar title="Community" publicNav />
-            <div className="container" style={{ padding: '40px 24px', maxWidth: 720 }}>
-                <h2 className="mb-3">🌍 Farming Community</h2>
+        <PageLayout role="public" publicNav title="🌍 Farming Community">
+            <div className="community-content">
                 <div className="card mb-3">
                     <form onSubmit={handlePost}>
                         <div className="form-group">
@@ -38,14 +37,14 @@ const Community = () => {
                 </div>
                 {posts.map(p => (
                     <div key={p._id} className="card mb-2">
-                        <p style={{ color: 'var(--text)' }}>{p.content}</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 8 }}>
+                        <p className="community-post-content">{p.content}</p>
+                        <p className="community-post-meta">
                             — {p.userId?.name || 'Farmer'} · {new Date(p.createdAt).toLocaleDateString()}
                         </p>
                     </div>
                 ))}
             </div>
-        </div>
+        </PageLayout>
     )
 }
 

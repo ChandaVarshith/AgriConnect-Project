@@ -20,9 +20,9 @@ const authService = {
     registerFinancier: (data) => api.post('/auth/register/financier', data),
     registerPublic: (name, email, password) => api.post('/auth/register/public', { name, email, password }),
 
-    sendOTP: (email) => api.post('/auth/send-otp', { email }),
+    sendOTP: (data) => api.post('/auth/send-otp', data),
     verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
-    resetPassword: (email, otp, newPassword) => api.post('/auth/reset-password', { email, otp, newPassword }),
+    resetPassword: (data) => api.post('/auth/reset-password', data),
 }
 
 export default authService

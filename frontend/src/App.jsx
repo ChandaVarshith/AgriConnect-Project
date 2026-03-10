@@ -12,6 +12,7 @@ import ExpertSignup from './pages/auth/ExpertSignup'
 import FinancierSignup from './pages/auth/FinancierSignup'
 import PublicRegister from './pages/auth/PublicRegister'
 import ForgotPassword from './pages/auth/ForgotPassword'
+import GoogleCallback from './pages/auth/GoogleCallback'
 
 // Pre-auth Public Pages (landing)
 import PublicHome from './pages/public/PublicHome'
@@ -31,6 +32,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageFarmers from './pages/admin/ManageFarmers'
 import ManageExperts from './pages/admin/ManageExperts'
 import ManageFinanciers from './pages/admin/ManageFinanciers'
+import AddNewSector from './pages/admin/AddNewSector'
 
 // Farmer Pages
 import FarmerHome from './pages/farmer/FarmerHome'
@@ -40,6 +42,7 @@ import BrowseLoans from './pages/farmer/BrowseLoans'
 import LoanApplication from './pages/farmer/LoanApplication'
 import ExploreArticles from './pages/farmer/ExploreArticles'
 import MarketplaceFarmer from './pages/farmer/MarketplaceFarmer'
+import AppliedLoans from './pages/farmer/AppliedLoans'
 
 // Expert Pages
 import ExpertHome from './pages/expert/ExpertHome'
@@ -50,7 +53,7 @@ import CreateArticle from './pages/expert/CreateArticle'
 import ExpertAllContent from './pages/expert/ExpertAllContent'
 import ExpertMarketplace from './pages/expert/ExpertMarketplace'
 import CropSuitabilityMap from './pages/expert/CropSuitabilityMap'
-import GeminiAssistance from './pages/expert/GeminiAssistance'
+import AgriBotAssistance from './pages/expert/AgriBotAssistance'
 
 // Financier Pages
 import FinancierHome from './pages/financier/FinancierHome'
@@ -80,12 +83,14 @@ function App() {
                         <Route path="/register/financier" element={<FinancierSignup />} />
                         <Route path="/register/public" element={<PublicRegister />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/google-callback" element={<GoogleCallback />} />
 
                         {/* Admin Routes */}
                         <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
                         <Route path="/admin/farmers" element={<ProtectedRoute role="admin"><ManageFarmers /></ProtectedRoute>} />
                         <Route path="/admin/experts" element={<ProtectedRoute role="admin"><ManageExperts /></ProtectedRoute>} />
                         <Route path="/admin/financiers" element={<ProtectedRoute role="admin"><ManageFinanciers /></ProtectedRoute>} />
+                        <Route path="/admin/sectors" element={<ProtectedRoute role="admin"><AddNewSector /></ProtectedRoute>} />
 
                         {/* Farmer Routes */}
                         <Route path="/farmer" element={<ProtectedRoute role="farmer"><FarmerHome /></ProtectedRoute>} />
@@ -93,6 +98,7 @@ function App() {
                         <Route path="/farmer/responses" element={<ProtectedRoute role="farmer"><MyResponsesFarmer /></ProtectedRoute>} />
                         <Route path="/farmer/loans" element={<ProtectedRoute role="farmer"><BrowseLoans /></ProtectedRoute>} />
                         <Route path="/farmer/loan-apply/:loanId" element={<ProtectedRoute role="farmer"><LoanApplication /></ProtectedRoute>} />
+                        <Route path="/farmer/applied-loans" element={<ProtectedRoute role="farmer"><AppliedLoans /></ProtectedRoute>} />
                         <Route path="/farmer/articles" element={<ProtectedRoute role="farmer"><ExploreArticles /></ProtectedRoute>} />
                         <Route path="/farmer/marketplace" element={<ProtectedRoute role="farmer"><MarketplaceFarmer /></ProtectedRoute>} />
 
@@ -105,7 +111,7 @@ function App() {
                         <Route path="/expert/article/create" element={<ProtectedRoute role="expert"><CreateArticle /></ProtectedRoute>} />
                         <Route path="/expert/marketplace" element={<ProtectedRoute role="expert"><ExpertMarketplace /></ProtectedRoute>} />
                         <Route path="/expert/crop-map" element={<ProtectedRoute role="expert"><CropSuitabilityMap /></ProtectedRoute>} />
-                        <Route path="/expert/gemini" element={<ProtectedRoute role="expert"><GeminiAssistance /></ProtectedRoute>} />
+                        <Route path="/expert/gemini" element={<ProtectedRoute role="expert"><AgriBotAssistance /></ProtectedRoute>} />
 
                         {/* Financier Routes */}
                         <Route path="/financier" element={<ProtectedRoute role="financier"><FinancierHome /></ProtectedRoute>} />

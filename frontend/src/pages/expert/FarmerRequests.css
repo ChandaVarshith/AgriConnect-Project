@@ -1,0 +1,131 @@
+.farmer-req-search {
+    width: 100%;
+    max-width: 460px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    margin-bottom: 16px;
+    outline: none;
+}
+
+.farmer-req-sort-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.farmer-req-sort-label {
+    color: #999;
+    font-size: 0.85rem;
+    align-self: center;
+}
+
+.farmer-req-sort-btn {
+    padding: 6px 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.farmer-req-error {
+    color: #ef4444;
+}
+
+.farmer-req-loading {
+    color: #aaa;
+}
+
+.farmer-req-grid {
+    display: grid;
+    gap: 14px;
+    max-width: 860px;
+}
+
+.farmer-req-empty {
+    color: #888;
+}
+
+.farmer-req-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 18px 22px;
+}
+
+.farmer-req-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.farmer-req-crop {
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.farmer-req-farmer {
+    font-size: 0.8rem;
+    color: #4caf50;
+    margin-bottom: 4px;
+}
+
+.farmer-req-desc {
+    font-size: 0.82rem;
+    color: #bbb;
+    max-width: 600px;
+}
+
+.farmer-req-meta {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 6px;
+}
+
+.farmer-req-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.farmer-req-status-badge {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #000;
+    text-transform: capitalize;
+}
+
+.farmer-req-btn-primary {
+    padding: 5px 14px;
+    background: #3b82f6;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border-radius: 5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: none;
+}
+
+.farmer-req-btn-secondary {
+    padding: 5px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border-radius: 5px;
+    text-decoration: none;
+    text-transform: uppercase;
+}

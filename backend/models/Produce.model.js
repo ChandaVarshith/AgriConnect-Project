@@ -12,7 +12,10 @@ const ProduceSchema = new Schema({
     images: [String],
     // Expert approval status
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
-    available: { type: Boolean, default: true },
+    available: { type: Boolean, default: false },
+    // Rejection reason from expert
+    rejectionReason: { type: String, default: '' },
+    rejectedByEmail: { type: String, default: '' },
     // Cached farmer contact for public reveal on purchase
     farmerName: { type: String, default: '' },
     farmerPhone: { type: String, default: '' },

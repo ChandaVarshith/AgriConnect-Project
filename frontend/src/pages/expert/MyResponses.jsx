@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import queryService from '../../services/queryService'
+import './MyResponses.css'
 
 const ExpertMyResponses = () => {
     const [responses, setResponses] = useState([])
@@ -13,23 +14,17 @@ const ExpertMyResponses = () => {
     return (
         <PageLayout role="expert" title="My Responses">
             {loading ? (
-                <p style={{ color: '#aaa' }}>Loading…</p>
+                <p className="expert-my-resp-loading">Loading…</p>
             ) : (
-                <div style={{ display: 'grid', gap: 16, maxWidth: 860 }}>
-                    {responses.length === 0 && <p style={{ color: '#888' }}>No responses yet.</p>}
+                <div className="expert-my-resp-grid">
+                    {responses.length === 0 && <p className="expert-my-resp-empty">No responses yet.</p>}
                     {responses.map(r => (
-                        <div key={r._id} style={{
-                            background: 'rgba(255,255,255,0.08)',
-                            backdropFilter: 'blur(12px)',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            borderLeft: '4px solid #4caf50',
-                            borderRadius: 10, padding: '18px 22px',
-                        }}>
+                        <div key={r._id} className="expert-my-resp-card">
                             {/* Heading: show query topic, not the response text */}
-                            <h4 style={{ color: '#fff', marginBottom: 10, fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.05rem', letterSpacing: '0.04em' }}>
+                            <h4 className="expert-my-resp-title">
                                 🌾 Query: {r.queryId?.cropType || 'Farming Query'}
                                 {r.queryId?.location && (
-                                    <span style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 400, marginLeft: 10 }}>
+                                    <span className="expert-my-resp-location">
                                         📍 {r.queryId.location}
                                     </span>
                                 )}
@@ -37,34 +32,26 @@ const ExpertMyResponses = () => {
 
                             {/* Farmer's original description */}
                             {r.queryId?.description && (
-                                <div style={{
-                                    background: 'rgba(0,0,0,0.2)', borderRadius: 6,
-                                    padding: '8px 12px', marginBottom: 12,
-                                    borderLeft: '3px solid rgba(255,255,255,0.15)',
-                                }}>
-                                    <span style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Farmer's Question: </span>
-                                    <span style={{ color: '#94a3b8', fontSize: '0.83rem' }}>{r.queryId.description}</span>
+                                <div className="expert-my-resp-farmer-box">
+                                    <span className="expert-my-resp-farmer-label">Farmer's Question: </span>
+                                    <span className="expert-my-resp-farmer-text">{r.queryId.description}</span>
                                 </div>
                             )}
 
                             {/* Expert's response */}
-                            <div style={{
-                                background: 'rgba(34,197,94,0.07)', borderRadius: 6,
-                                padding: '10px 14px', marginBottom: 12,
-                                border: '1px solid rgba(34,197,94,0.15)',
-                            }}>
-                                <span style={{ color: '#4ade80', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Response: </span>
-                                <p style={{ color: '#d1fae5', fontSize: '0.88rem', marginTop: 4, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{r.responseText}</p>
+                            <div className="expert-my-resp-expert-box">
+                                <span className="expert-my-resp-expert-label">Your Response: </span>
+                                <p className="expert-my-resp-expert-text">{r.responseText}</p>
                             </div>
 
-                            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                            <div className="expert-my-resp-meta-row">
+                                <p className="expert-my-resp-meta">
                                     🗓 {new Date(r.createdAt).toLocaleString()}
                                 </p>
-                                <p style={{ fontSize: '0.78rem', margin: 0 }}>
-                                    Status: <span style={{ color: '#4ade80', fontWeight: 700 }}>Resolved</span>
+                                <p className="expert-my-resp-meta-status">
+                                    Status: <span className="expert-my-resp-meta-resolved">Resolved</span>
                                 </p>
-                                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                                <p className="expert-my-resp-meta">
                                     Farmer: {r.queryId?.farmerId?.phone || r.queryId?.farmerId?.email || '—'}
                                 </p>
                             </div>

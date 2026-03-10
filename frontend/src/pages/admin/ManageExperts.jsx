@@ -1,21 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
+import './ManageExperts.css'
 
-const inputStyle = { padding: '9px 13px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.87rem', outline: 'none', width: '100%', boxSizing: 'border-box' }
-const labelStyle = { display: 'block', color: '#ccc', fontSize: '0.78rem', fontWeight: 600, marginBottom: 4 }
 const EMPTY = { name: '', email: '', password: '', phone: '', experience: '', specialization: '', qualification: '', languagesSpoken: '', certifications: '' }
 
-const STATUS_COLORS = { pending: { bg: '#f59e0b22', color: '#f59e0b' }, approved: { bg: '#22c55e22', color: '#22c55e' }, rejected: { bg: '#ef444422', color: '#ef4444' } }
+const STATUS_COLORS = { pending: { bg: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.35)', color: '#fbbf24' }, approved: { bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.35)', color: '#4ade80' }, rejected: { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.35)', color: '#f87171' } }
+
+const SORT_OPTIONS = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'az', label: 'Name A–Z' },
+    { value: 'exp_desc', label: 'Experience: High → Low' }
+]
 
 const ManageExperts = () => {
     const [experts, setExperts] = useState([])
-    const [filter, setFilter] = useState('all')
+    const [filter, setFilter] = useState('all') // 'all', 'pending', 'approved', 'rejected'
+    const [search, setSearch] = useState('')
+    const [sortBy, setSortBy] = useState('newest')
+
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState(EMPTY)
     const [saving, setSaving] = useState(false)
-    const [toast, setToast] = useState('')
+    const [toastMsg, setToastMsg] = useState('')
+
+    const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 3000) }
 
     const fetchExperts = () => {
         setLoading(true)
@@ -45,116 +55,151 @@ const ManageExperts = () => {
         setSaving(true)
         try {
             await API.post('/admin/experts', form)
-            setToast('✅ Expert added and approved!')
+            showToast('✅ Expert added and approved!')
             setForm(EMPTY)
             setShowForm(false)
             fetchExperts()
-            setTimeout(() => setToast(''), 3000)
         } catch (err) {
-            setToast('❌ ' + (err.response?.data?.message || 'Failed to add expert.'))
-            setTimeout(() => setToast(''), 3500)
+            showToast('❌ ' + (err.response?.data?.message || 'Failed to add expert.'))
         } finally {
             setSaving(false)
         }
     }
 
-    const filtered = filter === 'all' ? experts : experts.filter(e => e.status === filter)
-    const pending = experts.filter(e => e.status === 'pending')
+    const pendingCount = experts.filter(e => e.status === 'pending').length
+
+    const applyFiltersAndSort = (list) => {
+        let out = [...list]
+
+        // Status filter
+        if (filter !== 'all') out = out.filter(e => e.status === filter)
+
+        // Search
+        if (search.trim()) {
+            const q = search.trim().toLowerCase()
+            out = out.filter(e =>
+                e.name?.toLowerCase().includes(q) ||
+                e.email?.toLowerCase().includes(q) ||
+                e.specialization?.toLowerCase().includes(q)
+            )
+        }
+
+        // Sort
+        if (sortBy === 'az') out.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+        else if (sortBy === 'exp_desc') out.sort((a, b) => (Number(b.experience) || 0) - (Number(a.experience) || 0))
+        return out
+    }
+
+    const filtered = applyFiltersAndSort(experts)
 
     return (
         <PageLayout role="admin" title="Manage Experts">
-            {pending.length > 0 && (
-                <div style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid #f59e0b', borderRadius: 8, padding: '12px 18px', marginBottom: 20, color: '#f59e0b', fontSize: '0.88rem' }}>
-                    🔔 {pending.length} expert{pending.length > 1 ? 's' : ''} awaiting approval.
-                </div>
-            )}
-            {toast && (
-                <div style={{ background: toast.startsWith('✅') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', border: `1px solid ${toast.startsWith('✅') ? '#22c55e' : '#ef4444'}`, borderRadius: 8, padding: '12px 18px', marginBottom: 20, color: '#fff', fontSize: '0.88rem' }}>
-                    {toast}
+            {pendingCount > 0 && (
+                <div className="mf-alert-pending">
+                    🔔 {pendingCount} expert{pendingCount > 1 ? 's' : ''} awaiting approval.
                 </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-                <div style={{ display: 'flex', gap: 8 }}>
-                    {['all', 'pending', 'approved', 'rejected'].map(s => (
-                        <button key={s} onClick={() => setFilter(s)} style={{
-                            background: filter === s ? '#3b82f6' : 'rgba(255,255,255,0.1)',
-                            color: '#fff', border: 'none', borderRadius: 6, padding: '8px 16px',
-                            fontSize: '0.82rem', fontWeight: filter === s ? 700 : 400, cursor: 'pointer', textTransform: 'capitalize',
-                        }}>{s}</button>
-                    ))}
+            {toastMsg && <div className="mf-toast">{toastMsg}</div>}
+
+            <div className="mf-controls">
+                <div className="mf-controls-left">
+                    <input
+                        type="text"
+                        className="mf-search"
+                        placeholder="🔍 Search name, email, specialization…"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+
+                    <div className="mf-cat-tabs">
+                        {['all', 'pending', 'approved', 'rejected'].map(s => (
+                            <button key={s}
+                                onClick={() => setFilter(s)}
+                                className={`mf-cat-tab ${filter === s ? 'mf-cat-tab--active' : ''}`}>
+                                {s.charAt(0).toUpperCase() + s.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+
+                    <select className="mf-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                        {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
                 </div>
-                <button onClick={() => setShowForm(!showForm)} style={{
-                    background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 6,
-                    padding: '10px 22px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
-                }}>{showForm ? '✕ Cancel' : '+ Add Expert'}</button>
+
+                <button
+                    onClick={() => setShowForm(!showForm)}
+                    className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
+                >
+                    {showForm ? '✕ Cancel' : '+ Add Expert'}
+                </button>
             </div>
 
             {showForm && (
-                <form onSubmit={handleAdd} style={{
-                    background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)',
-                    borderRadius: 12, padding: '24px 28px', marginBottom: 28,
-                }}>
-                    <h3 style={{ color: '#fff', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.3rem', margin: '0 0 20px' }}>Add New Expert (Auto-Approved)</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px 20px', marginBottom: 20 }}>
-                        {[
-                            { key: 'name', label: 'Full Name *', type: 'text', required: true },
-                            { key: 'email', label: 'Email *', type: 'email', required: true },
-                            { key: 'password', label: 'Password *', type: 'password', required: true },
-                            { key: 'phone', label: 'Phone', type: 'tel' },
-                            { key: 'specialization', label: 'Field of Specialization *', type: 'text', required: true },
-                            { key: 'experience', label: 'Years of Experience', type: 'number' },
-                            { key: 'qualification', label: 'Qualification', type: 'text' },
-                            { key: 'languagesSpoken', label: 'Languages Spoken', type: 'text' },
-                            { key: 'certifications', label: 'Certifications', type: 'text' },
-                        ].map(f => (
-                            <div key={f.key}>
-                                <label style={labelStyle}>{f.label}</label>
-                                <input type={f.type} value={form[f.key]} onChange={set(f.key)} required={f.required} style={inputStyle} placeholder={f.label.replace(' *', '')} />
-                            </div>
-                        ))}
-                    </div>
-                    <button type="submit" disabled={saving} style={{
-                        background: saving ? '#1e40af' : '#3b82f6', color: '#fff', border: 'none',
-                        borderRadius: 6, padding: '10px 28px', fontWeight: 700, fontSize: '0.9rem',
-                        cursor: saving ? 'not-allowed' : 'pointer',
-                    }}>{saving ? 'Saving…' : 'Add Expert'}</button>
-                </form>
+                <div className="mf-form-wrap">
+                    <form onSubmit={handleAdd} className="mf-form">
+                        <h3 className="mf-form-title">Add New Expert (Auto-Approved)</h3>
+                        <div className="mf-form-grid">
+                            {[
+                                { key: 'name', label: 'Full Name *', type: 'text', required: true },
+                                { key: 'email', label: 'Email *', type: 'email', required: true },
+                                { key: 'password', label: 'Password *', type: 'password', required: true },
+                                { key: 'phone', label: 'Phone', type: 'tel' },
+                                { key: 'specialization', label: 'Field of Specialization *', type: 'text', required: true },
+                                { key: 'experience', label: 'Years of Experience', type: 'number' },
+                                { key: 'qualification', label: 'Qualification', type: 'text' },
+                                { key: 'languagesSpoken', label: 'Languages Spoken', type: 'text' },
+                                { key: 'certifications', label: 'Certifications', type: 'text' },
+                            ].map(f => (
+                                <div key={f.key}>
+                                    <label className="mf-label">{f.label}</label>
+                                    <input type={f.type} value={form[f.key]} onChange={set(f.key)} required={f.required} className="mf-input" placeholder={f.label.replace(' *', '')} />
+                                </div>
+                            ))}
+                        </div>
+                        <button type="submit" disabled={saving} className="mf-submit-btn">
+                            {saving ? 'Saving…' : 'Add Expert'}
+                        </button>
+                    </form>
+                </div>
             )}
 
-            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : filtered.length === 0 ? (
-                <p style={{ color: '#aaa' }}>No experts found.</p>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    {filtered.map(e => {
-                        const sc = STATUS_COLORS[e.status] || STATUS_COLORS.pending
-                        return (
-                            <div key={e._id} style={{
-                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: 10, padding: '18px 22px',
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12,
-                            }}>
-                                <div style={{ flex: 1, minWidth: 200 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                                        <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.98rem' }}>{e.name}</span>
-                                        <span style={{ background: sc.bg, color: sc.color, padding: '2px 10px', borderRadius: 50, fontSize: '0.72rem', fontWeight: 700 }}>{e.status}</span>
+            {loading ? <p style={{ color: '#888', textAlign: 'center' }}>Loading experts...</p> : (
+                filtered.length > 0 ? (
+                    <div className="mf-grid">
+                        {filtered.map(e => {
+                            const sc = STATUS_COLORS[e.status] || STATUS_COLORS.pending
+                            return (
+                                <div key={e._id} className="mf-card" style={{ borderTopColor: sc.color }}>
+                                    <div className="mf-card-top">
+                                        <span className="mf-badge-status" style={{ background: sc.bg, color: sc.color, borderColor: sc.border }}>{e.status}</span>
                                     </div>
-                                    <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{e.email}</div>
-                                    <div style={{ color: '#bbb', fontSize: '0.8rem' }}>{e.specialization}{e.experience ? ` · ${e.experience}yrs` : ''}</div>
+                                    <h4 className="mf-card-title">{e.name}</h4>
+                                    <p className="mf-card-subtitle">{e.email}</p>
+
+                                    <p className="mf-card-row">Specialization: <strong>{e.specialization}</strong></p>
+                                    {e.experience > 0 && <p className="mf-card-row">Experience: <strong>{e.experience} years</strong></p>}
+                                    {e.qualification && <p className="mf-card-row">Qualification: <strong>{e.qualification}</strong></p>}
+
+                                    <div className="mf-actions-row">
+                                        {e.status !== 'approved' && (
+                                            <button onClick={() => handleStatusUpdate(e._id, 'approved')} className="mf-btn mf-btn-approve">Approve</button>
+                                        )}
+                                        {e.status === 'pending' && (
+                                            <button onClick={() => handleStatusUpdate(e._id, 'rejected')} className="mf-btn mf-btn-reject">Reject</button>
+                                        )}
+                                        <button onClick={() => handleDelete(e._id)} className="mf-btn mf-btn-remove">Remove</button>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                    {e.status !== 'approved' && (
-                                        <button onClick={() => handleStatusUpdate(e._id, 'approved')} style={{ background: '#22c55e', color: '#000', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Approve</button>
-                                    )}
-                                    {e.status !== 'rejected' && (
-                                        <button onClick={() => handleStatusUpdate(e._id, 'rejected')} style={{ background: '#f59e0b', color: '#000', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Reject</button>
-                                    )}
-                                    <button onClick={() => handleDelete(e._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: 5, padding: '6px 16px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}>Remove</button>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div className="mf-empty">
+                        <span className="mf-empty-icon">🤝</span>
+                        <p className="mf-empty-text">No experts found matching your criteria.</p>
+                    </div>
+                )
             )}
         </PageLayout>
     )

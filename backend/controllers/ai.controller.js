@@ -9,22 +9,28 @@ exports.processVoiceQuery = async (req, res) => {
     }
 }
 
-exports.geminiAssist = async (req, res) => {
+exports.openRouterAssist = async (req, res) => {
     try {
         const { prompt } = req.body
-        const apiKey = process.env.GEMINI_API_KEY
+        const apiKey = process.env.OPENROUTER_API_KEY
         if (!apiKey) {
-            return res.status(400).json({ message: 'GEMINI_API_KEY not configured on server.' })
+            return res.status(400).json({ message: 'OPENROUTER_API_KEY not configured on server.' })
         }
-        const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-        const response = await axios.post(GEMINI_URL, {
-            contents: [{ parts: [{ text: prompt }] }]
+        const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
+        const response = await axios.post(OPENROUTER_URL, {
+            model: 'google/gemini-2.0-flash-001',
+            messages: [{ role: 'user', content: prompt }]
+        }, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
         })
-        const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.'
+        const text = response.data.choices?.[0]?.message?.content || 'No response.'
         res.json({ response: text })
     } catch (err) {
         const status = err.response?.status || 500
-        const msg = err.response?.data?.error?.message || err.message || 'Gemini API error.'
+        const msg = err.response?.data?.error?.message || err.message || 'OpenRouter API error.'
         res.status(status).json({ message: msg })
     }
 }

@@ -1,0 +1,104 @@
+.expert-my-resp-loading {
+    color: #aaa;
+}
+
+.expert-my-resp-grid {
+    display: grid;
+    gap: 16px;
+    max-width: 860px;
+}
+
+.expert-my-resp-empty {
+    color: #888;
+}
+
+.expert-my-resp-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 4px solid #4caf50;
+    border-radius: 10px;
+    padding: 18px 22px;
+}
+
+.expert-my-resp-title {
+    color: #fff;
+    margin-bottom: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+}
+
+.expert-my-resp-location {
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-left: 10px;
+}
+
+.expert-my-resp-farmer-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border-left: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+.expert-my-resp-farmer-label {
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.expert-my-resp-farmer-text {
+    color: #94a3b8;
+    font-size: 0.83rem;
+}
+
+.expert-my-resp-expert-box {
+    background: rgba(34, 197, 94, 0.07);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(34, 197, 94, 0.15);
+}
+
+.expert-my-resp-expert-label {
+    color: #4ade80;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.expert-my-resp-expert-text {
+    color: #d1fae5;
+    font-size: 0.88rem;
+    margin-top: 4px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.expert-my-resp-meta-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.expert-my-resp-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.expert-my-resp-meta-status {
+    font-size: 0.78rem;
+    margin: 0;
+}
+
+.expert-my-resp-meta-resolved {
+    color: #4ade80;
+    font-weight: 700;
+}

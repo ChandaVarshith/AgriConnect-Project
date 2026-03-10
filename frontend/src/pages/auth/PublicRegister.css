@@ -1,0 +1,158 @@
+.public-register-container {
+    min-height: 100vh;
+    position: relative;
+}
+
+.public-register-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.32);
+    z-index: 0;
+}
+
+.public-register-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+}
+
+.public-register-logo-link {
+    text-decoration: none;
+    display: flex;
+}
+
+.public-register-logo-1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.public-register-logo-2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #e02020;
+}
+
+.public-register-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 40px;
+}
+
+.public-register-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.public-register-title {
+    color: #fff;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+}
+
+.public-register-subtitle {
+    color: #aaa;
+    text-align: center;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+}
+
+.public-register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.public-register-label {
+    display: block;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.03em;
+}
+
+.public-register-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.92rem;
+    outline: none;
+    box-sizing: border-box;
+    backdrop-filter: blur(4px);
+}
+
+.public-register-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0;
+}
+
+.public-register-btn {
+    width: 100%;
+    padding: 12px 0;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    transition: background 0.2s;
+}
+
+.public-register-btn-active {
+    background: #a855f7;
+    cursor: pointer;
+}
+
+.public-register-btn-loading {
+    background: #5a2daa;
+    cursor: not-allowed;
+}
+
+.public-register-footer-text {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.public-register-link {
+    color: #a855f7;
+    font-weight: 600;
+    text-decoration: none;
+}

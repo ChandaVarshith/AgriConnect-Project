@@ -9,6 +9,8 @@ const FinancierSchema = new Schema({
     contact: { type: String },
     location: { type: String, trim: true, default: '' },
     loanTypes: [{ type: Schema.Types.ObjectId, ref: 'Loan' }],
+    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Financier', FinancierSchema)
+

@@ -1,0 +1,147 @@
+.signup-selector-container {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.signup-selector-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.32);
+    z-index: 0;
+}
+
+.signup-selector-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+}
+
+.signup-selector-logo-link {
+    text-decoration: none;
+    display: flex;
+}
+
+.signup-selector-logo-1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.signup-selector-logo-2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #e02020;
+}
+
+.signup-selector-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 24px 60px;
+}
+
+.signup-selector-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    color: #fff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    text-align: center;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+.signup-selector-subtitle {
+    color: #ccc;
+    font-size: 0.95rem;
+    margin-bottom: 44px;
+    text-align: center;
+    max-width: 420px;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.signup-selector-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: center;
+    max-width: 920px;
+    width: 100%;
+}
+
+.signup-selector-card {
+    flex: 1 1 240px;
+    max-width: 270px;
+    background: rgba(255, 255, 255, 0.09);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 34px 24px 28px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.22s ease;
+    user-select: none;
+}
+
+.signup-selector-card-emoji {
+    font-size: 2.8rem;
+    margin-bottom: 12px;
+}
+
+.signup-selector-card-title {
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.04em;
+}
+
+.signup-selector-card-desc {
+    color: #bbb;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.signup-selector-card-btn {
+    display: inline-block;
+    padding: 9px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+}
+
+.signup-selector-footer-text {
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 38px;
+    text-align: center;
+}
+
+.signup-selector-footer-link {
+    color: #e02020;
+    font-weight: 600;
+    text-decoration: none;
+}

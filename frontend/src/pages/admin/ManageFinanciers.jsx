@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
-
-const th = { padding: '12px 16px', color: '#fff', textAlign: 'left', fontSize: '0.82rem', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)' }
-const td = { padding: '12px 16px', color: '#ddd', fontSize: '0.85rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }
-const inputStyle = { padding: '9px 13px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.87rem', outline: 'none', width: '100%', boxSizing: 'border-box' }
-const labelStyle = { display: 'block', color: '#ccc', fontSize: '0.78rem', fontWeight: 600, marginBottom: 4 }
+import './ManageFinanciers.css'
 
 const EMPTY = { name: '', orgName: '', email: '', password: '', contact: '', location: '' }
 
+const STATUS_COLORS = {
+    pending: { bg: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.35)', color: '#fbbf24' },
+    approved: { bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.35)', color: '#4ade80' },
+    rejected: { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.35)', color: '#f87171' }
+}
+
+const SORT_OPTIONS = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'az_org', label: 'Organization A–Z' },
+    { value: 'products_desc', label: 'Most Products First' }
+]
+
 const ManageFinanciers = () => {
     const [list, setList] = useState([])
+    const [filter, setFilter] = useState('all') // 'all', 'pending', 'approved', 'rejected'
+    const [search, setSearch] = useState('')
+    const [sortBy, setSortBy] = useState('newest')
+
     const [loading, setL] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState(EMPTY)
     const [saving, setSaving] = useState(false)
-    const [toast, setToast] = useState('')
+    const [toastMsg, setToastMsg] = useState('')
+
+    const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 3000) }
 
     const load = () => {
         setL(true)
@@ -25,99 +39,174 @@ const ManageFinanciers = () => {
 
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            await API.put(`/admin/financiers/${id}/${status}`)
+            load()
+        } catch { }
+    }
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Remove this financier? This cannot be undone.')) return
+        try {
+            await API.delete(`/admin/financiers/${id}`)
+            load()
+        } catch { }
+    }
+
     const handleAdd = async (e) => {
         e.preventDefault()
         setSaving(true)
         try {
             await API.post('/admin/financiers', form)
-            setToast('✅ Financier added successfully!')
+            showToast('✅ Financier added and approved!')
             setForm(EMPTY)
             setShowForm(false)
             load()
-            setTimeout(() => setToast(''), 3000)
         } catch (err) {
-            setToast('❌ ' + (err.response?.data?.message || 'Failed to add financier.'))
-            setTimeout(() => setToast(''), 3500)
+            showToast('❌ ' + (err.response?.data?.message || 'Failed to add financier.'))
         } finally {
             setSaving(false)
         }
     }
 
+    const pendingCount = list.filter(f => f.status === 'pending').length
+
+    const applyFiltersAndSort = (dataList) => {
+        let out = [...dataList]
+
+        // Status Filter
+        if (filter !== 'all') out = out.filter(f => f.status === filter)
+
+        // Search
+        if (search.trim()) {
+            const q = search.trim().toLowerCase()
+            out = out.filter(f =>
+                f.orgName?.toLowerCase().includes(q) ||
+                f.name?.toLowerCase().includes(q) ||
+                f.location?.toLowerCase().includes(q) ||
+                f.email?.toLowerCase().includes(q)
+            )
+        }
+
+        // Sort
+        if (sortBy === 'az_org') out.sort((a, b) => (a.orgName || '').localeCompare(b.orgName || ''))
+        else if (sortBy === 'products_desc') out.sort((a, b) => (b.loanTypes?.length || 0) - (a.loanTypes?.length || 0))
+        return out
+    }
+
+    const filtered = applyFiltersAndSort(list)
+
     return (
-        <PageLayout role="admin" title="View All Sectors">
-            {toast && (
-                <div style={{ background: toast.startsWith('✅') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', border: `1px solid ${toast.startsWith('✅') ? '#22c55e' : '#ef4444'}`, borderRadius: 8, padding: '12px 18px', marginBottom: 20, color: '#fff', fontSize: '0.88rem' }}>
-                    {toast}
+        <PageLayout role="admin" title="Manage All Financiers">
+            {pendingCount > 0 && (
+                <div className="mf-alert-pending">
+                    🔔 {pendingCount} organization{pendingCount > 1 ? 's' : ''} awaiting approval.
                 </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-                <p style={{ color: '#aaa', margin: 0, fontSize: '0.88rem' }}>Organisations offering agricultural financial services on AgriConnect.</p>
-                <button onClick={() => setShowForm(!showForm)} style={{
-                    background: '#f59e0b', color: '#000', border: 'none', borderRadius: 6,
-                    padding: '10px 22px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
-                }}>
+            {toastMsg && <div className="mf-toast">{toastMsg}</div>}
+
+            <div className="mf-controls">
+                <div className="mf-controls-left">
+                    <input
+                        type="text"
+                        className="mf-search"
+                        placeholder="🔍 Search organization, location, email…"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+
+                    <div className="mf-cat-tabs">
+                        {['all', 'pending', 'approved', 'rejected'].map(s => (
+                            <button key={s}
+                                onClick={() => setFilter(s)}
+                                className={`mf-cat-tab ${filter === s ? 'mf-cat-tab--active' : ''}`}>
+                                {s.charAt(0).toUpperCase() + s.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+
+                    <select className="mf-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                        {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                </div>
+
+                <button
+                    onClick={() => setShowForm(!showForm)}
+                    className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
+                >
                     {showForm ? '✕ Cancel' : '+ Add Financier'}
                 </button>
             </div>
 
             {showForm && (
-                <form onSubmit={handleAdd} style={{
-                    background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)',
-                    borderRadius: 12, padding: '24px 28px', marginBottom: 28,
-                }}>
-                    <h3 style={{ color: '#fff', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.3rem', margin: '0 0 20px' }}>Add New Financier</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px 20px', marginBottom: 20 }}>
-                        {[
-                            { key: 'orgName', label: 'Organisation Name *', type: 'text', required: true },
-                            { key: 'name', label: 'Contact Person Name', type: 'text' },
-                            { key: 'email', label: 'Email *', type: 'email', required: true },
-                            { key: 'password', label: 'Password *', type: 'password', required: true },
-                            { key: 'contact', label: 'Phone / Contact', type: 'tel' },
-                            { key: 'location', label: 'Location', type: 'text' },
-                        ].map(f => (
-                            <div key={f.key}>
-                                <label style={labelStyle}>{f.label}</label>
-                                <input type={f.type} value={form[f.key]} onChange={set(f.key)} required={f.required} style={inputStyle} placeholder={f.label.replace(' *', '')} />
-                            </div>
-                        ))}
-                    </div>
-                    <button type="submit" disabled={saving} style={{
-                        background: saving ? '#92400e' : '#f59e0b', color: '#000', border: 'none',
-                        borderRadius: 6, padding: '10px 28px', fontWeight: 700, fontSize: '0.9rem',
-                        cursor: saving ? 'not-allowed' : 'pointer',
-                    }}>
-                        {saving ? 'Saving…' : 'Add Financier'}
-                    </button>
-                </form>
+                <div className="mf-form-wrap">
+                    <form onSubmit={handleAdd} className="mf-form">
+                        <h3 className="mf-form-title">Add New Financier (Auto-Approved)</h3>
+                        <div className="mf-form-grid">
+                            {[
+                                { key: 'orgName', label: 'Organization Name *', type: 'text', required: true },
+                                { key: 'name', label: 'Contact Person Name', type: 'text' },
+                                { key: 'email', label: 'Email *', type: 'email', required: true },
+                                { key: 'password', label: 'Password *', type: 'password', required: true },
+                                { key: 'contact', label: 'Phone / Contact', type: 'tel' },
+                                { key: 'location', label: 'Location', type: 'text' },
+                            ].map(f => (
+                                <div key={f.key}>
+                                    <label className="mf-label">{f.label}</label>
+                                    <input type={f.type} value={form[f.key]} onChange={set(f.key)} required={f.required} className="mf-input" placeholder={f.label.replace(' *', '')} />
+                                </div>
+                            ))}
+                        </div>
+                        <button type="submit" disabled={saving} className="mf-submit-btn">
+                            {saving ? 'Saving…' : 'Add Financier'}
+                        </button>
+                    </form>
+                </div>
             )}
 
-            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : (
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <thead><tr>
-                            {['Organisation', 'Contact Person', 'Email', 'Phone', 'Location', 'Loans Offered'].map(h => <th key={h} style={th}>{h}</th>)}
-                        </tr></thead>
-                        <tbody>
-                            {list.length === 0
-                                ? <tr><td colSpan={6} style={{ ...td, textAlign: 'center', color: '#666', padding: 28 }}>No financiers found.</td></tr>
-                                : list.map((f, i) => (
-                                    <tr key={f._id} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'transparent' }}>
-                                        <td style={{ ...td, fontWeight: 600, color: '#fff' }}>{f.orgName}</td>
-                                        <td style={td}>{f.name || '—'}</td>
-                                        <td style={td}>{f.email}</td>
-                                        <td style={td}>{f.contact || '—'}</td>
-                                        <td style={td}>{f.location || '—'}</td>
-                                        <td style={td}>
-                                            <span style={{ background: '#f59e0b22', color: '#f59e0b', padding: '3px 10px', borderRadius: 50, fontSize: '0.78rem', fontWeight: 700 }}>
-                                                {f.loanTypes?.length || 0} products
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </div>
+            {loading ? <p style={{ color: '#888', textAlign: 'center' }}>Loading financiers...</p> : (
+                filtered.length > 0 ? (
+                    <div className="mf-grid">
+                        {filtered.map(f => {
+                            const sc = STATUS_COLORS[f.status] || STATUS_COLORS.pending
+                            return (
+                                <div key={f._id} className="mf-card" style={{ borderTopColor: sc.color }}>
+                                    <div className="mf-card-top">
+                                        <span className="mf-badge-cat" style={{ marginRight: '8px' }}>
+                                            {f.loanTypes?.length || 0} Products
+                                        </span>
+                                        <span className="mf-badge-status" style={{ background: sc.bg, color: sc.color, borderColor: sc.border }}>{f.status}</span>
+                                    </div>
+                                    <h4 className="mf-card-title" style={{ color: '#60a5fa' }}>{f.orgName}</h4>
+                                    <p className="mf-card-subtitle">Contact: {f.name || '—'}</p>
+
+                                    <p className="mf-card-row">Location: <strong>{f.location || '—'}</strong></p>
+                                    <p className="mf-card-row">Email: <strong>{f.email}</strong></p>
+                                    <p className="mf-card-row">Phone: <strong>{f.contact || '—'}</strong></p>
+
+                                    <div className="mf-actions-row">
+                                        {f.status !== 'approved' ? (
+                                            <>
+                                                <button onClick={() => handleStatusUpdate(f._id, 'approve')} className="mf-btn mf-btn-approve">Approve</button>
+                                                {f.status === 'pending' && <button onClick={() => handleStatusUpdate(f._id, 'reject')} className="mf-btn mf-btn-reject">Reject</button>}
+                                                <button onClick={() => handleDelete(f._id)} className="mf-btn mf-btn-remove">Remove</button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => handleDelete(f._id)} className="mf-btn mf-btn-remove">Remove</button>
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div className="mf-empty">
+                        <span className="mf-empty-icon">🏦</span>
+                        <p className="mf-empty-text">No financiers found matching your criteria.</p>
+                    </div>
+                )
             )}
         </PageLayout>
     )

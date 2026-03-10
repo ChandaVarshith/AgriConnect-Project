@@ -1,415 +1,553 @@
-# AgriConnect - Complete Project Structure & Files Documentation
-
-## 📋 Project Overview
-**AgriConnect** is a full-stack agricultural platform (MERN Stack) that connects farmers, experts, financiers, and administrators. It provides features for farm visits, loans, marketplace, AI-powered assistance, and community interactions.
-
-**Tech Stack:**
-- **Frontend**: React 18, Vite, React Router v6, Axios, Leaflet, React Quill
-- **Backend**: Node.js, Express, MongoDB, Mongoose, JWT Auth, Bcrypt
-- **Tools**: Multer (file upload), Nodemailer (email), Nodemon (dev)
+# AgriConnect — Complete Platform Documentation
 
 ---
 
-## 📁 Complete Directory Structure
+## 🌾 What Is AgriConnect?
+
+**AgriConnect** is a full-stack web platform built to solve the real problems faced by Indian farmers. It bridges the gap between **farmers**, **agricultural experts**, **loan providers (financiers)**, and **buyers (public)** — all in one place.
+
+The platform is built on the **MERN Stack** (MongoDB, Express, React, Node.js).
+
+### The Problem It Solves
+
+| Problem | AgriConnect Solution |
+|---------|---------------------|
+| Farmers can't get expert advice easily | Built-in Q&A system: farmers post queries, experts respond |
+| Farmers can't find loans | Loan marketplace where financiers post products, farmers apply |
+| Farmers struggle to sell produce | Expert-moderated auction-style produce marketplace |
+| Language barriers for rural users | Multilingual UI: English, Hindi, Telugu, Spanish |
+| No weather info before farming decisions | Live weather widget on the dashboard |
+| Outdated knowledge & techniques | Expert-authored article library |
+| No platform connection for buyers | Public marketplace to browse and directly contact farmers |
+
+### Who Uses It?
+
+| Role | What They Do |
+|------|-------------|
+| 🌱 **Farmer** | Submit queries, apply for loans, sell produce, read articles |
+| 👩‍🔬 **Expert** | Answer farmer queries, write articles, approve/reject produce listings |
+| 🏦 **Financier** | Post loan products, review farmer loan applications |
+| 🛒 **Public (Buyer)** | Browse approved produce, contact farmers directly to buy |
+| 🛡️ **Admin** | Oversee all users and platform stats via dashboard |
+
+---
+
+## 🏗️ How the App is Built
 
 ```
-Agriconnect/
-├── README (Root Level Configs)
-│   ├── package.json                  # Root package (Monorepo setup)
-│   ├── package-lock.json
-│   ├── vite.config.js                # Root Vite config
-│   ├── index.html                    # Root HTML entry
-│   └── .gitignore
+AgriConnect/
+├── backend/          ← Node.js + Express API server (PORT 5000)
+│   ├── models/       ← MongoDB data schemas (Mongoose)
+│   ├── routes/       ← URL endpoint definitions
+│   ├── controllers/  ← Business logic for each endpoint
+│   ├── middleware/   ← JWT auth, roles, file uploads, error handling
+│   ├── utils/        ← Email, tokens, OTP, encryption helpers
+│   └── uploads/      ← Stored images (articles, produce photos)
 │
-├── backend/                          # Node.js/Express Backend
-│   ├── server.js                     # Main server entry point (67 lines)
-│   ├── package.json                  # Backend dependencies
-│   ├── package-lock.json
-│   ├── .gitignore
-│   │
-│   ├── config/                       # Configuration Files
-│   │   ├── db.js                     # MongoDB connection setup
-│   │   └── mailer.js                 # Nodemailer configuration
-│   │
-│   ├── models/                       # Mongoose Database Models (14 models)
-│   │   ├── Admin.model.js            # Admin user schema
-│   │   ├── Farmer.model.js           # Farmer profile schema
-│   │   ├── Expert.model.js           # Expert/Extension officer schema
-│   │   ├── Financier.model.js        # Loan provider schema
-│   │   ├── Article.model.js          # Educational articles
-│   │   ├── Query.model.js            # Farmer queries/questions
-│   │   ├── Response.model.js         # Expert responses to queries
-│   │   ├── CommunityPost.model.js    # Community discussion posts
-│   │   ├── FarmVisit.model.js        # Expert farm visit records
-│   │   ├── Loan.model.js             # Loan product offerings
-│   │   ├── LoanApplication.model.js  # Farmer loan applications
-│   │   ├── OTP.model.js              # One-time password records
-│   │   ├── Produce.model.js          # Marketplace produce listings
-│   │   └── Produce.model.js          # Duplicate (check for consolidation)
-│   │
-│   ├── routes/                       # API Route Handlers (12 routes)
-│   │   ├── auth.routes.js            # Authentication (login, signup, logout)
-│   │   ├── admin.routes.js           # Admin management endpoints
-│   │   ├── farmer.routes.js          # Farmer-specific routes
-│   │   ├── expert.routes.js          # Expert-specific routes
-│   │   ├── financier.routes.js       # Financier-specific routes
-│   │   ├── query.routes.js           # Query/Q&A endpoints
-│   │   ├── article.routes.js         # Article CRUD operations
-│   │   ├── loan.routes.js            # Loan management
-│   │   ├── community.routes.js       # Community posts
-│   │   ├── farmvisit.routes.js       # Farm visit scheduling
-│   │   ├── marketplace.routes.js     # Produce marketplace
-│   │   ├── weather.routes.js         # Weather data
-│   │   └── ai.routes.js              # AI assistance (Gemini)
-│   │
-│   ├── controllers/                  # Business Logic (13 controllers)
-│   │   ├── auth.controller.js        # Auth logic (register, login, verify)
-│   │   ├── admin.controller.js       # Admin operations
-│   │   ├── farmer.controller.js      # (Implied) Farmer operations
-│   │   ├── expert.controller.js      # (Implied) Expert operations
-│   │   ├── article.controller.js     # Article CRUD logic
-│   │   ├── query.controller.js       # Query management
-│   │   ├── response.controller.js    # Response handling
-│   │   ├── community.controller.js   # Community post logic
-│   │   ├── farmvisit.controller.js   # Farm visit logic
-│   │   ├── loan.controller.js        # Loan operations
-│   │   ├── loanApplication.controller.js  # Application processing
-│   │   ├── marketplace.controller.js # Marketplace logic
-│   │   ├── weather.controller.js     # Weather API integration
-│   │   └── ai.controller.js          # Gemini AI logic
-│   │
-│   ├── middleware/                   # Express Middleware (4 files)
-│   │   ├── auth.middleware.js        # JWT token verification
-│   │   ├── role.middleware.js        # Role-based access control
-│   │   ├── error.middleware.js       # Global error handling
-│   │   └── upload.middleware.js      # Multer file upload config
-│   │
-│   ├── utils/                        # Utility Functions (4 files)
-│   │   ├── encrypt.js                # Password encryption (bcrypt)
-│   │   ├── generateToken.js          # JWT token generation
-│   │   ├── generateOTP.js            # One-time password generation
-│   │   └── sendEmail.js              # Email sending via Nodemailer
-│   │
-│   ├── uploads/                      # File Storage Directory
-│   │   ├── article-images/           # Article cover images
-│   │   │   └── README.md
-│   │   ├── documents/                # User documents (verification, etc.)
-│   │   └── produce-images/           # Marketplace produce photos
-│   │
-│   └── seed-admin.js                 # Database seeding (admin users)
-│   └── seed-expert.js                # Database seeding (expert users)
-│
-├── frontend/                         # React + Vite Frontend
-│   ├── index.html                    # Main HTML template
-│   ├── package.json                  # Frontend dependencies
-│   ├── package-lock.json
-│   ├── vite.config.js                # Vite bundler config
-│   ├── .gitignore
-│   │
-│   └── src/
-│       ├── main.jsx                  # React app entry point
-│       ├── App.jsx                   # Root app component
-│       ├── index.css                 # Global styles
-│       │
-│       ├── context/                  # React Context (2 files)
-│       │   ├── AuthContext.jsx       # Authentication state management
-│       │   └── LanguageContext.jsx   # Multi-language support state
-│       │
-│       ├── components/               # Reusable React Components (15 files)
-│       │   ├── Navbar.jsx            # Top navigation bar
-│       │   ├── Sidebar.jsx           # Side navigation menu
-│       │   ├── DashboardLayout.jsx   # Layout wrapper for dashboards
-│       │   ├── PageLayout.jsx        # Generic page layout
-│       │   ├── Modal.jsx             # Reusable modal dialog
-│       │   ├── ArticleCard.jsx       # Article display card
-│       │   ├── LoanCard.jsx          # Loan product card
-│       │   ├── ProduceCard.jsx       # Marketplace produce card
-│       │   ├── QueryCard.jsx         # Query/Q&A display card
-│       │   ├── Pagination.jsx        # Table/list pagination
-│       │   ├── ProtectedRoute.jsx    # Authenticated route wrapper
-│       │   ├── WeatherWidget.jsx     # Weather display widget
-│       │   ├── VoiceAssistant.jsx    # Speech recognition component
-│       │   ├── GeminiPanel.jsx       # AI chat interface
-│       │   └── LanguageSwitcher.jsx  # Language toggle component
-│       │
-│       ├── pages/                    # Page Components (40+ files)
-│       │
-│       ├── pages/auth/               # Authentication Pages (6 files)
-│       │   ├── Login.jsx             # User login page
-│       │   ├── SignupSelector.jsx    # Choose signup type
-│       │   ├── FarmerRegister.jsx    # Farmer registration
-│       │   ├── ExpertSignup.jsx      # Expert registration
-│       │   ├── FinancierSignup.jsx   # Financier registration
-│       │   └── ForgotPassword.jsx    # Password recovery
-│       │
-│       ├── pages/admin/              # Admin Panel Pages (4 files)
-│       │   ├── AdminDashboard.jsx    # Admin overview
-│       │   ├── ManageFarmers.jsx     # Farmer management
-│       │   ├── ManageExperts.jsx     # Expert management
-│       │   └── ManageFinanciers.jsx  # Financier management
-│       │
-│       ├── pages/farmer/             # Farmer Dashboard Pages (7 files)
-│       │   ├── FarmerHome.jsx        # Farmer main dashboard
-│       │   ├── SubmitQuery.jsx       # Submit Q&A to experts
-│       │   ├── MyResponses.jsx       # View responses from experts
-│       │   ├── ExploreArticles.jsx   # Browse expert articles
-│       │   ├── BrowseLoans.jsx       # View available loans
-│       │   ├── LoanApplication.jsx   # Apply for loan
-│       │   └── MarketplaceFarmer.jsx # Sell produce
-│       │
-│       ├── pages/expert/             # Expert Dashboard Pages (7 files)
-│       │   ├── ExpertHome.jsx        # Expert main dashboard
-│       │   ├── FarmerRequests.jsx    # Incoming farmer queries
-│       │   ├── RespondToQuery.jsx    # Answer farmer queries
-│       │   ├── MyResponses.jsx       # View published responses
-│       │   ├── CreateArticle.jsx     # Write educational articles
-│       │   ├── GeminiAssistance.jsx  # AI-powered expert helper
-│       │   └── CropSuitabilityMap.jsx # Interactive crop mapping
-│       │
-│       ├── pages/financier/          # Financier Pages (4 files)
-│       │   ├── FinancierHome.jsx     # Financier dashboard
-│       │   ├── AddLoan.jsx           # Create new loan product
-│       │   ├── AllLoans.jsx          # View/manage loans
-│       │   └── LoanRequests.jsx      # Review loan applications
-│       │
-│       ├── pages/public/             # Public Pages (5 files)
-│       │   ├── PublicHome.jsx        # Landing page
-│       │   ├── Marketplace.jsx       # Public produce marketplace
-│       │   ├── Community.jsx         # Community discussion forum
-│       │   ├── FarmVisit.jsx         # Farm visit booking
-│       │   └── ExploreUs.jsx         # About/info page
-│       │
-│       ├── services/                 # API Integration Services (8 files)
-│       │   ├── api.js                # Axios instance & base config
-│       │   ├── authService.js        # Auth API calls
-│       │   ├── articleService.js     # Article API integration
-│       │   ├── queryService.js       # Query/Q&A API
-│       │   ├── loanService.js        # Loan API calls
-│       │   ├── marketplaceService.js # Marketplace API
-│       │   ├── weatherService.js     # Weather API integration
-│       │   └── geminiService.js      # Gemini AI API calls
-│       │
-│       └── utils/                    # Utility Functions (3 files)
-│           ├── encrypt.js            # Client-side encryption utilities
-│           ├── formatDate.js         # Date formatting helpers
-│           └── translate.js          # Translation/i18n utilities
-│
-└── src/                              # Root src/ (Duplicate/Legacy)
-    ├── App.jsx
-    ├── main.jsx
-    ├── index.css
-    ├── components/                   # Components (duplicate of frontend/src)
-    ├── context/
-    ├── pages/
-    ├── services/
-    └── utils/
+└── frontend/         ← React 18 + Vite (PORT 5173)
+    └── src/
+        ├── components/  ← Reusable UI building blocks
+        ├── pages/       ← One folder per user role
+        ├── context/     ← Global state (AuthContext, LanguageContext)
+        └── services/    ← Axios functions that call the backend API
 ```
 
 ---
 
-## 📊 File Count Summary
-
-| Directory | Count | Purpose |
-|-----------|-------|---------|
-| Backend Models | 14 | Database schemas |
-| Backend Routes | 12 | API endpoints |
-| Backend Controllers | 13 | Business logic |
-| Frontend Components | 15 | Reusable UI components |
-| Frontend Pages | 35+ | Page/screen components |
-| Frontend Services | 8 | API integration layers |
-| Middleware | 4 | Request processing |
-| Utils | 7 | Helper functions |
-| **TOTAL** | **~150+** | **Complete application** |
+## 🌐 Page-by-Page Breakdown
 
 ---
 
-## 🔑 Key Features Implemented
+### 🔓 Public Landing Page (No Login Required)
 
-### 1. **Authentication & Authorization**
-- Role-based users: Admin, Farmer, Expert, Financier
-- JWT-based authentication
-- OTP verification for signup
-- Password encryption with bcrypt
-- Protected routes
+#### `PublicHome.jsx`
+The **first page** visitors see when they open the website.
 
-### 2. **Farmer Features**
-- Submit agricultural queries to experts
-- View responses and expert advice
-- Browse & apply for loans
-- Sell produce on marketplace
-- Track loan applications
-
-### 3. **Expert Features**
-- Respond to farmer queries
-- Create educational articles
-- AI-powered Gemini assistance
-- Crop suitability mapping
-- Schedule farm visits
-
-### 4. **Financier Features**
-- Create & manage loan products
-- Review loan applications
-- Manage loan portfolio
-
-### 5. **Admin Features**
-- Manage farmers, experts, financiers
-- Moderation capabilities
-- System oversight dashboard
-
-### 6. **Public Features**
-- Marketplace browse (no login needed)
-- Community discussions
-- About/Info pages
-- Weather information
-
-### 7. **AI Integration**
-- Gemini AI assistant for expert guidance
-- Natural language query processing
-
-### 8. **Marketplace**
-- Produce listing & browsing
-- Buy/sell functionality
-- Product image uploads
+- Full-screen farm background image (Unsplash)
+- Hero section with the tagline **"Empowering Farmers for a Sustainable Future"**
+- Two call-to-action buttons: **Sign In** and **Register as Farmer**
+- Scroll-down button that animates to a second section
+- **Platform Overview section**: Two side-by-side cards showing:
+  - ⚠️ **The Problem** — 7 real farmer pain points (disconnection, finance gaps, language barriers, etc.)
+  - ✅ **AgriConnect Solution** — 7 matching solutions the platform provides
+- Role badges: Admin · Farmer · Expert · Financier · Public
+- "Get Started Today" CTA button
 
 ---
 
-## 🔄 API Routes Structure
+### 👩‍🌾 Farmer Section
 
-### Authentication (`/api/auth`)
-- POST `/register` - User registration
-- POST `/login` - User login
-- POST `/verify-otp` - OTP verification
-- POST `/logout` - User logout
-- POST `/forgot-password` - Password reset
+#### `FarmerHome.jsx` — Farmer Dashboard
+The **entry screen** after a farmer logs in.
+
+- Glassmorphism hero with a farm background image
+- Welcome heading and inspirational farming quote (both translated based on the farmer's preferred language)
+- **5 Quick Action buttons**, each with icon + color accent:
+  - 🌾 Send Crop Suggestion Request → `/farmer/query`
+  - 💬 View All Responses → `/farmer/responses`
+  - 🏦 View All Loans → `/farmer/loans`
+  - 📰 Explore Farming Content → `/farmer/articles`
+  - 🛒 Sell Your Produce → `/farmer/marketplace`
+- All labels are **translated** using the LanguageContext (supports English, Telugu, Hindi, Spanish)
+
+#### `SubmitQuery.jsx` — Ask an Expert
+- Form to type a crop/farming question and submit it to experts
+- Submitted query goes into the shared query pool that experts see
+
+#### `MyResponses.jsx` — View Expert Answers
+- Lists all queries the farmer submitted with:
+  - The original question
+  - Expert's response (if answered)
+  - Status badge (Pending / Answered)
+
+#### `ExploreArticles.jsx` — Read Expert Articles
+- Grid of article cards written by experts
+- Each card has: cover image, title, description preview, author name, date
+- Click to open full article
+
+#### `BrowseLoans.jsx` — View Available Loans
+- Lists all loan products posted by financiers
+- Shows interest rate, max amount, tenure, eligibility conditions
+- Button to apply for each loan
+
+#### `LoanApplication.jsx` — Apply for a Loan
+- Form with: loan amount, purpose, land area, expected repayment
+- Submits a loan application tied to the farmer's profile
+
+#### `AppliedLoans.jsx` — Track Loan Status
+- Shows all loans the farmer has applied for
+- Status badge: Pending / Approved / Rejected
+
+#### `MarketplaceFarmer.jsx` ⭐ — Sell Produce (Auction-Style)
+This is the **core commerce page** for farmers. It has multiple interactive sections:
+
+**Top Bar:**
+- Live count of approved listings in the marketplace
+- **📋 Pending Requests button** — shows count badge of own pending listings; click to open a drawer showing all listings awaiting expert approval
+- **+ Add New Listing button** — expands an inline form
+
+**Add Listing Form (inline, no page redirect):**
+- Fields: Produce Name, Category (dropdown: Vegetables/Fruits/Grains/Dairy/Other), Quantity, Unit (kg/quintal/tonne), Price per unit (₹), Description, Harvest Date
+- On submit: listing is created in DB with `status: "pending"`, `available: false` — **not visible to the public yet**
+- Toast: "✅ Listing submitted! Waiting for expert approval."
+- Pending drawer auto-opens so farmer sees their new listing immediately
+
+**Pending Requests Drawer:**
+- Shows only the farmer's own listings where `status === "pending"`
+- Clearly labeled: "waiting for expert approval"
+- Each card shows: name, category badge, quantity, price, description
+
+**Main Listings Grid (Search + Filter + Sort):**
+- 🔍 Search bar — searches by produce name
+- Category tabs — All / Vegetables / Fruits / Grains / Dairy / Other
+- Sort dropdown — Newest First / Name A–Z / Price Low→High / Price High→Low
+- **"Your Listings" section** — only your approved produce (green border cards, Remove button)
+- **"Other Farmers" section** — all other approved produce from other farmers (shows their name + phone)
+
+**💬 My Messages Widget (bottom-right floating button):**
+- Badge shows count of the farmer's rejected listings
+- Click to open a popup showing:
+  - Which expert reviewed it (`rejectedByEmail`)
+  - The produce name, quantity, price
+  - ❌ **Expert's rejection reason** — so farmer knows exactly what to fix
+  - "Dismiss" button → deletes the listing from DB and farmer can create a fresh one
+
+---
+
+### 👩‍🔬 Expert Section
+
+#### `ExpertHome.jsx` — Expert Dashboard
+- Glassmorphism hero with agricultural background
+- **7 clickable navigation cards**, each with emoji + description + color accent:
+  - 📩 Farmer Requests, ✍️ My Responses, 📰 All Content, ➕ Create Article
+  - 🛒 Marketplace (approve/reject), 🤖 Gemini AI, 🗺️ Crop Map
+
+#### `FarmerRequests.jsx` — View Farmer Queries
+- Lists all queries submitted by farmers across the platform
+- Expert can click to open and respond
+
+#### `RespondToQuery.jsx` — Answer a Query
+- Shows the farmer's question in full
+- Text area for expert to type detailed response
+- Submit sends response tied to the query
+
+#### `MyResponses.jsx` — Expert's Published Responses
+- All queries the expert has already responded to
+- Shows query text + expert's response + date
+
+#### `CreateArticle.jsx` — Write an Article
+- Rich text editor (React Quill) for writing long-form content
+- Fields: Title, Category, Cover Image upload (Multer), Content
+- All styles in external `CreateArticle.css` (no inline styles)
+
+#### `ExpertAllContent.jsx` — Manage Articles
+- Table/grid of all articles the expert has created
+- Edit and delete buttons per article
+
+#### `ExpertMarketplace.jsx` ⭐ — Approve/Reject Farmer Produce
+The expert's **quality control interface** for the marketplace.
+
+**Controls Bar:**
+- Search (by farmer name, phone, or produce name)
+- Category tabs — All / Vegetables / Fruits / Grains / Dairy / Other
+- Sort dropdown — Newest / By Farmer Phone / By Farmer Name / Produce A–Z / Price Low→High
+
+**⏳ Pending Approval section:**
+- All produce listings from ALL farmers waiting for review
+- Each card shows: produce name, category, quantity, price, description, farmer name + phone, harvest date
+- Two action buttons:
+  - ✓ **Approve** → listing is immediately set to `status: "approved"`, `available: true` → goes live on public marketplace instantly
+  - ✕ **Reject** → opens an inline textarea for the expert to type a rejection reason → on confirm, sends `rejectionReason + rejectedByEmail` (expert's JWT email) back to the farmer via My Messages
+
+**✅ All Active Listings section:**
+- All currently live/approved listings across the platform
+- Expert can still **Remove** a listing (sets it back to rejected/unavailable)
+
+#### `GeminiAssistance.jsx` — AI Help
+- Chat interface powered by Google Gemini AI
+- Expert can ask agricultural questions, get AI-generated insights and analysis
+
+#### `CropSuitabilityMap.jsx` — Crop Map
+- Interactive map (React Leaflet) showing which crops are suitable for which regions
+- Expert can visualize geographic crop data
+
+---
+
+### 🏦 Financier Section
+
+#### `FinancierHome.jsx` — Financier Dashboard
+- Glassmorphism hero with financial/stock market background
+- **4 clickable action cards** with hover color animations:
+  - ➕ Add Loan — create a new loan product
+  - 📋 Loan Requests — review farmer applications
+  - 📊 All Loans — view and manage all products
+  - 👨‍🌾 Farmer Portfolio — applications grouped by farmer
+
+#### `AddLoan.jsx` — Create Loan Product
+- Form: Loan name, interest rate (%), max amount, tenure (months), eligibility conditions, description
+- Submitted loan appears in the Farmer's Browse Loans page
+
+#### `AllLoans.jsx` — Manage Loan Products
+- Table of all loans the financier has posted
+- Edit / Delete buttons per loan
+
+#### `LoanRequests.jsx` — Review Applications
+- All loan applications received from farmers
+- Shows farmer's name, requested amount, purpose
+- Approve / Reject actions per application
+
+---
+
+### 🛡️ Admin Section
+
+#### `AdminDashboard.jsx` — Platform Overview
+- **5 stat cards** pulled live from the API:
+  - Total Farmers (green), Active Experts (blue), Financiers (amber), Total Queries (purple), Active Loans (pink)
+- **3 Recharts visualizations**:
+  - 🥧 **Users by Role** — Pie chart (Farmers / Experts / Financiers)
+  - 🍩 **Query Status** — Donut chart (Pending / Resolved queries)
+  - 📊 **System Activity** — Bar chart (Queries count / Loans count)
+- All charts use custom tooltips and are fully responsive
+
+#### `ManageFarmers.jsx` — Farmer Management
+- Search bar (searches by name, phone, district, state, primary crops)
+- Sort dropdown (Newest / A–Z / Farm Size Large→Small / Farm Size Small→Large)
+- Compact card grid for each farmer showing:
+  - Language badge, farm size badge, name, phone, email, district, state, crops, join date
+- **+ Add Farmer button** — inline form to create a new farmer directly (name, phone, password, email, district, state, farm size, crops, preferred language)
+- 🗑️ **Remove Farmer** button — confirms before permanently deleting
+
+#### `ManageExperts.jsx` — Expert Management
+- Same searchable, sortable grid pattern as ManageFarmers
+- Shows: expert's specialization, credentials, contact info
+- Add Expert and Remove Expert actions
+
+#### `ManageFinanciers.jsx` — Financier Management
+- Searchable grid with financier details
+- Add and Remove actions consistent with the other manage pages
+
+#### `AddNewSector.jsx` — Add Produce Categories
+- Form to add new sector/category names for the marketplace
+- Keeps produce categories dynamic and extensible
+
+---
+
+### 🌐 Public (Authenticated Buyers)
+
+#### `PublicUserHome.jsx` — Buyer Dashboard
+- Same `DashboardLayout` used by Farmers, Experts, and Financiers (fully consistent UI)
+- Farm background image with glassmorphism welcome text
+- Personalized greeting: "Welcome, [User Name]!"
+- **3 Quick Action buttons**:
+  - 📰 Explore Content — browse expert articles
+  - 🌱 Learn Farming — farming guides and tips
+  - 🛒 Buy Resources → goes to the auction board
+
+#### `PublicBuyResources.jsx` ⭐ — The Auction Board (Buyer's Marketplace)
+This is where **buyers discover and contact farmers** directly.
+
+- Only shows **expert-approved listings** (quality-gated — no unverified produce visible)
+- Header subtitle: "Browse expert-approved produce directly from farmers"
+- **3 cascading filters (applied in order)**:
+  1. 🔍 **Search** — real-time, filters by produce name OR category keyword
+  2. 🗂️ **Category Tabs** — All / Vegetables / Fruits / Grains / Dairy / Other
+  3. ⬆️⬇️ **Sort** — Newest First / A–Z / Price Low→High / Price High→Low
+- **Listing cards** show: produce image (if uploaded), name, category badge, price per unit (₹), quantity available, description
+- **📞 Contact Farmer button** (per card):
+  - On click: makes an API call to `/marketplace/:id/purchase`
+  - Backend reveals the farmer's name + phone number
+  - Button transforms to show: "✓ Farmer Contact Revealed" with farmer's name and phone number
+  - No payment gateway — buyers contact farmers directly (phone/WhatsApp)
+
+#### `PublicContent.jsx` — Browse Expert Articles
+- Grid of articles written and published by experts
+- Public buyers can read farming guides and crop information
+
+#### `PublicLearnFarming.jsx` — Learn Farming
+- Curated farming guides, seasonal tips, best practices
+- Educational cards with farming knowledge
+
+#### `Community.jsx` — Community Forum
+- Discussion board where users can post and read farming discussions
+- Open community for advice sharing
+
+#### `FarmVisit.jsx` — Book a Farm Visit
+- Form for scheduling an expert to visit the farm
+- Selects date, purpose, location
+
+---
+
+## 🔄 The Produce Listing Flow (End-to-End)
+
+This is the **most important flow** in the application:
+
+```
+1. FARMER fills the "Add New Listing" form
+   → Listing saved in DB: status="pending", available=false
+   → Toast: "Waiting for expert approval"
+   → Pending Requests drawer opens showing the submission
+
+2. EXPERT opens ExpertMarketplace
+   → Sees the listing in "Pending Approval" section with farmer's details
+   → Reviews the listing
+
+   IF APPROVED:
+   → Listing: status="approved", available=true
+   → Listing immediately appears in PublicBuyResources (buyers can see it)
+   → Listing also appears in "Your Listings" section in MarketplaceFarmer
+
+   IF REJECTED:
+   → Expert types rejection reason (required field) in the inline textarea
+   → Listing: status="rejected", rejectionReason=<text>, rejectedByEmail=<expert's email>
+   → Listing disappears from expert view (not publicly visible)
+   → Farmer's "💬 My Messages" badge count increases
+
+3. FARMER opens "My Messages" widget
+   → Sees: which expert reviewed it, produce name, price, quantity
+   → Sees: the rejection reason ("e.g. Produce image is missing, price too high")
+   → Clicks "Dismiss" → listing is permanently deleted from DB
+   → Farmer clicks "+ Add New Listing" → submits a corrected listing
+
+4. PUBLIC BUYER opens PublicBuyResources
+   → Sees all approved listings
+   → Searches / filters / sorts to find desired produce
+   → Clicks "📞 Contact Farmer"
+   → Farmer's name and phone number are revealed
+   → Buyer calls/WhatsApps the farmer directly
+```
+
+---
+
+## 🗄️ Database Models (What's Stored in MongoDB)
+
+### Produce (Marketplace Listing)
+The most complex model. Every field explained:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `farmerId` | ObjectId → Farmer | Which farmer owns this listing |
+| `name` | String | Produce name (e.g. "Tomato", "Rice") |
+| `description` | String | Details about the produce |
+| `category` | String | vegetables / fruits / grains / dairy / other |
+| `quantity` | Number | Amount available |
+| `unit` | String | kg / quintal / tonne |
+| `price` | Number | Price per unit in ₹ |
+| `images` | [String] | Array of image file paths |
+| `status` | String | `pending` → `approved` or `rejected` |
+| `available` | Boolean | `false` until approved; `true` once expert approves |
+| `rejectionReason` | String | Expert's written reason if rejected |
+| `rejectedByEmail` | String | Expert's email — shown to farmer in My Messages |
+| `farmerName` | String | Cached at listing time for fast public display |
+| `farmerPhone` | String | Revealed to buyer only after "Contact Farmer" click |
+| `createdAt` | Date | Auto-timestamp (Mongoose) |
+
+### Other Models
+
+| Model | Purpose |
+|-------|---------|
+| `Farmer` | Profile: name, phone, district, state, farm size, primary crops, preferred language |
+| `Expert` | Profile: name, email, specialization, credentials |
+| `Financier` | Profile: name, organization, contact |
+| `Admin` | System administrator accounts |
+| `Query` | A question submitted by a farmer to experts |
+| `Response` | Expert's answer to a query (linked to Query) |
+| `Article` | Expert-authored educational post with rich text + cover image |
+| `Loan` | A loan product created by a financier (interest rate, amount, tenure) |
+| `LoanApplication` | A farmer's application for a specific loan product |
+| `CommunityPost` | A discussion post in the community forum |
+| `FarmVisit` | A farm visit request with date and location |
+| `OTP` | One-time passwords for signup verification (TTL-based) |
+
+---
+
+## ⚙️ Backend API — All Endpoints
+
+### Auth (`/api/auth`)
+- `POST /register` — Register new user (farmer/expert/financier/public)
+- `POST /login` — Login and receive JWT token
+- `POST /verify-otp` — Verify OTP sent to email during signup
+- `POST /logout` — Invalidate session
+- `POST /forgot-password` — Send password reset link
 
 ### Admin (`/api/admin`)
-- GET `/farmers` - List all farmers
-- GET `/experts` - List all experts
-- GET `/financiers` - List all financiers
-- DELETE `/user/:id` - Remove user
+- `GET /stats` — Platform-wide counts (farmers, experts, financiers, queries, loans)
+- `GET /query-stats` — Query pending vs resolved breakdown for charts
+- `GET /farmers` — List all farmers
+- `POST /farmers` — Add a new farmer (admin action)
+- `DELETE /farmers/:id` — Remove a farmer
+- `GET /experts` — List all experts
+- `GET /financiers` — List all financiers
 
 ### Farmer (`/api/farmer`)
-- GET `/profile` - Get profile
-- PUT `/profile` - Update profile
-- GET `/dashboard` - Dashboard data
+- `GET /profile` — Get farmer's profile
+- `PUT /profile` — Update farmer's profile
 
 ### Expert (`/api/expert`)
-- GET `/profile` - Get profile
-- PUT `/profile` - Update profile
-- GET `/dashboard` - Dashboard data
+- `GET /profile` — Get expert's profile
+- `PUT /profile` — Update expert's profile
 
 ### Queries (`/api/queries`)
-- POST `/` - Create query
-- GET `/` - Get all queries
-- GET `/:id` - Get single query
-- PUT `/:id` - Update query
+- `POST /` — Farmer submits a query
+- `GET /` — Get all queries (experts see all; farmers see their own)
+- `GET /:id` — Get a single query
+- `PUT /:id` — Expert responds to query
 
 ### Articles (`/api/articles`)
-- POST `/` - Create article
-- GET `/` - Get all articles
-- GET `/:id` - Get single article
-- PUT `/:id` - Update article
-- DELETE `/:id` - Delete article
+- `POST /` — Expert creates an article (with image upload)
+- `GET /` — Get all published articles
+- `GET /:id` — Get a single article
+- `PUT /:id` — Update an article
+- `DELETE /:id` — Delete an article
 
 ### Loans (`/api/loans`)
-- POST `/` - Create loan product
-- GET `/` - Get all loans
-- GET `/:id` - Get loan details
-- POST `/apply` - Apply for loan
+- `POST /` — Financier creates a loan product
+- `GET /` — Get all loan products
+- `GET /:id` — Get one loan
+- `POST /apply` — Farmer applies for a loan
+- `GET /applications` — Financier sees all received applications
 
-### Marketplace (`/api/marketplace`)
-- POST `/produce` - List produce
-- GET `/produce` - Get all listings
-- DELETE `/produce/:id` - Remove listing
+### Marketplace (`/api/marketplace`) ⭐
+| Endpoint | Who Uses It | What It Does |
+|----------|------------|-------------|
+| `POST /` | Farmer | Create listing → status=pending, available=false |
+| `GET /` | Public / Expert | Get all **approved** listings |
+| `GET /farmer/my` | Farmer | Get only the logged-in farmer's own listings |
+| `GET /farmer/all` | Farmer | Get all approved + own pending/rejected (with _isOwner flag) |
+| `GET /expert/pending` | Expert | Get all listings with status=pending |
+| `PUT /:id/approve` | Expert | Approve → status=approved, available=true |
+| `PUT /:id/reject` | Expert | Reject → saves reason + expert email, available=false |
+| `DELETE /:id` | Farmer | Delete own listing (any status) |
+| `DELETE /:id/expert-remove` | Expert | Remove an already-approved live listing |
+| `POST /:id/purchase` | Public | Reveal farmer contact (name + phone) |
 
 ### Community (`/api/community`)
-- POST `/posts` - Create post
-- GET `/posts` - Get all posts
-- DELETE `/posts/:id` - Delete post
+- `POST /posts` — Create a community post
+- `GET /posts` — Get all posts
+- `DELETE /posts/:id` — Delete a post
 
 ### Farm Visits (`/api/farmvisit`)
-- POST `/` - Schedule visit
-- GET `/` - Get all scheduled visits
-- PUT `/:id` - Update visit
+- `POST /` — Schedule a visit
+- `GET /` — Get all visits
+- `PUT /:id` — Update visit details
 
 ### Weather (`/api/weather`)
-- GET `/:location` - Get weather data
+- `GET /:location` — Fetch live weather data for any location
 
 ### AI (`/api/ai`)
-- POST `/chat` - Chat with Gemini
-- POST `/analyze` - Analyze agricultural data
+- `POST /chat` — Send a message to Gemini AI, get a response
 
 ---
 
-## 🛡️ Security Features
+## 🧩 Reusable Components
 
-1. **Authentication**: JWT tokens in headers
-2. **Authorization**: Role-based middleware
-3. **Password Security**: Bcrypt hashing
-4. **CORS**: Cross-origin protection
-5. **Input Validation**: Server-side validation
-6. **File Upload**: Multer with restrictions
-7. **Environment Variables**: Sensitive config in .env
-
----
-
-## 🗄️ Database Models
-
-### User Models
-- **Admin** - System administrators
-- **Farmer** - Agricultural users
-- **Expert** - Domain experts/extension officers
-- **Financier** - Loan providers
-
-### Content Models
-- **Article** - Educational content by experts
-- **Query** - Farmer questions
-- **Response** - Expert answers
-- **CommunityPost** - Discussion forum posts
-
-### Transaction Models
-- **Loan** - Loan product offerings
-- **LoanApplication** - Farmer loan requests
-- **Produce** - Marketplace product listings
-- **FarmVisit** - Expert visit scheduling records
-
-### Utility Models
-- **OTP** - One-time passwords for verification
+| Component | What It Does |
+|-----------|-------------|
+| `DashboardLayout` | Hero layout used for all home screens: full-page background image + glassmorphism welcome text + children below. Used by Farmer, Expert, Financier, and Public home pages |
+| `PageLayout` | Sidebar + Navbar wrapper used for all inner pages (non-home screens). Has role-based sidebar links |
+| `Navbar` | Top bar with logo, language switcher (🌐), hamburger menu |
+| `Sidebar` | Left sidebar with navigation links relevant to the role |
+| `ProduceCard` | Card to display a single produce listing (name, price, qty, category) |
+| `ArticleCard` | Card to display an expert article (title, author, date, preview) |
+| `LoanCard` | Card to display a loan product (interest, amount, tenure) |
+| `QueryCard` | Card showing a farmer's Q&A query and status |
+| `WeatherWidget` | Live weather data display for a given location |
+| `GeminiPanel` | Floating AI chat panel accessible across the app |
+| `VoiceAssistant` | Microphone-based voice query input (React Speech Recognition) |
+| `LanguageSwitcher` | Toggle between English / Telugu / Hindi / Spanish |
+| `Modal` | Generic reusable popup dialog |
+| `Pagination` | Navigate through long lists/tables |
+| `ProtectedRoute` | Wrapper that redirects un-authenticated or wrong-role users |
 
 ---
 
-## 🚀 Running the Application
+## 🌍 Multilingual Support
 
-### Backend
+The platform supports 4 languages: **English, Telugu, Hindi, Spanish**
+
+- Controlled by `LanguageContext.jsx`
+- Farmer selects preferred language during registration
+- All Farmer-facing UI text uses `t('key')` translation function
+- Keys include: welcome messages, quick action labels, quotes, field labels
+
+---
+
+## 🔐 Security
+
+| Layer | Mechanism |
+|-------|----------|
+| **Authentication** | JWT tokens sent in `Authorization: Bearer <token>` header |
+| **Role Control** | Every protected route checks `req.user.role` via `role.middleware.js` |
+| **Password Storage** | bcryptjs hashing — plain passwords never stored |
+| **File Uploads** | Multer restricts file type and size, stores in `/uploads/` |
+| **CORS** | Only allows requests from the frontend `CLIENT_URL` |
+| **OTP** | Email-based one-time passwords for signup verification |
+| **Env Variables** | All secrets (JWT secret, DB URI, API keys) in `.env` file |
+
+---
+
+## 🚀 Running the Project
+
+### Backend (Terminal 1)
 ```bash
 cd backend
 npm install
-npm run dev  # Or: npm start for production
+npm run dev       # Runs on http://localhost:5000
 ```
 
-### Frontend
+### Frontend (Terminal 2)
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev       # Runs on http://localhost:5173
 ```
 
-### Root Level (Monorepo)
-```bash
-npm install
-npm run dev
-```
-
----
-
-## 📝 Environment Variables (Backend .env)
-
-```
+### Required `.env` (inside `/backend/`)
+```env
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://...
+MONGO_URI=mongodb+srv://...
 CLIENT_URL=http://localhost:5173
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_secret_key
 GMAIL_USER=your_email@gmail.com
 GMAIL_PASS=your_app_password
 GEMINI_API_KEY=your_gemini_key
@@ -418,35 +556,57 @@ WEATHER_API_KEY=your_weather_api_key
 
 ---
 
-## 📦 Dependencies
+## 📦 Tech Stack & Libraries
 
 ### Backend
-- express, mongoose, cors, dotenv
-- bcryptjs, jsonwebtoken
-- multer, nodemailer
-- axios (for external APIs)
+| Package | Purpose |
+|---------|---------|
+| `express` | HTTP server and routing |
+| `mongoose` | MongoDB ORM / schema definitions |
+| `cors` | Cross-origin request handling |
+| `dotenv` | Load environment variables from `.env` |
+| `bcryptjs` | Password hashing |
+| `jsonwebtoken` | JWT creation and verification |
+| `multer` | File uploads (images) |
+| `nodemailer` | Send emails (OTP, notifications) |
+| `axios` | HTTP client for external API calls (weather, AI) |
 
 ### Frontend
-- react, react-dom, react-router-dom
-- axios
-- react-leaflet, leaflet (mapping)
-- react-quill (rich text editor)
-- react-speech-recognition (voice)
+| Package | Purpose |
+|---------|---------|
+| `react` + `react-dom` | UI framework |
+| `react-router-dom` | Client-side routing and navigation |
+| `axios` | API calls to backend |
+| `react-leaflet` + `leaflet` | Interactive crop suitability map |
+| `react-quill` | Rich text editor for expert articles |
+| `recharts` | Charts on Admin Dashboard (Pie, Bar) |
+| `react-speech-recognition` | Voice input for queries |
 
 ---
 
-## 🎯 Project Goals
+## 📝 Project Status
 
-- **Connect Stakeholders**: Bridge farmers, experts, and financiers
-- **Knowledge Sharing**: Educational articles and query-response system
-- **Financial Inclusion**: Simplified loan application and management
-- **Market Access**: Marketplace for direct produce sales
-- **AI-Powered Assistance**: Gemini integration for expert guidance
-- **Community Building**: Discussion forums and peer support
-- **Accessibility**: Multi-language support and voice assistance
+**Last Updated:** March 2026
+**Status:** Active Development
+**Core Features:** ✅ Complete and working
+**In Progress:** Authentication edge cases (forgot password, advanced OTP flow)
 
----
+### ✅ Completed Features
+- All role dashboards (Farmer, Expert, Financier, Admin, Public)
+- **Full auction-style marketplace** with Farmer → Expert → Public pipeline
+- Expert approve/reject with feedback loop to farmer
+- Admin dashboard with live Recharts visualizations
+- Multilingual support (4 languages)
+- Loan marketplace (create, apply, review)
+- Q&A system (submit query → expert responds)
+- Expert article library with rich text editor
+- AI assistant (Gemini integration)
+- Interactive crop suitability map
+- Weather widget
+- Community discussion forum
+- Farm visit scheduling
 
-**Last Updated**: February 2026
-**Project Status**: Active Development
-**Stack**: MERN (MongoDB, Express, React, Node.js)
+### 🔧 Known In-Progress
+- Forgot password / password reset flow
+- Advanced OTP signup steps
+- Produce image upload in marketplace form (backend ready, frontend form pending)

@@ -3,10 +3,12 @@ import PageLayout from '../../components/PageLayout'
 import loanService from '../../services/loanService'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../context/LanguageContext'
+import './BrowseLoans.css'
 
 const BrowseLoans = () => {
     const { t } = useLanguage()
     const [loans, setLoans] = useState([])
+    const [appliedLoanIds, setAppliedLoanIds] = useState(new Set())
     const [search, setSearch] = useState('')
     const [loanTypeSort, setLoanTypeSort] = useState('')
     const [interestSort, setInterestSort] = useState('')
@@ -19,6 +21,13 @@ const BrowseLoans = () => {
             .then(r => setLoans(Array.isArray(r.data) ? r.data : []))
             .catch(() => setError('Failed to load loans. Please try again.'))
             .finally(() => setLoading(false))
+
+        loanService.getMyApplications()
+            .then(r => {
+                const ids = r.data.map(app => app.loanId?._id || app.loanId)
+                setAppliedLoanIds(new Set(ids))
+            })
+            .catch(err => console.error("Could not fetch applied loans", err))
     }, [])
 
     const getFiltered = () => {
@@ -51,51 +60,39 @@ const BrowseLoans = () => {
 
     const filtered = getFiltered()
 
-    const dropdownStyle = {
-        padding: '9px 14px',
-        background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.18)',
-        borderRadius: 6, color: '#fff', fontSize: '0.85rem',
-        outline: 'none', cursor: 'pointer',
-        fontFamily: "'Inter', sans-serif",
-        minWidth: 160,
-    }
-
     return (
         <PageLayout role="farmer" title={t('viewallloans')}>
+            <div className="browse-loans-opt-bar">
+                <Link to="/farmer/applied-loans" className="browse-loans-applied-view-btn">
+                    View Applied Loans
+                </Link>
+            </div>
             {/* Search + Filters */}
-            <div style={{ display: 'flex', gap: 12, marginBottom: 28, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div className="browse-loans-filters">
                 {/* Search */}
                 <input
                     type="text"
                     placeholder={t('searchloans')}
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    style={{
-                        padding: '9px 16px',
-                        background: 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.18)',
-                        borderRadius: 6, color: '#fff', fontSize: '0.88rem',
-                        outline: 'none', minWidth: 200, flex: '1 1 200px',
-                        fontFamily: "'Inter', sans-serif",
-                    }}
+                    className="browse-loans-search"
                 />
 
                 {/* Loan Type dropdown */}
-                <select value={loanTypeSort} onChange={e => setLoanTypeSort(e.target.value)} style={dropdownStyle}>
+                <select value={loanTypeSort} onChange={e => setLoanTypeSort(e.target.value)} className="browse-loans-dropdown">
                     <option value="">{t('sortbyloantype')}</option>
                     <option value="az">A → Z</option>
                 </select>
 
                 {/* Interest Rate dropdown */}
-                <select value={interestSort} onChange={e => setInterestSort(e.target.value)} style={dropdownStyle}>
+                <select value={interestSort} onChange={e => setInterestSort(e.target.value)} className="browse-loans-dropdown">
                     <option value="">{t('sortbyinterestrate')}</option>
                     <option value="asc">{t('lowtohigh')}</option>
                     <option value="desc">{t('hightolow')}</option>
                 </select>
 
                 {/* Max Amount dropdown */}
-                <select value={amountSort} onChange={e => setAmountSort(e.target.value)} style={dropdownStyle}>
+                <select value={amountSort} onChange={e => setAmountSort(e.target.value)} className="browse-loans-dropdown">
                     <option value="">{t('sortbymaxamount')}</option>
                     <option value="asc">{t('lowtohigh')}</option>
                     <option value="desc">{t('hightolow')}</option>
@@ -103,41 +100,20 @@ const BrowseLoans = () => {
             </div>
 
             {/* States */}
-            {loading && <p style={{ color: '#aaa', fontSize: '1rem', textAlign: 'center', padding: 40 }}>{t('loading')}</p>}
-            {error && <p style={{ color: '#e55', fontSize: '1rem', textAlign: 'center', padding: 40 }}>{error}</p>}
+            {loading && <p className="browse-loans-msg">{t('loading')}</p>}
+            {error && <p className="browse-loans-err">{error}</p>}
 
             {!loading && !error && (
                 filtered.length === 0 ? (
-                    <div style={{
-                        textAlign: 'center', padding: '60px 20px',
-                        background: 'rgba(255,255,255,0.04)', borderRadius: 12,
-                        border: '1px solid rgba(255,255,255,0.08)',
-                    }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 14 }}>🏦</div>
-                        <p style={{ color: '#aaa', fontSize: '1.05rem' }}>{t('noloansavailable')}</p>
+                    <div className="browse-loans-empty">
+                        <div className="browse-loans-empty-icon">🏦</div>
+                        <p className="browse-loans-empty-text">{t('noloansavailable')}</p>
                     </div>
                 ) : (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
-                        gap: 20,
-                    }}>
+                    <div className="browse-loans-grid">
                         {filtered.map(loan => (
-                            <div key={loan._id} style={{
-                                background: 'rgba(255,255,255,0.06)',
-                                backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderTop: '3px solid #22c55e',
-                                borderRadius: 12,
-                                padding: '22px 24px',
-                                display: 'flex', flexDirection: 'column',
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                            }}
-                                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.5)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)'; }}
-                            >
-                                <h4 style={{ color: '#22c55e', marginBottom: 14, textTransform: 'capitalize', fontSize: '1.1rem', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.04em' }}>
+                            <div key={loan._id} className="browse-loans-card">
+                                <h4 className="browse-loans-card-title">
                                     {loan.title || loan.type || 'Loan'}
                                 </h4>
 
@@ -147,31 +123,27 @@ const BrowseLoans = () => {
                                     { label: t('maxamount'), val: `₹${(loan.amount ?? 0).toLocaleString()}`, color: '#4ade80' },
                                     { label: t('repaymentperiod'), val: `${loan.tenure ?? '—'} ${t('months')}`, color: '#fff' },
                                 ].map(row => (
-                                    <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <span style={{ fontSize: '0.78rem', color: '#888', letterSpacing: '0.04em' }}>{row.label}</span>
-                                        <strong style={{ fontSize: '0.9rem', color: row.color, fontFamily: row.mono ? 'monospace' : 'inherit' }}>{row.val}</strong>
+                                    <div key={row.label} className="browse-loans-card-row">
+                                        <span className="browse-loans-card-label">{row.label}</span>
+                                        <strong className={`browse-loans-card-value ${row.mono ? 'mono' : ''}`} style={{ color: row.color }}>{row.val}</strong>
                                     </div>
                                 ))}
 
-                                <Link
-                                    to={`/farmer/loan-apply/${loan._id}`}
-                                    style={{
-                                        display: 'block', textAlign: 'center',
-                                        padding: '11px 0', marginTop: 'auto', paddingTop: 14,
-                                        background: 'linear-gradient(135deg,#16a34a,#22c55e)',
-                                        color: '#fff',
-                                        fontFamily: "'Barlow Condensed', sans-serif",
-                                        fontWeight: 700, fontSize: '0.9rem',
-                                        borderRadius: 6, textDecoration: 'none',
-                                        textTransform: 'uppercase', letterSpacing: '0.06em',
-                                        transition: 'opacity 0.2s',
-                                        boxShadow: '0 4px 16px rgba(34,197,94,0.3)',
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                                >
-                                    {t('applyforloan')}
-                                </Link>
+                                {appliedLoanIds.has(loan._id) ? (
+                                    <Link
+                                        to={`/farmer/applied-loans`}
+                                        className="browse-loans-apply-btn applied-state"
+                                    >
+                                        APPLIED
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        to={`/farmer/loan-apply/${loan._id}`}
+                                        className="browse-loans-apply-btn"
+                                    >
+                                        {t('applyforloan')}
+                                    </Link>
+                                )}
                             </div>
                         ))}
                     </div>

@@ -8,7 +8,8 @@ const NAV_ITEMS = {
         { to: '/admin', label: 'Admin Dashboard' },
         { to: '/admin/farmers', label: 'Manage Farmers' },
         { to: '/admin/experts', label: 'Manage Experts' },
-        { to: '/admin/financiers', label: 'View All Sectors' },
+        { to: '/admin/financiers', label: 'Manage All Financiers' },
+        { to: '/admin/sectors', label: 'Add New Sectors' },
     ],
     farmer: [
         { to: '/farmer', label: 'My Home' },
@@ -25,7 +26,7 @@ const NAV_ITEMS = {
         { to: '/expert/content', label: 'All Content' },
         { to: '/expert/article/create', label: 'Create Content' },
         { to: '/expert/marketplace', label: 'Marketplace Management' },
-        { to: '/expert/gemini', label: 'Get Gemini Assistance' },
+        { to: '/expert/gemini', label: 'AgriBot AI' },
         { to: '/expert/crop-map', label: 'Explore Interactive Map' },
     ],
     financier: [
@@ -53,7 +54,7 @@ const LANGUAGES = [
     { label: 'English', code: 'en' },
     { label: 'Telugu', code: 'te' },
     { label: 'Hindi', code: 'hi' },
-    { label: 'Spanish', code: 'es' },
+    { label: 'French', code: 'fr' },
 ]
 
 const Navbar = ({ role: roleProp, publicNav }) => {
@@ -94,7 +95,7 @@ const Navbar = ({ role: roleProp, publicNav }) => {
 
                 <div className="nav-right">
                     {/* Globe language selector */}
-                    {user && (
+                    {user && role === 'farmer' && (
                         <div style={{ position: 'relative' }} ref={langRef}>
                             <button className="globe-btn" onClick={() => setLangOpen(!langOpen)}
                                 title="Change Language">

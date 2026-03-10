@@ -1,87 +1,206 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Navbar from '../../components/Navbar'
 import authService from '../../services/authService'
+import './ForgotPassword.css'
 
-const BG = 'https://images.unsplash.com/photo-1542785853-cd7048c2b6d8?w=1400&auto=format&fit=crop&q=80'
+const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
+
+const ROLES = [
+    { value: 'farmer', label: '🌾 Farmer', identifierType: 'phone', placeholder: 'Registered phone number' },
+    { value: 'expert', label: '🧑‍🔬 Expert', identifierType: 'email', placeholder: 'Registered email address' },
+    { value: 'financier', label: '🏦 Financier', identifierType: 'email', placeholder: 'Registered email address' },
+    { value: 'admin', label: '🛡️ Admin', identifierType: 'email', placeholder: 'Admin email address' },
+    { value: 'public', label: '🌐 Public User', identifierType: 'email', placeholder: 'Registered email address' },
+]
 
 const ForgotPassword = () => {
-    const [step, setStep] = useState(1)
-    const [email, setEmail] = useState('')
+    const [step, setStep] = useState(1)          // Step 1: Role + ID, Step 2: OTP, Step 3: New Password
+    const [role, setRole] = useState('farmer')
+    const [identifier, setIdentifier] = useState('')
+    const [resolvedEmail, setResolvedEmail] = useState('') // actual email used for OTP (for farmer, found from phone)
     const [otp, setOtp] = useState('')
     const [newPass, setNewPass] = useState('')
+    const [confirmPass, setConfirmPass] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
+    const currentRole = ROLES.find(r => r.value === role)
+    const isFarmer = role === 'farmer'
+
     const sendOtp = async (e) => {
         e.preventDefault(); setError(''); setLoading(true)
-        try { await authService.sendOTP(email); setStep(2) }
-        catch (err) { setError(err.response?.data?.message || 'Failed to send OTP.') }
-        finally { setLoading(false) }
+        try {
+            const payload = isFarmer
+                ? { phone: identifier, role: 'farmer' }
+                : { email: identifier, role }
+            const res = await authService.sendOTP(payload)
+            // Backend returns the actual email we will send to (especially useful for farmer)
+            setResolvedEmail(res.data.email || identifier)
+            setStep(2)
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to send OTP. Please try again.')
+        } finally { setLoading(false) }
     }
 
     const verifyOtp = async (e) => {
         e.preventDefault(); setError(''); setLoading(true)
-        try { await authService.verifyOTP(email, otp); setStep(3) }
-        catch (err) { setError(err.response?.data?.message || 'Invalid OTP.') }
-        finally { setLoading(false) }
+        try {
+            await authService.verifyOTP(resolvedEmail, otp)
+            setStep(3)
+        } catch (err) {
+            setError(err.response?.data?.message || 'Invalid or expired OTP.')
+        } finally { setLoading(false) }
     }
 
     const resetPass = async (e) => {
-        e.preventDefault(); setError(''); setLoading(true)
+        e.preventDefault(); setError('');
+        if (newPass !== confirmPass) { setError('Passwords do not match.'); return }
+        setLoading(true)
         try {
-            await authService.resetPassword(email, otp, newPass)
+            const payload = isFarmer
+                ? { phone: identifier, email: resolvedEmail, otp, newPassword: newPass, role }
+                : { email: resolvedEmail, otp, newPassword: newPass, role }
+            await authService.resetPassword(payload)
             navigate('/login')
-        } catch (err) { setError(err.response?.data?.message || 'Reset failed.') }
-        finally { setLoading(false) }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Password reset failed.')
+        } finally { setLoading(false) }
     }
 
+    const goBack = () => { setStep(s => s - 1); setError('') }
+
     return (
-        <div style={{ minHeight: '100vh', background: '#000', position: 'relative' }}>
-            <img src={BG} alt="farm"
-                style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.35)', zIndex: 0 }} />
-            <Navbar publicNav />
-            <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '90px 20px 40px' }}>
-                <div className="glass-card">
-                    <h2>Forgot Password</h2>
+        <div className="fp-container">
+            <img src={BG} alt="farm" className="fp-bg" />
+
+            <nav className="fp-nav">
+                <Link to="/" className="fp-logo-link">
+                    <span className="fp-logo-1">AGRI&nbsp;</span>
+                    <span className="fp-logo-2">CONNECT</span>
+                </Link>
+            </nav>
+
+            <div className="fp-content">
+                <div className="fp-card">
+
+                    {/* ── Step Indicator ── */}
+                    <div className="fp-steps">
+                        {['Identify', 'Verify OTP', 'New Password'].map((label, i) => (
+                            <div key={i} className={`fp-step ${step === i + 1 ? 'fp-step--active' : step > i + 1 ? 'fp-step--done' : ''}`}>
+                                <span className="fp-step-num">{step > i + 1 ? '✓' : i + 1}</span>
+                                <span className="fp-step-label">{label}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <h2 className="fp-title">Forgot Password</h2>
+
+                    {/* ── STEP 1: Role + Identifier ── */}
                     {step === 1 && (
-                        <form onSubmit={sendOtp}>
-                            <label>Registered Email</label>
-                            <input type="email" placeholder="your@email.com" value={email}
-                                onChange={e => setEmail(e.target.value)} required />
-                            {error && <p className="msg-error">{error}</p>}
-                            <button className="btn-submit" type="submit" disabled={loading}>
-                                {loading ? 'Sending…' : 'Send OTP'}
+                        <form onSubmit={sendOtp} className="fp-form">
+                            <div>
+                                <label className="fp-label">Your Role</label>
+                                <select
+                                    value={role}
+                                    onChange={e => { setRole(e.target.value); setIdentifier(''); setError('') }}
+                                    className="fp-input fp-select"
+                                >
+                                    {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="fp-label">{isFarmer ? 'Phone Number' : 'Email Address'}</label>
+                                <input
+                                    type={isFarmer ? 'tel' : 'email'}
+                                    placeholder={currentRole?.placeholder}
+                                    value={identifier}
+                                    onChange={e => { setIdentifier(e.target.value); setError('') }}
+                                    required
+                                    className="fp-input"
+                                />
+                            </div>
+
+                            {error && <p className="fp-error">{error}</p>}
+
+                            <button type="submit" disabled={loading} className="fp-btn fp-btn-primary">
+                                {loading ? 'Sending OTP…' : '📧 Send OTP'}
                             </button>
                         </form>
                     )}
+
+                    {/* ── STEP 2: OTP Verification ── */}
                     {step === 2 && (
-                        <form onSubmit={verifyOtp}>
-                            <p style={{ color: '#444', fontSize: '0.88rem', marginBottom: 14 }}>OTP sent to <strong>{email}</strong></p>
-                            <label>Enter OTP</label>
-                            <input type="text" maxLength={6} placeholder="6-digit OTP" value={otp}
-                                onChange={e => setOtp(e.target.value)} required
-                                style={{ textAlign: 'center', letterSpacing: '0.3em', fontSize: '1.2rem' }} />
-                            {error && <p className="msg-error">{error}</p>}
-                            <button className="btn-submit" type="submit" disabled={loading}>
-                                {loading ? 'Verifying…' : 'Verify OTP'}
+                        <form onSubmit={verifyOtp} className="fp-form">
+                            <div className="fp-otp-info">
+                                📧 OTP sent to <strong>{resolvedEmail}</strong>
+                            </div>
+
+                            <div>
+                                <label className="fp-label">Enter 6-digit OTP</label>
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    placeholder="• • • • • •"
+                                    value={otp}
+                                    onChange={e => { setOtp(e.target.value); setError('') }}
+                                    required
+                                    className="fp-input fp-otp-input"
+                                />
+                            </div>
+
+                            {error && <p className="fp-error">{error}</p>}
+
+                            <button type="submit" disabled={loading || otp.length < 4} className="fp-btn fp-btn-primary">
+                                {loading ? 'Verifying…' : '✅ Verify OTP'}
+                            </button>
+                            <button type="button" onClick={goBack} className="fp-btn fp-btn-secondary">
+                                ← Back
                             </button>
                         </form>
                     )}
+
+                    {/* ── STEP 3: New Password ── */}
                     {step === 3 && (
-                        <form onSubmit={resetPass}>
-                            <label>New Password</label>
-                            <input type="password" placeholder="Enter new password" value={newPass}
-                                onChange={e => setNewPass(e.target.value)} required />
-                            {error && <p className="msg-error">{error}</p>}
-                            <button className="btn-submit" type="submit" disabled={loading}>
-                                {loading ? 'Resetting…' : 'Reset Password'}
+                        <form onSubmit={resetPass} className="fp-form">
+                            <div>
+                                <label className="fp-label">New Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Enter new password"
+                                    value={newPass}
+                                    onChange={e => { setNewPass(e.target.value); setError('') }}
+                                    required
+                                    className="fp-input"
+                                />
+                            </div>
+                            <div>
+                                <label className="fp-label">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Confirm new password"
+                                    value={confirmPass}
+                                    onChange={e => { setConfirmPass(e.target.value); setError('') }}
+                                    required
+                                    className="fp-input"
+                                />
+                            </div>
+
+                            {error && <p className="fp-error">{error}</p>}
+
+                            <button type="submit" disabled={loading} className="fp-btn fp-btn-primary">
+                                {loading ? 'Resetting…' : '🔑 Reset Password'}
+                            </button>
+                            <button type="button" onClick={goBack} className="fp-btn fp-btn-secondary">
+                                ← Back
                             </button>
                         </form>
                     )}
-                    <p style={{ textAlign: 'center', marginTop: 14, fontSize: '0.85rem', color: '#555' }}>
-                        Remember it? <Link to="/login" className="link-red">Sign In</Link>
+
+                    <p className="fp-footer">
+                        Remember it?{' '}
+                        <Link to="/login" className="fp-link">Sign In</Link>
                     </p>
                 </div>
             </div>

@@ -15,9 +15,10 @@ exports.getListings = async (req, res) => {
 }
 
 // Expert: get pending listings (awaiting approval)
+// NOTE: pending listings have available:false until approved, so do NOT filter by available
 exports.getPendingListings = async (req, res) => {
     try {
-        const listings = await Produce.find({ status: 'pending', available: true })
+        const listings = await Produce.find({ status: 'pending' })
             .populate('farmerId', 'name phone location email')
             .sort({ createdAt: -1 })
         res.json(listings)
@@ -25,6 +26,7 @@ exports.getPendingListings = async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
+
 
 // Farmer: get ONLY own listings
 exports.getMyListings = async (req, res) => {
@@ -37,21 +39,41 @@ exports.getMyListings = async (req, res) => {
 }
 
 // Farmer: get ALL approved listings + own pending/rejected (so farmers see everything)
+// Each listing gets an _isOwner flag so the frontend never needs to compare IDs
 exports.getAllForFarmer = async (req, res) => {
     try {
-        // All approved listings from any farmer
+        const myId = req.user.id.toString()
+        const mongoose = require('mongoose')
+        const myObjectId = new mongoose.Types.ObjectId(myId)
+
+        // All approved listings from any farmer (visible to everyone once approved)
         const approved = await Produce.find({ available: true, status: 'approved' })
             .populate('farmerId', 'name phone location')
             .sort({ createdAt: -1 })
-        // Own non-approved listings (pending/rejected) so farmer can see their queue
-        const ownOther = await Produce.find({ farmerId: req.user.id, status: { $ne: 'approved' }, available: true })
+
+        // Own pending/rejected listings — use ObjectId for reliable MongoDB match
+        const ownPending = await Produce.find({ farmerId: myObjectId, status: { $ne: 'approved' } })
+            .populate('farmerId', 'name phone location')
             .sort({ createdAt: -1 })
-        // Merge: own non-approved first, then all approved (deduplicated)
+
+        // Merge: own pending/rejected first, then all approved (deduplicated by _id)
         const approvedIds = new Set(approved.map(a => a._id.toString()))
-        const ownNotInApproved = ownOther.filter(o => !approvedIds.has(o._id.toString()))
+        const ownNotInApproved = ownPending.filter(o => !approvedIds.has(o._id.toString()))
         const all = [...ownNotInApproved, ...approved]
-        res.json(all)
+
+        // Stamp each listing with _isOwner — single source of truth for frontend
+        const result = all.map(listing => {
+            const raw = listing.toObject ? listing.toObject() : { ...listing }
+            const fId = (raw.farmerId && typeof raw.farmerId === 'object')
+                ? (raw.farmerId._id || raw.farmerId.id || '').toString()
+                : (raw.farmerId || '').toString()
+            raw._isOwner = (fId === myId)
+            return raw
+        })
+
+        res.json(result)
     } catch (err) {
+        console.error('[getAllForFarmer] ERROR:', err.message)
         res.status(500).json({ message: err.message })
     }
 }
@@ -66,7 +88,7 @@ exports.getListingById = async (req, res) => {
     }
 }
 
-// Farmer: create listing — auto-approved so it shows immediately
+// Farmer: create listing — starts as PENDING, expert must approve before going live
 exports.createListing = async (req, res) => {
     try {
         const farmer = await Farmer.findById(req.user.id)
@@ -74,7 +96,8 @@ exports.createListing = async (req, res) => {
         const listing = await Produce.create({
             ...req.body,
             farmerId: req.user.id,
-            status: 'approved',
+            status: 'pending',
+            available: false,          // not visible to public until approved
             farmerName: farmer.name || '',
             farmerPhone: farmer.phone || '',
         })
@@ -108,10 +131,14 @@ exports.deleteListing = async (req, res) => {
     }
 }
 
-// Expert: approve listing
+// Expert: approve listing — makes it publicly available
 exports.approveListing = async (req, res) => {
     try {
-        const listing = await Produce.findByIdAndUpdate(req.params.id, { status: 'approved' }, { new: true })
+        const listing = await Produce.findByIdAndUpdate(
+            req.params.id,
+            { status: 'approved', available: true, rejectionReason: '' },
+            { new: true }
+        )
         if (!listing) return res.status(404).json({ message: 'Listing not found.' })
         res.json({ message: 'Listing approved.', listing })
     } catch (err) {
@@ -119,12 +146,30 @@ exports.approveListing = async (req, res) => {
     }
 }
 
-// Expert: reject listing (mark unavailable)
+// Expert: reject listing — updates status to 'rejected' so farmer sees notification
 exports.rejectListing = async (req, res) => {
     try {
-        const listing = await Produce.findByIdAndUpdate(req.params.id, { status: 'rejected', available: false }, { new: true })
+        const reason = req.body.rejectionReason || req.body.reason || 'Rejected by expert.'
+
+        // Find expert email
+        let expertEmail = req.user.email || 'expert@agriconnect.com'
+        if (!req.user.email && req.user.id) {
+            const Expert = require('../models/Expert.model')
+            const expert = await Expert.findById(req.user.id)
+            if (expert) expertEmail = expert.email
+        }
+
+        const listing = await Produce.findByIdAndUpdate(
+            req.params.id,
+            { status: 'rejected', rejectionReason: reason, rejectedByEmail: expertEmail, available: false },
+            { new: true }
+        )
         if (!listing) return res.status(404).json({ message: 'Listing not found.' })
-        res.json({ message: 'Listing rejected.', listing })
+
+        res.json({
+            message: 'Listing rejected.',
+            listing,
+        })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }

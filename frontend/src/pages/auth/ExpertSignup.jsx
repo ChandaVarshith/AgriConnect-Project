@@ -1,20 +1,9 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import './ExpertSignup.css'
 
 const BG = 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1400&auto=format&fit=crop&q=80'
-
-const inputStyle = {
-    width: '100%', padding: '10px 14px',
-    background: 'rgba(255,255,255,0.12)',
-    border: '1px solid rgba(255,255,255,0.25)',
-    borderRadius: 6, color: '#fff', fontSize: '0.92rem',
-    outline: 'none', boxSizing: 'border-box',
-}
-const labelStyle = {
-    display: 'block', color: '#fff', fontSize: '0.82rem',
-    fontWeight: 600, marginBottom: 5, letterSpacing: '0.03em',
-}
 
 const ExpertSignup = () => {
     const [form, setForm] = useState({ name: '', email: '', password: '', specialization: '' })
@@ -70,74 +59,49 @@ const ExpertSignup = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', position: 'relative' }}>
-            <img src={BG} alt="farm bg" style={{
-                position: 'fixed', inset: 0, width: '100%', height: '100%',
-                objectFit: 'cover', filter: 'brightness(0.35)', zIndex: 0,
-            }} />
+        <div className="expert-signup-container">
+            <img src={BG} alt="farm bg" className="expert-signup-bg" />
 
-            <nav style={{
-                position: 'fixed', top: 0, left: 0, right: 0, height: 56,
-                display: 'flex', alignItems: 'center', padding: '0 24px',
-                background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100,
-            }}>
-                <Link to="/" style={{ textDecoration: 'none', display: 'flex' }}>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#fff' }}>AGRI&nbsp;</span>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#e02020' }}>CONNECT</span>
+            <nav className="expert-signup-nav">
+                <Link to="/" className="expert-signup-logo-link">
+                    <span className="expert-signup-logo-1">AGRI&nbsp;</span>
+                    <span className="expert-signup-logo-2">CONNECT</span>
                 </Link>
             </nav>
 
-            <div style={{
-                position: 'relative', zIndex: 10, minHeight: '100vh',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '80px 20px 40px',
-            }}>
-                <div style={{
-                    width: '100%', maxWidth: 440,
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(22px)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 14, padding: '36px 32px',
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-                }}>
+            <div className="expert-signup-content">
+                <div className="expert-signup-card">
 
                     {/* ── SUCCESS SCREEN ── */}
                     {success ? (
-                        <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                            <div style={{ fontSize: '3.5rem', marginBottom: 14 }}>🎉</div>
-                            <h2 style={{
-                                color: '#fff', fontFamily: "'Barlow Condensed',sans-serif",
-                                fontSize: '2rem', fontWeight: 800, marginBottom: 10,
-                            }}>Request Sent!</h2>
-                            <p style={{ color: '#ccc', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                        <div className="expert-signup-success-container">
+                            <div className="expert-signup-success-icon">🎉</div>
+                            <h2 className="expert-signup-success-title">Request Sent!</h2>
+                            <p className="expert-signup-success-text">
                                 Your expert registration request has been sent to the admin.<br />
-                                You'll be able to login once the admin <strong style={{ color: '#4caf50' }}>approves your account</strong>.
+                                You'll be able to login once the admin <strong className="expert-signup-success-highlight">approves your account</strong>.
                             </p>
-                            <p style={{ color: '#888', fontSize: '0.8rem', marginTop: 18 }}>Redirecting to login…</p>
+                            <p className="expert-signup-success-redirect">Redirecting to login…</p>
                         </div>
                     ) : (
                         <>
-                            <h2 style={{
-                                color: '#fff', textAlign: 'center',
-                                fontFamily: "'Barlow Condensed',sans-serif",
-                                fontSize: '1.9rem', fontWeight: 800, marginBottom: 24, letterSpacing: '0.04em',
-                            }}>
+                            <h2 className="expert-signup-title">
                                 Expert Sign Up
                             </h2>
 
-                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <form onSubmit={handleSubmit} className="expert-signup-form">
 
                                 {/* Full Name */}
                                 <div>
-                                    <label style={labelStyle}>Full Name</label>
+                                    <label className="expert-signup-label">Full Name</label>
                                     <input type="text" placeholder="Dr. / Prof. Full Name" value={form.name}
-                                        onChange={e => setForm({ ...form, name: e.target.value })} required style={inputStyle} />
+                                        onChange={e => setForm({ ...form, name: e.target.value })} required className="expert-signup-input" />
                                 </div>
 
                                 {/* Email + Send OTP inline */}
                                 <div>
-                                    <label style={labelStyle}>Email</label>
-                                    <div style={{ display: 'flex', gap: 8 }}>
+                                    <label className="expert-signup-label">Email</label>
+                                    <div className="expert-signup-email-row">
                                         <input
                                             type="email"
                                             placeholder="your@email.com"
@@ -150,17 +114,12 @@ const ExpertSignup = () => {
                                                 setOtpError('')
                                             }}
                                             required
-                                            style={{ ...inputStyle, flex: 1 }}
+                                            className="expert-signup-input expert-signup-email-input"
                                             disabled={emailVerified}
                                         />
                                         {/* Verified badge OR Send OTP button */}
                                         {emailVerified ? (
-                                            <div style={{
-                                                display: 'flex', alignItems: 'center', gap: 5,
-                                                background: 'rgba(76,175,80,0.2)', border: '1px solid #4caf50',
-                                                borderRadius: 6, padding: '0 12px', whiteSpace: 'nowrap',
-                                                color: '#4caf50', fontWeight: 700, fontSize: '0.82rem',
-                                            }}>
+                                            <div className="expert-signup-verified-badge">
                                                 ✅ Verified
                                             </div>
                                         ) : (
@@ -168,13 +127,7 @@ const ExpertSignup = () => {
                                                 type="button"
                                                 onClick={handleSendOtp}
                                                 disabled={otpLoading || !form.email}
-                                                style={{
-                                                    padding: '0 14px', background: otpLoading ? '#1a50cc' : '#3b82f6',
-                                                    color: '#fff', fontWeight: 700, fontSize: '0.78rem',
-                                                    border: 'none', borderRadius: 6, cursor: otpLoading ? 'not-allowed' : 'pointer',
-                                                    whiteSpace: 'nowrap', letterSpacing: '0.04em',
-                                                    textTransform: 'uppercase', minWidth: 90,
-                                                }}
+                                                className={`expert-signup-otp-btn ${otpLoading ? 'expert-signup-otp-btn-loading' : 'expert-signup-otp-btn-active'}`}
                                             >
                                                 {otpLoading ? 'Sending…' : otpSent ? 'Resend' : 'Send OTP'}
                                             </button>
@@ -183,42 +136,24 @@ const ExpertSignup = () => {
 
                                     {/* OTP Input – appears after OTP is sent */}
                                     {otpSent && !emailVerified && (
-                                        <div style={{
-                                            marginTop: 10,
-                                            background: 'rgba(59,130,246,0.1)',
-                                            border: '1px solid rgba(59,130,246,0.35)',
-                                            borderRadius: 8, padding: '14px 14px 12px',
-                                            animation: 'fadeSlideIn 0.25s ease',
-                                        }}>
-                                            <p style={{ color: '#93c5fd', fontSize: '0.8rem', marginBottom: 10, margin: '0 0 10px' }}>
-                                                📧 OTP sent to <strong style={{ color: '#fff' }}>{form.email}</strong>
+                                        <div className="expert-signup-otp-container">
+                                            <p className="expert-signup-otp-text">
+                                                📧 OTP sent to <strong className="expert-signup-otp-email">{form.email}</strong>
                                             </p>
-                                            <div style={{ display: 'flex', gap: 8 }}>
+                                            <div className="expert-signup-otp-input-row">
                                                 <input
                                                     type="text"
                                                     maxLength={6}
                                                     placeholder="Enter 6-digit OTP"
                                                     value={otp}
                                                     onChange={e => { setOtp(e.target.value); setOtpError('') }}
-                                                    style={{
-                                                        ...inputStyle, flex: 1,
-                                                        textAlign: 'center', letterSpacing: '0.3em',
-                                                        fontSize: '1.1rem', fontWeight: 700,
-                                                    }}
+                                                    className="expert-signup-input expert-signup-otp-input"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={handleVerifyOtp}
                                                     disabled={verifyLoading || otp.length < 4}
-                                                    style={{
-                                                        padding: '0 14px',
-                                                        background: verifyLoading ? '#15803d' : '#16a34a',
-                                                        color: '#fff', fontWeight: 700, fontSize: '0.78rem',
-                                                        border: 'none', borderRadius: 6,
-                                                        cursor: verifyLoading ? 'not-allowed' : 'pointer',
-                                                        whiteSpace: 'nowrap', textTransform: 'uppercase',
-                                                        letterSpacing: '0.04em',
-                                                    }}
+                                                    className={`expert-signup-verify-btn ${verifyLoading ? 'expert-signup-verify-btn-loading' : 'expert-signup-verify-btn-active'}`}
                                                 >
                                                     {verifyLoading ? 'Checking…' : 'Verify'}
                                                 </button>
@@ -228,7 +163,7 @@ const ExpertSignup = () => {
 
                                     {/* OTP error */}
                                     {otpError && (
-                                        <p style={{ color: '#ff6b6b', fontSize: '0.8rem', marginTop: 6, margin: '6px 0 0' }}>
+                                        <p className="expert-signup-error">
                                             {otpError}
                                         </p>
                                     )}
@@ -236,21 +171,21 @@ const ExpertSignup = () => {
 
                                 {/* Password */}
                                 <div>
-                                    <label style={labelStyle}>Password</label>
+                                    <label className="expert-signup-label">Password</label>
                                     <input type="password" placeholder="Create a password" value={form.password}
-                                        onChange={e => setForm({ ...form, password: e.target.value })} required style={inputStyle} />
+                                        onChange={e => setForm({ ...form, password: e.target.value })} required className="expert-signup-input" />
                                 </div>
 
                                 {/* Specialization */}
                                 <div>
-                                    <label style={labelStyle}>Specialization</label>
+                                    <label className="expert-signup-label">Specialization</label>
                                     <input type="text" placeholder="e.g. Soil Science, Agronomy" value={form.specialization}
-                                        onChange={e => setForm({ ...form, specialization: e.target.value })} required style={inputStyle} />
+                                        onChange={e => setForm({ ...form, specialization: e.target.value })} required className="expert-signup-input" />
                                 </div>
 
                                 {/* Submit error */}
                                 {submitError && (
-                                    <p style={{ color: '#ff6b6b', fontSize: '0.85rem', textAlign: 'center', margin: 0 }}>
+                                    <p className="expert-signup-submit-error">
                                         {submitError}
                                     </p>
                                 )}
@@ -260,25 +195,14 @@ const ExpertSignup = () => {
                                     type="submit"
                                     disabled={!emailVerified || submitLoading}
                                     title={!emailVerified ? 'Please verify your email first' : ''}
-                                    style={{
-                                        width: '100%', padding: '13px 0',
-                                        background: !emailVerified
-                                            ? 'rgba(100,100,100,0.4)'
-                                            : submitLoading ? '#15803d' : '#16a34a',
-                                        color: emailVerified ? '#fff' : '#888',
-                                        fontWeight: 700, fontSize: '1rem',
-                                        border: 'none', borderRadius: 6,
-                                        cursor: !emailVerified || submitLoading ? 'not-allowed' : 'pointer',
-                                        textTransform: 'uppercase', letterSpacing: '0.06em',
-                                        marginTop: 4, transition: 'background 0.2s',
-                                    }}
+                                    className={`expert-signup-submit-btn ${!emailVerified ? 'expert-signup-submit-btn-disabled' : submitLoading ? 'expert-signup-submit-btn-loading' : 'expert-signup-submit-btn-active'}`}
                                 >
                                     {submitLoading ? 'Sending Request…' : '🚀 Send Request to Admin'}
                                 </button>
 
                                 {/* Helper hint */}
                                 {!emailVerified && (
-                                    <p style={{ textAlign: 'center', fontSize: '0.78rem', color: '#888', margin: '-8px 0 0' }}>
+                                    <p className="expert-signup-helper-text">
                                         Verify your email above to enable this button
                                     </p>
                                 )}
@@ -286,23 +210,16 @@ const ExpertSignup = () => {
                         </>
                     )}
 
-                    <p style={{ textAlign: 'center', marginTop: 18, fontSize: '0.85rem', color: '#ccc' }}>
+                    <p className="expert-signup-footer-text">
                         Already have an account?{' '}
-                        <Link to="/login" style={{ color: '#e02020', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
+                        <Link to="/login" className="expert-signup-link-primary">Sign In</Link>
                     </p>
-                    <p style={{ textAlign: 'center', marginTop: 8, fontSize: '0.85rem', color: '#ccc' }}>
+                    <p className="expert-signup-footer-text-secondary">
                         Not an expert?{' '}
-                        <Link to="/register" style={{ color: '#f59e0b', fontWeight: 600, textDecoration: 'none' }}>Choose a different role</Link>
+                        <Link to="/register" className="expert-signup-link-secondary">Choose a different role</Link>
                     </p>
                 </div>
             </div>
-
-            <style>{`
-                @keyframes fadeSlideIn {
-                    from { opacity: 0; transform: translateY(-8px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
         </div>
     )
 }

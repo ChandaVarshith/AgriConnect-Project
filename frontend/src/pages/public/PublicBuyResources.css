@@ -1,0 +1,203 @@
+.public-buy-resources-header {
+    margin-bottom: 24px;
+}
+
+.public-buy-resources-title {
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.6rem;
+    margin: 0 0 6px;
+}
+
+.public-buy-resources-subtitle {
+    color: #aaa;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+/* ── Controls bar ── */
+.marketplace-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.marketplace-search {
+    flex: 1;
+    min-width: 180px;
+    padding: 9px 14px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.87rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+
+.marketplace-search::placeholder {
+    color: #555;
+}
+
+.marketplace-search:focus {
+    border-color: rgba(34, 197, 94, 0.45);
+}
+
+.marketplace-cat-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.marketplace-cat-tab {
+    padding: 7px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #999;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.17s;
+    white-space: nowrap;
+}
+
+.marketplace-cat-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ddd;
+}
+
+.marketplace-cat-tab--active {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.45);
+    color: #4ade80;
+}
+
+.marketplace-sort-select {
+    padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    color: #ccc;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    cursor: pointer;
+}
+
+.marketplace-sort-select option {
+    background: #1a2a1a;
+    color: #fff;
+}
+
+.public-buy-resources-loading {
+    color: #aaa;
+}
+
+.public-buy-resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+.public-buy-resources-card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.public-buy-resources-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.public-buy-resources-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.public-buy-resources-card-title {
+    color: #fff;
+    margin: 0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+}
+
+.public-buy-resources-card-category {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+.public-buy-resources-card-price-container {
+    text-align: right;
+}
+
+.public-buy-resources-card-price {
+    color: #22c55e;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.public-buy-resources-card-qty {
+    color: #aaa;
+    font-size: 0.78rem;
+}
+
+.public-buy-resources-card-desc {
+    color: #bbb;
+    font-size: 0.82rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.public-buy-resources-farmer-info {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.public-buy-resources-farmer-info-title {
+    color: #22c55e;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.public-buy-resources-farmer-info-text {
+    color: #ccc;
+    font-size: 0.84rem;
+    margin: 0;
+}
+
+.public-buy-resources-contact-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 9px 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.public-buy-resources-contact-btn-loading {
+    background: #166534;
+    color: #000;
+    cursor: not-allowed;
+}
+
+.public-buy-resources-contact-btn-active {
+    background: #22c55e;
+    color: #000;
+    cursor: pointer;
+}

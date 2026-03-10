@@ -1,0 +1,11 @@
+.farm-visit-content {
+    max-width: 580px;
+}
+
+.farm-visit-success {
+    color: var(--success);
+}
+
+.farm-visit-error {
+    color: var(--danger);
+}

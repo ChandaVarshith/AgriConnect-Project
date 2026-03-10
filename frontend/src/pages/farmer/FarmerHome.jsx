@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../components/DashboardLayout'
 import { useLanguage } from '../../context/LanguageContext'
+import './FarmerHome.css'
 
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
 
@@ -25,54 +26,20 @@ const FarmerHome = () => {
             subText={t('farmerinspirationquote')}
         >
             {/* Quick-action cards below the hero */}
-            <div style={{
-                padding: '0 0 60px',
-            }}>
-                <h2 style={{
-                    color: 'rgba(255,255,255,0.7)',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: '1.4rem', fontWeight: 700,
-                    letterSpacing: '0.08em', textTransform: 'uppercase',
-                    marginBottom: 20,
-                }}>
+            <div className="farmer-home-container">
+                <h2 className="farmer-home-title">
                     {t('quickactions')}
                 </h2>
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                    gap: 16,
-                }}>
+                <div className="farmer-home-grid">
                     {ACTIONS.map(a => (
-                        <button key={a.path} onClick={() => navigate(a.path)} style={{
-                            background: 'rgba(255,255,255,0.07)',
-                            backdropFilter: 'blur(10px)',
-                            border: `1px solid rgba(255,255,255,0.12)`,
-                            borderTop: `3px solid ${a.color}`,
-                            borderRadius: 12,
-                            padding: '20px 18px',
-                            display: 'flex', flexDirection: 'column',
-                            alignItems: 'flex-start', gap: 10,
-                            cursor: 'pointer', textAlign: 'left',
-                            transition: 'transform 0.2s, box-shadow 0.2s, background 0.2s',
-                        }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.transform = 'translateY(-4px)'
-                                e.currentTarget.style.boxShadow = `0 12px 40px rgba(0,0,0,0.6)`
-                                e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.transform = 'translateY(0)'
-                                e.currentTarget.style.boxShadow = 'none'
-                                e.currentTarget.style.background = 'rgba(255,255,255,0.07)'
-                            }}
+                        <button
+                            key={a.path}
+                            onClick={() => navigate(a.path)}
+                            className="farmer-home-action-btn"
+                            style={{ borderTop: `3px solid ${a.color}` }}
                         >
-                            <span style={{ fontSize: '2rem' }}>{a.icon}</span>
-                            <span style={{
-                                color: '#e5e5e5', fontSize: '0.82rem',
-                                fontWeight: 600, lineHeight: 1.35,
-                                letterSpacing: '0.01em',
-                                fontFamily: "'Inter', sans-serif",
-                            }}>
+                            <span className="farmer-home-action-icon">{a.icon}</span>
+                            <span className="farmer-home-action-label">
                                 {t(a.labelKey)}
                             </span>
                         </button>

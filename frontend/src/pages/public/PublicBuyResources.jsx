@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
+import './PublicBuyResources.css'
+
+const CATEGORIES = ['vegetables', 'fruits', 'grains', 'dairy', 'other']
 
 const PublicBuyResources = () => {
     const [listings, setListings] = useState([])
     const [search, setSearch] = useState('')
+    const [activeCat, setActiveCat] = useState('all')
+    const [sortOpt, setSortOpt] = useState('newest')
     const [loading, setLoading] = useState(true)
     const [inquiry, setInquiry] = useState({}) // id -> {open, revealed, farmerName, farmerPhone, submitting}
 
@@ -12,10 +17,32 @@ const PublicBuyResources = () => {
         API.get('/marketplace').then(r => setListings(r.data)).catch(() => { }).finally(() => setLoading(false))
     }, [])
 
-    const filtered = listings.filter(l =>
-        l.name?.toLowerCase().includes(search.toLowerCase()) ||
-        l.category?.toLowerCase().includes(search.toLowerCase())
-    )
+    let filtered = [...listings]
+
+    // 1. Filter by Search
+    if (search.trim()) {
+        const q = search.trim().toLowerCase()
+        filtered = filtered.filter(l =>
+            l.name?.toLowerCase().includes(q) ||
+            l.category?.toLowerCase().includes(q)
+        )
+    }
+
+    // 2. Filter by Category
+    if (activeCat !== 'all') {
+        filtered = filtered.filter(l => (l.category || 'other') === activeCat)
+    }
+
+    // 3. Sort
+    if (sortOpt === 'newest') {
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    } else if (sortOpt === 'price_asc') {
+        filtered.sort((a, b) => (a.price || 0) - (b.price || 0))
+    } else if (sortOpt === 'price_desc') {
+        filtered.sort((a, b) => (b.price || 0) - (a.price || 0))
+    } else if (sortOpt === 'az') {
+        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+    }
 
     const handleInquiry = async (id) => {
         setInquiry(prev => ({ ...prev, [id]: { ...prev[id], submitting: true } }))
@@ -30,62 +57,72 @@ const PublicBuyResources = () => {
         }
     }
 
-    const cardStyle = {
-        background: 'rgba(255,255,255,0.07)',
-        border: '1px solid rgba(255,255,255,0.12)',
-        borderRadius: 12, padding: '22px 20px', display: 'flex', flexDirection: 'column', gap: 10,
-    }
-
     return (
         <PageLayout role="public" title="Buy Resources">
-            <div style={{ marginBottom: 24 }}>
-                <h2 style={{ color: '#fff', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.6rem', margin: '0 0 6px' }}>
+            <div className="public-buy-resources-header">
+                <h2 className="public-buy-resources-title">
                     Fresh Farm Produce 🛒
                 </h2>
-                <p style={{ color: '#aaa', fontSize: '0.88rem', margin: 0 }}>
+                <p className="public-buy-resources-subtitle">
                     Browse expert-approved produce directly from farmers. Submit an inquiry to get farmer contact details.
                 </p>
             </div>
 
-            <input placeholder="🔍  Search by crop or category…" value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{ padding: '10px 16px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.9rem', width: '100%', maxWidth: 400, marginBottom: 24, outline: 'none' }} />
+            <div className="marketplace-controls">
+                <input type="text" className="marketplace-search" placeholder="🔍  Search produce…"
+                    value={search} onChange={e => setSearch(e.target.value)} />
 
-            {loading ? <p style={{ color: '#aaa' }}>Loading listings…</p> :
-                filtered.length === 0 ? <p style={{ color: '#aaa' }}>No approved produce available yet.</p> : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 20 }}>
+                <div className="marketplace-cat-tabs">
+                    <button className={`marketplace-cat-tab ${activeCat === 'all' ? 'marketplace-cat-tab--active' : ''}`}
+                        onClick={() => setActiveCat('all')}>All</button>
+                    {CATEGORIES.map(c => (
+                        <button key={c}
+                            className={`marketplace-cat-tab ${activeCat === c ? 'marketplace-cat-tab--active' : ''}`}
+                            onClick={() => setActiveCat(c)}>
+                            {c.charAt(0).toUpperCase() + c.slice(1)}
+                        </button>
+                    ))}
+                </div>
+
+                <select className="marketplace-sort-select" value={sortOpt} onChange={e => setSortOpt(e.target.value)}>
+                    <option value="newest">Newest First</option>
+                    <option value="az">A–Z</option>
+                    <option value="price_asc">Price: Low → High</option>
+                    <option value="price_desc">Price: High → Low</option>
+                </select>
+            </div>
+
+            {loading ? <p className="public-buy-resources-loading">Loading listings…</p> :
+                filtered.length === 0 ? <p className="public-buy-resources-loading">No approved produce available yet.</p> : (
+                    <div className="public-buy-resources-grid">
                         {filtered.map(l => {
                             const inq = inquiry[l._id] || {}
                             return (
-                                <div key={l._id} style={cardStyle}>
+                                <div key={l._id} className="public-buy-resources-card">
                                     {l.images?.[0] && (
                                         <img src={l.images[0]} alt={l.name}
-                                            style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 8 }} />
+                                            className="public-buy-resources-card-img" />
                                     )}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div className="public-buy-resources-card-header">
                                         <div>
-                                            <h3 style={{ color: '#fff', margin: 0, fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.1rem' }}>{l.name}</h3>
-                                            <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{l.category || 'Produce'}</div>
+                                            <h3 className="public-buy-resources-card-title">{l.name}</h3>
+                                            <div className="public-buy-resources-card-category">{l.category || 'Produce'}</div>
                                         </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <div style={{ color: '#22c55e', fontWeight: 700, fontSize: '1.05rem' }}>₹{l.price}/{l.unit || 'kg'}</div>
-                                            <div style={{ color: '#aaa', fontSize: '0.78rem' }}>{l.quantity} {l.unit || 'kg'} available</div>
+                                        <div className="public-buy-resources-card-price-container">
+                                            <div className="public-buy-resources-card-price">₹{l.price}/{l.unit || 'kg'}</div>
+                                            <div className="public-buy-resources-card-qty">{l.quantity} {l.unit || 'kg'} available</div>
                                         </div>
                                     </div>
-                                    {l.description && <p style={{ color: '#bbb', fontSize: '0.82rem', margin: 0, lineHeight: 1.5 }}>{l.description}</p>}
+                                    {l.description && <p className="public-buy-resources-card-desc">{l.description}</p>}
 
                                     {inq.revealed ? (
-                                        <div style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 8, padding: '12px 14px' }}>
-                                            <p style={{ color: '#22c55e', fontSize: '0.82rem', fontWeight: 700, margin: '0 0 4px' }}>✓ Farmer Contact Revealed</p>
-                                            <p style={{ color: '#ccc', fontSize: '0.84rem', margin: 0 }}>👤 {inq.farmerName}</p>
-                                            <p style={{ color: '#ccc', fontSize: '0.84rem', margin: 0 }}>📞 {inq.farmerPhone}</p>
+                                        <div className="public-buy-resources-farmer-info">
+                                            <p className="public-buy-resources-farmer-info-title">✓ Farmer Contact Revealed</p>
+                                            <p className="public-buy-resources-farmer-info-text">👤 {inq.farmerName}</p>
+                                            <p className="public-buy-resources-farmer-info-text">📞 {inq.farmerPhone}</p>
                                         </div>
                                     ) : (
-                                        <button onClick={() => handleInquiry(l._id)} disabled={inq.submitting} style={{
-                                            background: inq.submitting ? '#166534' : '#22c55e', color: '#000',
-                                            border: 'none', borderRadius: 6, padding: '9px 0', fontSize: '0.88rem',
-                                            fontWeight: 700, cursor: inq.submitting ? 'not-allowed' : 'pointer', width: '100%', transition: 'background 0.2s',
-                                        }}>
+                                        <button onClick={() => handleInquiry(l._id)} disabled={inq.submitting} className={`public-buy-resources-contact-btn ${inq.submitting ? 'public-buy-resources-contact-btn-loading' : 'public-buy-resources-contact-btn-active'}`}>
                                             {inq.submitting ? 'Processing…' : '📞 Contact Farmer'}
                                         </button>
                                     )}

@@ -1,44 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
+import './AdminDashboard.css'
+import {
+    PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid
+} from 'recharts'
 
 const StatCard = ({ label, value, color }) => (
-    <div style={{
-        background: 'rgba(255,255,255,0.07)', border: `1px solid ${color}40`,
-        borderRadius: 12, padding: '20px 24px', textAlign: 'center', flex: '1 1 140px',
-    }}>
-        <div style={{ color, fontSize: '2rem', fontWeight: 800, fontFamily: "'Barlow Condensed',sans-serif" }}>{value}</div>
-        <div style={{ color: '#aaa', fontSize: '0.82rem', marginTop: 4 }}>{label}</div>
+    <div className="admin-dash-stat-card" style={{ border: `1px solid ${color}40` }}>
+        <div className="admin-dash-stat-value" style={{ color }}>{value}</div>
+        <div className="admin-dash-stat-label">{label}</div>
     </div>
 )
-
-const BarChart = ({ pending, resolved }) => {
-    const max = Math.max(pending, resolved, 1)
-    const pct = (v) => Math.round((v / max) * 100)
-    return (
-        <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px 28px' }}>
-            <h3 style={{ color: '#fff', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '1.2rem', margin: '0 0 24px' }}>
-                Farmer Queries — Pending vs Resolved
-            </h3>
-            <div style={{ display: 'flex', gap: 32, alignItems: 'flex-end', height: 160 }}>
-                {[
-                    { label: 'Pending', value: pending, color: '#f59e0b' },
-                    { label: 'Resolved', value: resolved, color: '#22c55e' },
-                ].map(b => (
-                    <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                        <div style={{ color: '#fff', fontWeight: 700, fontSize: '1rem' }}>{b.value}</div>
-                        <div style={{
-                            width: 60, background: `linear-gradient(to top, ${b.color}, ${b.color}88)`,
-                            height: `${pct(b.value)}%`, minHeight: b.value > 0 ? 10 : 2,
-                            borderRadius: '6px 6px 0 0', transition: 'height 0.4s ease',
-                        }} />
-                        <div style={{ color: '#aaa', fontSize: '0.8rem' }}>{b.label}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ farmers: 0, experts: 0, financiers: 0, queries: 0, loans: 0 })
@@ -63,14 +37,101 @@ const AdminDashboard = () => {
         { label: 'Active Loans', value: stats.loans, color: '#ec4899' },
     ]
 
+    const roleData = [
+        { name: 'Farmers', value: stats.farmers },
+        { name: 'Experts', value: stats.experts },
+        { name: 'Financiers', value: stats.financiers },
+    ].filter(d => d.value > 0);
+    const roleColors = ['#22c55e', '#3b82f6', '#f59e0b'];
+
+    const queryData = [
+        { name: 'Pending', value: queryStats.pending },
+        { name: 'Resolved', value: queryStats.resolved },
+    ].filter(d => d.value > 0);
+    const queryColors = ['#f59e0b', '#22c55e'];
+
+    const activityData = [
+        { name: 'Queries', value: stats.queries },
+        { name: 'Loans', value: stats.loans },
+    ];
+
+    const CustomTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="admin-dash-tooltip">
+                    <p className="admin-dash-tooltip-label">{`${payload[0].name} : ${payload[0].value}`}</p>
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <PageLayout role="admin" title="Admin Dashboard">
-            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : (
+            {loading ? <p className="admin-dash-loading">Loading…</p> : (
                 <>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
+                    <div className="admin-dash-stats-grid">
                         {statCards.map(c => <StatCard key={c.label} {...c} />)}
                     </div>
-                    <BarChart pending={queryStats.pending} resolved={queryStats.resolved} />
+
+                    <div className="admin-dash-charts-grid">
+                        <div className="admin-dash-chart-card">
+                            <h3 className="admin-dash-chart-title">Users by Role</h3>
+                            <div className="admin-dash-chart-wrapper">
+                                {roleData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={250}>
+                                        <PieChart>
+                                            <Pie data={roleData} cx="50%" cy="50%" innerRadius={0} outerRadius={80} paddingAngle={2} dataKey="value">
+                                                {roleData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={roleColors[index % roleColors.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend wrapperStyle={{ fontSize: '0.85rem', paddingTop: '10px' }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                ) : <p className="admin-dash-chart-empty">No data available</p>}
+                            </div>
+                        </div>
+
+                        <div className="admin-dash-chart-card">
+                            <h3 className="admin-dash-chart-title">Query Status</h3>
+                            <div className="admin-dash-chart-wrapper">
+                                {queryData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={250}>
+                                        <PieChart>
+                                            <Pie data={queryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={5} dataKey="value">
+                                                {queryData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={queryColors[index % queryColors.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend wrapperStyle={{ fontSize: '0.85rem', paddingTop: '10px' }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                ) : <p className="admin-dash-chart-empty">No data available</p>}
+                            </div>
+                        </div>
+
+                        <div className="admin-dash-chart-card">
+                            <h3 className="admin-dash-chart-title">System Activity</h3>
+                            <div className="admin-dash-chart-wrapper">
+                                <ResponsiveContainer width="100%" height={250}>
+                                    <BarChart data={activityData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                                        <XAxis dataKey="name" tick={{ fill: '#aaa', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.2)' }} tickLine={false} />
+                                        <YAxis tick={{ fill: '#aaa', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} content={<CustomTooltip />} />
+                                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                            {activityData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#a855f7' : '#ec4899'} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
                 </>
             )}
         </PageLayout>

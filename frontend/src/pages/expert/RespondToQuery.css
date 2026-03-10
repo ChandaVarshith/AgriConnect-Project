@@ -1,0 +1,293 @@
+.resp-query-success-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px;
+    justify-content: center;
+}
+
+.resp-query-success-icon {
+    font-size: 60px;
+    margin-bottom: 16px;
+}
+
+.resp-query-success-title {
+    color: #4caf50;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.5rem;
+}
+
+.resp-query-success-text {
+    color: #aaa;
+    margin-top: 8px;
+    margin-bottom: 20px;
+}
+
+.resp-query-btn-primary {
+    padding: 10px 28px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.resp-query-weather-container {
+    max-width: 600px;
+}
+
+.resp-query-weather-search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.resp-query-weather-input {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.resp-query-weather-search-btn {
+    padding: 10px 22px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resp-query-weather-search-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.resp-query-error {
+    color: #ef4444;
+    margin-bottom: 12px;
+}
+
+.resp-query-weather-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.resp-query-weather-temp {
+    color: #fff;
+    font-size: 2.8rem;
+    margin: 0 0 8px;
+}
+
+.resp-query-weather-loc {
+    color: #3b82f6;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.resp-query-weather-desc {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+    margin-bottom: 16px;
+}
+
+.resp-query-weather-details {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+}
+
+.resp-query-weather-detail-label {
+    color: #888;
+    font-size: 0.78rem;
+}
+
+.resp-query-weather-detail-val {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.resp-query-btn-secondary {
+    margin-top: 24px;
+    padding: 10px 28px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.resp-query-loading {
+    color: #aaa;
+}
+
+.resp-query-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 760px;
+}
+
+.resp-query-details-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 4px solid #f39c12;
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+.resp-query-details-title {
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.resp-query-detail-row {
+    font-size: 0.88rem;
+    color: #bbb;
+    margin-bottom: 6px;
+}
+
+.resp-query-detail-strong {
+    color: #fff;
+}
+
+.resp-query-status-badge {
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.resp-query-resolved-card {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-left: 4px solid #22c55e;
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.resp-query-resolved-icon {
+    font-size: 2rem;
+}
+
+.resp-query-resolved-title {
+    color: #4ade80;
+    margin: 0 0 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+}
+
+.resp-query-resolved-text {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.resp-query-btn-back {
+    margin-left: auto;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.resp-query-form-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+.resp-query-form-title {
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.resp-query-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    resize: vertical;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.resp-query-form-error {
+    color: #e02020;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.resp-query-actions-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.resp-query-btn-submit {
+    padding: 10px 24px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.resp-query-btn-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.resp-query-btn-weather {
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.resp-query-btn-cancel {
+    padding: 10px 24px;
+    background: transparent;
+    color: #aaa;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}

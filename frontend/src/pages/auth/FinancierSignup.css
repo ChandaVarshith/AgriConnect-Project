@@ -1,0 +1,329 @@
+.financier-signup-container {
+    min-height: 100vh;
+    position: relative;
+}
+
+.financier-signup-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.35);
+    z-index: 0;
+}
+
+.financier-signup-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+}
+
+.financier-signup-logo-link {
+    text-decoration: none;
+    display: flex;
+}
+
+.financier-signup-logo-1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.financier-signup-logo-2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #e02020;
+}
+
+.financier-signup-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 40px;
+}
+
+.financier-signup-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.financier-signup-success-container {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.financier-signup-success-icon {
+    font-size: 3.5rem;
+    margin-bottom: 14px;
+}
+
+.financier-signup-success-title {
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.financier-signup-success-text {
+    color: #ccc;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.financier-signup-success-highlight {
+    color: #f59e0b;
+}
+
+.financier-signup-success-redirect {
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 18px;
+}
+
+.financier-signup-title {
+    color: #fff;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+}
+
+.financier-signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.financier-signup-label {
+    display: block;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.03em;
+}
+
+.financier-signup-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.92rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.financier-signup-email-row {
+    display: flex;
+    gap: 8px;
+}
+
+.financier-signup-email-input {
+    flex: 1;
+}
+
+.financier-signup-verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    border-radius: 6px;
+    padding: 0 12px;
+    white-space: nowrap;
+    color: #4caf50;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+.financier-signup-otp-btn {
+    padding: 0 14px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border: none;
+    border-radius: 6px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    min-width: 90px;
+}
+
+.financier-signup-otp-btn-loading {
+    background: #b06a00;
+    color: #000;
+    cursor: not-allowed;
+}
+
+.financier-signup-otp-btn-active {
+    background: #f59e0b;
+    color: #000;
+    cursor: pointer;
+}
+
+.financier-signup-otp-container {
+    margin-top: 10px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    animation: fadeSlideIn 0.25s ease;
+}
+
+.financier-signup-otp-text {
+    color: #fbbf24;
+    font-size: 0.8rem;
+    margin: 0 0 10px;
+}
+
+.financier-signup-otp-email {
+    color: #fff;
+}
+
+.financier-signup-otp-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.financier-signup-otp-input {
+    flex: 1;
+    text-align: center;
+    letter-spacing: 0.3em;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.financier-signup-verify-btn {
+    padding: 0 14px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border: none;
+    border-radius: 6px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.financier-signup-verify-btn-loading {
+    background: #b06a00;
+    cursor: not-allowed;
+}
+
+.financier-signup-verify-btn-active {
+    background: #d97706;
+    cursor: pointer;
+}
+
+.financier-signup-error {
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    margin: 6px 0 0;
+}
+
+.financier-signup-submit-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0;
+}
+
+.financier-signup-submit-btn {
+    width: 100%;
+    padding: 13px 0;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    transition: background 0.2s;
+}
+
+.financier-signup-submit-btn-disabled {
+    background: rgba(100, 100, 100, 0.4);
+    color: #888;
+    cursor: not-allowed;
+}
+
+.financier-signup-submit-btn-loading {
+    background: #b06a00;
+    color: #000;
+    cursor: not-allowed;
+}
+
+.financier-signup-submit-btn-active {
+    background: #f59e0b;
+    color: #000;
+    cursor: pointer;
+}
+
+.financier-signup-helper-text {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #888;
+    margin: -8px 0 0;
+}
+
+.financier-signup-footer-text {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.financier-signup-footer-text-secondary {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.financier-signup-link-primary {
+    color: #e02020;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.financier-signup-link-secondary {
+    color: #f59e0b;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

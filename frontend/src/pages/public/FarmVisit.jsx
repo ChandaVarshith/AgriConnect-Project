@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar'
+import PageLayout from '../../components/PageLayout'
 import API from '../../services/api'
+import './FarmVisit.css'
 
 const FarmVisit = () => {
     const [form, setForm] = useState({ visitorName: '', email: '', date: '', message: '' })
@@ -24,11 +25,9 @@ const FarmVisit = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-            <Navbar title="Farm Visit" publicNav />
-            <div className="container" style={{ padding: '40px 24px', maxWidth: 580 }}>
-                <h2 className="mb-2">🚜 Book a Farm Visit</h2>
-                <p className="mb-3">Experience farming first-hand. Register for an immersive farm visit experience.</p>
+        <PageLayout role="public" publicNav title="🚜 Book a Farm Visit">
+            <div className="farm-visit-content">
+                <p className="mb-3" style={{ color: '#ccc', fontSize: '1.1rem' }}>Experience farming first-hand. Register for an immersive farm visit experience.</p>
                 <div className="card">
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -51,15 +50,15 @@ const FarmVisit = () => {
                             <textarea rows={3} placeholder="Any special requests or questions?" value={form.message}
                                 onChange={e => setForm({ ...form, message: e.target.value })} />
                         </div>
-                        {success && <p style={{ color: 'var(--success)' }} className="mb-2">{success}</p>}
-                        {error && <p style={{ color: 'var(--danger)' }} className="mb-2">{error}</p>}
+                        {success && <p className="mb-2 farm-visit-success">{success}</p>}
+                        {error && <p className="mb-2 farm-visit-error">{error}</p>}
                         <button className="btn btn-primary" type="submit" disabled={loading}>
                             {loading ? 'Submitting…' : '🚜 Register for Farm Visit'}
                         </button>
                     </form>
                 </div>
             </div>
-        </div>
+        </PageLayout>
     )
 }
 

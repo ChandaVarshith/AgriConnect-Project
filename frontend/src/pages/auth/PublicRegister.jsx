@@ -1,22 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import authService from '../../services/authService'
+import './PublicRegister.css'
 
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
-
-const inputStyle = {
-    width: '100%', padding: '10px 14px',
-    background: 'rgba(255,255,255,0.12)',
-    border: '1px solid rgba(255,255,255,0.25)',
-    borderRadius: 6, color: '#fff',
-    fontSize: '0.92rem', outline: 'none',
-    boxSizing: 'border-box', backdropFilter: 'blur(4px)',
-}
-const labelStyle = {
-    display: 'block', color: '#fff',
-    fontSize: '0.82rem', fontWeight: 600,
-    marginBottom: 5, letterSpacing: '0.03em',
-}
 
 const PublicRegister = () => {
     const [form, setForm] = useState({ name: '', email: '', password: '' })
@@ -41,73 +28,69 @@ const PublicRegister = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', position: 'relative' }}>
-            <img src={BG} alt="farm bg" style={{
-                position: 'fixed', inset: 0, width: '100%', height: '100%',
-                objectFit: 'cover', filter: 'brightness(0.32)', zIndex: 0,
-            }} />
-            <nav style={{
-                position: 'fixed', top: 0, left: 0, right: 0, height: 56,
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '0 24px', background: 'rgba(0,0,0,0.4)',
-                backdropFilter: 'blur(8px)', zIndex: 100,
-            }}>
-                <Link to="/" style={{ textDecoration: 'none', display: 'flex' }}>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#fff' }}>AGRI&nbsp;</span>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#e02020' }}>CONNECT</span>
+        <div className="public-register-container">
+            <img src={BG} alt="farm bg" className="public-register-bg" />
+            <nav className="public-register-nav">
+                <Link to="/" className="public-register-logo-link">
+                    <span className="public-register-logo-1">AGRI&nbsp;</span>
+                    <span className="public-register-logo-2">CONNECT</span>
                 </Link>
             </nav>
-            <div style={{
-                position: 'relative', zIndex: 10, minHeight: '100vh',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '80px 20px 40px',
-            }}>
-                <div style={{
-                    width: '100%', maxWidth: 420,
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(22px)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 14, padding: '36px 32px',
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-                }}>
-                    <h2 style={{
-                        color: '#fff', textAlign: 'center',
-                        fontFamily: "'Barlow Condensed',sans-serif",
-                        fontSize: '2rem', fontWeight: 800,
-                        marginBottom: 6, letterSpacing: '0.04em',
-                    }}>Public User</h2>
-                    <p style={{ color: '#aaa', textAlign: 'center', fontSize: '0.85rem', marginBottom: 24 }}>
+            <div className="public-register-content">
+                <div className="public-register-card">
+                    <h2 className="public-register-title">Public User</h2>
+                    <p className="public-register-subtitle">
                         Explore farming content and buy fresh produce
                     </p>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <form onSubmit={handleSubmit} className="public-register-form">
                         <div>
-                            <label style={labelStyle}>Full Name</label>
-                            <input type="text" placeholder="Your name" value={form.name} onChange={set('name')} required style={inputStyle} />
+                            <label className="public-register-label">Full Name</label>
+                            <input type="text" placeholder="Your name" value={form.name} onChange={set('name')} required className="public-register-input" />
                         </div>
                         <div>
-                            <label style={labelStyle}>Email</label>
-                            <input type="email" placeholder="Enter email address" value={form.email} onChange={set('email')} required style={inputStyle} />
+                            <label className="public-register-label">Email</label>
+                            <input type="email" placeholder="Enter email address" value={form.email} onChange={set('email')} required className="public-register-input" />
                         </div>
                         <div>
-                            <label style={labelStyle}>Password</label>
-                            <input type="password" placeholder="Create a password" value={form.password} onChange={set('password')} required minLength={6} style={inputStyle} />
+                            <label className="public-register-label">Password</label>
+                            <input type="password" placeholder="Create a password" value={form.password} onChange={set('password')} required minLength={6} className="public-register-input" />
                         </div>
-                        {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', textAlign: 'center', margin: 0 }}>{error}</p>}
-                        <button type="submit" disabled={loading} style={{
-                            width: '100%', padding: '12px 0',
-                            background: loading ? '#5a2daa' : '#a855f7',
-                            color: '#fff', fontWeight: 700, fontSize: '1rem',
-                            border: 'none', borderRadius: 6,
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            textTransform: 'uppercase', letterSpacing: '0.06em',
-                            marginTop: 4, transition: 'background 0.2s',
-                        }}>
+                        {error && <p className="public-register-error">{error}</p>}
+                        <button type="submit" disabled={loading} className={`public-register-btn ${loading ? 'public-register-btn-loading' : 'public-register-btn-active'}`}>
                             {loading ? 'Creating Account…' : 'Create Account'}
                         </button>
                     </form>
-                    <p style={{ textAlign: 'center', marginTop: 18, fontSize: '0.85rem', color: '#ccc' }}>
+
+                    {/* ── Google Sign Up ── */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '16px 0', color: '#888', fontSize: '0.82rem' }}>
+                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+                        <span>or</span>
+                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+                    </div>
+                    <a
+                        href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`}
+                        style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                            padding: '11px 16px', borderRadius: '8px',
+                            background: '#fff', color: '#1a1a1a',
+                            fontWeight: 600, fontSize: '0.92rem',
+                            textDecoration: 'none', cursor: 'pointer',
+                            transition: 'opacity 0.2s', marginBottom: '4px'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                    >
+                        <img
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                            alt="Google"
+                            style={{ width: '20px', height: '20px' }}
+                        />
+                        Continue with Google
+                    </a>
+
+                    <p className="public-register-footer-text">
                         Already have an account?{' '}
-                        <Link to="/login" style={{ color: '#a855f7', fontWeight: 600, textDecoration: 'none' }}>
+                        <Link to="/login" className="public-register-link">
                             Sign In
                         </Link>
                     </p>

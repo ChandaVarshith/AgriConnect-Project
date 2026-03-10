@@ -1,0 +1,112 @@
+/* Top statistics grid */
+.admin-dash-stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.admin-dash-stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    flex: 1 1 150px;
+    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.admin-dash-stat-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-dash-stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: 'Barlow Condensed', sans-serif;
+    line-height: 1;
+}
+
+.admin-dash-stat-label {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Charts grid */
+.admin-dash-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.admin-dash-chart-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-dash-chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.admin-dash-chart-title {
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.4rem;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+}
+
+.admin-dash-chart-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+}
+
+.admin-dash-chart-empty {
+    color: #888;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Tooltip styles */
+.admin-dash-tooltip {
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.admin-dash-tooltip-label {
+    color: #fff;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.admin-dash-loading {
+    color: #aaa;
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+}

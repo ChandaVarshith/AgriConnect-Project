@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import loanService from '../../services/loanService'
 import API from '../../services/api'
+import './AllLoans.css'
 
 const AllLoansFinancier = () => {
     const [loans, setLoans] = useState([])
@@ -43,55 +44,43 @@ const AllLoansFinancier = () => {
     return (
         <PageLayout role="financier" title="All Loans">
             {toast && (
-                <div style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '11px 18px', marginBottom: 20, color: '#fff', fontSize: '0.88rem' }}>
+                <div className="all-loans-toast">
                     {toast}
                 </div>
             )}
 
-            <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-                <span style={{ color: '#999', fontSize: '0.85rem', alignSelf: 'center' }}>Sort by:</span>
+            <div className="all-loans-sort-bar">
+                <span className="all-loans-sort-label">Sort by:</span>
                 {[{ k: 'type', l: 'Loan Type' }, { k: 'amount', l: 'Max Amount' }, { k: 'interest', l: 'Interest Rate' }].map(({ k, l }) => (
-                    <button key={k} onClick={() => doSort(loans, k)} style={{
-                        padding: '6px 14px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                        background: sortBy === k ? '#e02020' : 'rgba(255,255,255,0.1)',
-                        color: '#fff', fontSize: '0.82rem', fontWeight: 600,
+                    <button key={k} onClick={() => doSort(loans, k)} className="all-loans-sort-btn" style={{
+                        background: sortBy === k ? '#e02020' : 'rgba(255,255,255,0.1)'
                     }}>{l}</button>
                 ))}
             </div>
 
-            {loading ? <p style={{ color: '#aaa' }}>Loading…</p> : (
-                <div style={{
-                    overflowX: 'auto',
-                    background: 'rgba(255,255,255,0.07)',
-                    backdropFilter: 'blur(12px)',
-                    borderRadius: 10,
-                    border: '1px solid rgba(255,255,255,0.12)',
-                }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            {loading ? <p className="all-loans-loading">Loading…</p> : (
+                <div className="all-loans-table-wrapper">
+                    <table className="all-loans-table">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)' }}>
+                            <tr className="all-loans-tr-head">
                                 {['Title', 'Loan Type', 'Max Amount', 'Interest Rate', 'Tenure', 'Applications', 'Action'].map(h => (
-                                    <th key={h} style={{ padding: '12px 18px', color: '#fff', textAlign: 'left', fontSize: '0.85rem', letterSpacing: '0.04em' }}>{h}</th>
+                                    <th key={h} className="all-loans-th">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {sorted.length === 0 ? (
-                                <tr><td colSpan={7} style={{ textAlign: 'center', padding: 28, color: '#666' }}>No loans found.</td></tr>
+                                <tr><td colSpan={7} className="all-loans-empty-td">No loans found.</td></tr>
                             ) : sorted.map((l, i) => (
-                                <tr key={l._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'transparent' }}>
-                                    <td style={{ padding: '12px 18px', color: '#fff', fontWeight: 600 }}>{l.title || '—'}</td>
-                                    <td style={{ padding: '12px 18px', color: '#fff', textTransform: 'capitalize' }}>{l.type}</td>
-                                    <td style={{ padding: '12px 18px', color: '#4ade80' }}>₹{l.amount?.toLocaleString()}</td>
-                                    <td style={{ padding: '12px 18px', color: '#fff' }}>{l.interestRate}%</td>
-                                    <td style={{ padding: '12px 18px', color: '#fff' }}>{l.tenure} months</td>
-                                    <td style={{ padding: '12px 18px', color: '#fff' }}>{l.applicationCount || 0}</td>
-                                    <td style={{ padding: '12px 18px' }}>
-                                        <button onClick={() => removeLoan(l._id)} style={{
-                                            background: '#ef4444', color: '#fff', border: 'none',
-                                            borderRadius: 5, padding: '5px 14px', fontWeight: 700,
-                                            fontSize: '0.78rem', cursor: 'pointer',
-                                        }}>Remove</button>
+                                <tr key={l._id} className={`all-loans-tr-body ${i % 2 === 0 ? 'even' : 'odd'}`}>
+                                    <td className="all-loans-td-title">{l.title || '—'}</td>
+                                    <td className="all-loans-td-type">{l.type}</td>
+                                    <td className="all-loans-td-amount">₹{l.amount?.toLocaleString()}</td>
+                                    <td className="all-loans-td-general">{l.interestRate}%</td>
+                                    <td className="all-loans-td-general">{l.tenure} months</td>
+                                    <td className="all-loans-td-general">{l.applicationCount || 0}</td>
+                                    <td className="all-loans-td-action">
+                                        <button onClick={() => removeLoan(l._id)} className="all-loans-btn-remove">Remove</button>
                                     </td>
                                 </tr>
                             ))}

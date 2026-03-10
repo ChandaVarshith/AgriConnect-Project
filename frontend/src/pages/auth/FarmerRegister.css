@@ -1,0 +1,307 @@
+.farmer-register-container {
+    min-height: 100vh;
+    position: relative;
+}
+
+.farmer-register-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.35);
+    z-index: 0;
+}
+
+.farmer-register-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+}
+
+.farmer-register-logo-link {
+    text-decoration: none;
+    display: flex;
+}
+
+.farmer-register-logo-1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.farmer-register-logo-2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #e02020;
+}
+
+.farmer-register-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 40px;
+}
+
+.farmer-register-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.farmer-register-title {
+    color: #fff;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+}
+
+.farmer-register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.farmer-register-label {
+    display: block;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.03em;
+}
+
+.farmer-register-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.92rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.farmer-register-select {
+    cursor: pointer;
+    appearance: auto;
+}
+
+.farmer-register-option {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.farmer-register-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0;
+}
+
+.farmer-register-success {
+    color: #4caf50;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0;
+}
+
+.farmer-register-btn {
+    width: 100%;
+    padding: 12px 0;
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+}
+
+.farmer-register-btn-active {
+    background: #22c55e;
+    cursor: pointer;
+}
+
+.farmer-register-btn-loading {
+    background: #2d7a2d;
+    cursor: not-allowed;
+}
+
+.farmer-register-footer-text {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.farmer-register-footer-text-secondary {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.farmer-register-link-primary {
+    color: #e02020;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.farmer-register-link-secondary {
+    color: #f59e0b;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ── Widen the card a bit to fit 2-col grid ── */
+.farmer-register-card {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Step indicator ── */
+.farmer-register-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    gap: 8px;
+}
+
+.farmer-register-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+}
+
+.farmer-register-step.active {
+    opacity: 1;
+}
+
+.farmer-register-step-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+
+.farmer-register-step.active .farmer-register-step-num {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.farmer-register-step-label {
+    font-size: 0.68rem;
+    color: #ccc;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.farmer-register-step-line {
+    flex: 1;
+    max-width: 60px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1px;
+    margin-bottom: 18px;
+}
+
+/* ── 2-column field grid ── */
+.farmer-register-field-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+}
+
+.farmer-register-field-full {
+    grid-column: 1 / -1;
+}
+
+/* ── Hint text ── */
+.farmer-register-hint {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.72rem;
+    margin-top: 4px;
+}
+
+/* ── Required asterisk ── */
+.req {
+    color: #f87171;
+    margin-left: 2px;
+}
+
+/* ── Back / next button row ── */
+.farmer-register-btn-row {
+    display: flex;
+    gap: 10px;
+}
+
+.farmer-register-btn-back {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    cursor: pointer;
+    width: auto;
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+}
+
+.farmer-register-btn-row .farmer-register-btn-active {
+    flex: 1;
+    color: #000;
+}
+
+@media (max-width: 560px) {
+    .farmer-register-field-group {
+        grid-template-columns: 1fr;
+    }
+
+    .farmer-register-card {
+        max-width: 420px;
+        padding: 28px 20px;
+    }
+}

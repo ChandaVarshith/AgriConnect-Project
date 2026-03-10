@@ -2,324 +2,392 @@ import React, { useEffect, useState } from 'react'
 import PageLayout from '../../components/PageLayout'
 import marketplaceService from '../../services/marketplaceService'
 import { useLanguage } from '../../context/LanguageContext'
-import { useAuth } from '../../context/AuthContext'
+import './MarketplaceFarmer.css'
 
-const CATEGORIES = ['vegetables', 'fruits', 'grains', 'dairy']
+const CATEGORIES = ['vegetables', 'fruits', 'grains', 'dairy', 'other']
+const SORT_OPTIONS = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'az', label: 'Name A–Z' },
+    { value: 'price_asc', label: 'Price: Low → High' },
+    { value: 'price_desc', label: 'Price: High → Low' },
+]
 
 const MarketplaceFarmer = () => {
     const { t } = useLanguage()
-    const { user } = useAuth()
     const [listings, setListings] = useState([])
     const [showForm, setShowForm] = useState(false)
+    const [showPending, setShowPending] = useState(false)   // toggle pending drawer
+    const [showRejections, setShowRejections] = useState(false) // toggle rejection popup
     const [form, setForm] = useState({
-        name: '', category: '', quantity: '', price: '', unit: 'kg',
-        description: '', harvestDate: '',
+        name: '', category: '', quantity: '', price: '', unit: 'kg', description: '', harvestDate: '',
     })
-    const [loading, setLoading] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState('')
     const [confirmId, setConfirmId] = useState(null)
+    const [search, setSearch] = useState('')
+    const [activeCat, setActiveCat] = useState('all')
+    const [sortBy, setSortBy] = useState('newest')
+    const [toastMsg, setToastMsg] = useState('')
 
-    const currentUserId = user?._id || user?.id || ''
+    const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 3000) }
 
     const loadListings = async () => {
         try {
             const res = await marketplaceService.getAllForFarmer()
-            setListings(res.data)
+            const data = Array.isArray(res.data) ? res.data : []
+            setListings(data)
         } catch {
-            // Fallback: if endpoint doesn't exist, try getMyListings
             try {
                 const res = await marketplaceService.getMyListings()
-                setListings(res.data)
-            } catch { }
+                const data = Array.isArray(res.data) ? res.data : []
+                setListings(data.map(l => ({ ...l, _isOwner: true })))
+            } catch { setListings([]) }
         }
     }
+
     useEffect(() => { loadListings() }, [])
 
     const handleCreate = async (e) => {
-        e.preventDefault(); setLoading(true); setError('')
+        e.preventDefault()
+        setSubmitting(true); setError('')
         try {
             await marketplaceService.createListing(form)
             setShowForm(false)
+            setShowPending(true)   // auto-open pending drawer so farmer sees their new listing
             setForm({ name: '', category: '', quantity: '', price: '', unit: 'kg', description: '', harvestDate: '' })
+            showToast('✅ Listing submitted! Waiting for expert approval.')
             loadListings()
-        } catch (err) { setError(err.response?.data?.message || 'Failed to create listing.') }
-        finally { setLoading(false) }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to create listing.')
+        } finally { setSubmitting(false) }
     }
-
-    const handleDelete = (id) => setConfirmId(id)
 
     const confirmDelete = async (id) => {
         setListings(prev => prev.filter(l => l._id !== id))
         setConfirmId(null)
         try {
             await marketplaceService.deleteListing(id)
-        } catch (err) {
-            console.error('Delete failed:', err)
-            loadListings()
+            showToast('🗑 Listing removed.')
+        } catch { loadListings() }
+    }
+
+    // ── Partition listings ──
+    // own pending (strict)
+    const myPending = listings.filter(l => l._isOwner === true && l.status === 'pending')
+    // own rejected
+    const myRejected = listings.filter(l => l._isOwner === true && l.status === 'rejected')
+    // own approved
+    const myApproved = listings.filter(l => l._isOwner === true && l.status === 'approved')
+    // other farmers' approved listings
+    const otherListings = listings.filter(l => l._isOwner !== true)
+
+    // filters + sort
+    const applyFilters = (list) => {
+        let out = [...list]
+        if (search.trim()) {
+            const q = search.trim().toLowerCase()
+            out = out.filter(l => l.name?.toLowerCase().includes(q))
         }
+        if (activeCat !== 'all') out = out.filter(l => l.category?.toLowerCase() === activeCat)
+        if (sortBy === 'az') out.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+        else if (sortBy === 'price_asc') out.sort((a, b) => Number(a.price) - Number(b.price))
+        else if (sortBy === 'price_desc') out.sort((a, b) => Number(b.price) - Number(a.price))
+        return out
     }
 
-    // Check if current farmer owns a listing
-    const isOwner = (listing) => {
-        const fId = listing.farmerId?._id || listing.farmerId
-        return fId === currentUserId || String(fId) === String(currentUserId)
-    }
+    const filteredApproved = applyFilters(myApproved)
+    const filteredOthers = applyFilters(otherListings)
 
-    const myCount = listings.filter(l => isOwner(l)).length
+    // ── Card render ──
+    const renderCard = (l, isOwner, isPendingCard = false) => {
+        const farmerName = l.farmerId?.name || l.farmerName || 'Farmer'
+        const farmerPhone = l.farmerId?.phone || l.farmerPhone || ''
 
-    const inp = {
-        width: '100%', padding: '10px 14px',
-        background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.18)',
-        borderRadius: 6, color: '#fff', fontSize: '0.9rem',
-        outline: 'none', boxSizing: 'border-box', marginBottom: 14,
-        fontFamily: "'Inter', sans-serif",
+        return (
+            <div key={l._id} className={`mf-card ${isPendingCard ? 'mf-card--pending-item' : isOwner ? 'mf-card--mine' : 'mf-card--other'}`}>
+                <div className="mf-card-top">
+                    {l.category && <span className="mf-badge-cat">{l.category}</span>}
+                    {isPendingCard && (
+                        <span className={`mf-badge-status mf-badge-status--${l.status || 'pending'}`}>
+                            {l.status || 'pending'}
+                        </span>
+                    )}
+                </div>
+
+                <h4 className="mf-card-title">{l.name}</h4>
+
+                {!isOwner && (
+                    <p className="mf-card-farmer">🌿 {farmerName}{farmerPhone ? ` · ${farmerPhone}` : ''}</p>
+                )}
+
+                <p className="mf-card-row">Qty: <strong>{l.quantity} {l.unit}</strong></p>
+                <p className="mf-card-row mf-card-price">Price: <strong>₹{l.price}/{l.unit}</strong></p>
+
+                {l.description && (
+                    <p className="mf-card-desc">
+                        {l.description.length > 80 ? l.description.slice(0, 80) + '…' : l.description}
+                    </p>
+                )}
+
+                {l.status === 'rejected' && l.rejectionReason && (
+                    <p className="mf-rejection-reason">
+                        ❌ Reason: {l.rejectionReason}
+                    </p>
+                )}
+
+                {isOwner && (
+                    <div className="mf-card-actions">
+                        {confirmId === l._id ? (
+                            <>
+                                <span className="mf-confirm-label">Sure?</span>
+                                <button className="mf-btn mf-btn--confirm" onClick={() => confirmDelete(l._id)}>Yes, Remove</button>
+                                <button className="mf-btn mf-btn--cancel" onClick={() => setConfirmId(null)}>Cancel</button>
+                            </>
+                        ) : (
+                            <button className="mf-btn mf-btn--remove" onClick={() => setConfirmId(l._id)}>Remove</button>
+                        )}
+                    </div>
+                )}
+            </div>
+        )
     }
-    const lbl = { display: 'block', color: '#bbb', fontSize: '0.78rem', fontWeight: 600, marginBottom: 5, letterSpacing: '0.04em', textTransform: 'uppercase' }
 
     return (
-        <PageLayout role="farmer" title={t('sellyourproduce')}>
-            {/* Header row */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
-                <h3 style={{ color: '#bbb', fontWeight: 400, fontSize: '0.9rem', fontFamily: "'Inter', sans-serif", textTransform: 'none', letterSpacing: 0 }}>
-                    {listings.length} listing{listings.length !== 1 ? 's' : ''} in marketplace
-                    {myCount > 0 && <span style={{ color: '#4ade80' }}> · {myCount} yours</span>}
-                </h3>
-                <button onClick={() => setShowForm(v => !v)} style={{
-                    padding: '10px 24px',
-                    background: showForm ? 'rgba(220,38,38,0.8)' : 'linear-gradient(135deg,#16a34a,#22c55e)',
-                    color: '#fff', fontWeight: 700, fontSize: '0.9rem',
-                    border: 'none', borderRadius: 6, cursor: 'pointer',
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    boxShadow: showForm ? 'none' : '0 4px 16px rgba(34,197,94,0.3)',
-                }}>
-                    {showForm ? '✕  Cancel' : `+ ${t('addnewproduct')}`}
-                </button>
+        <PageLayout role="farmer" title={t('sellyourproduce') || 'Sell Your Produce'}>
+
+            {toastMsg && <div className="mf-toast">{toastMsg}</div>}
+
+            {/* ── Top Bar ── */}
+            <div className="mf-top-bar">
+                <span className="mf-count-label">
+                    {(myApproved.length + otherListings.length)} listing{(myApproved.length + otherListings.length) !== 1 ? 's' : ''} in marketplace
+                    {myApproved.length > 0 && <span className="mf-count-mine"> · {myApproved.length} yours approved</span>}
+                </span>
+                <div className="mf-top-bar-actions">
+                    {/* Pending Requests Button — always visible */}
+                    <button
+                        className={`mf-pending-toggle-btn ${showPending ? 'active' : ''} ${myPending.length === 0 ? 'mf-pending-toggle-btn--empty' : ''}`}
+                        onClick={() => setShowPending(v => !v)}
+                    >
+                        📋 Pending Requests
+                        <span className={`mf-pending-count-badge ${myPending.length === 0 ? 'mf-pending-count-badge--empty' : ''}`}>
+                            {myPending.length}
+                        </span>
+                    </button>
+                    <button
+                        className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
+                        onClick={() => { setShowForm(v => !v); setError('') }}
+                    >
+                        {showForm ? '✕  Cancel' : '+ Add New Listing'}
+                    </button>
+                </div>
             </div>
 
-            {/* Add Listing Form */}
-            {showForm && (
-                <div style={{ maxWidth: 560, marginBottom: 36 }}>
-                    <div style={{
-                        background: 'rgba(255,255,255,0.06)',
-                        backdropFilter: 'blur(16px)',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        borderTop: '3px solid #22c55e',
-                        borderRadius: 14, padding: '28px 26px',
-                        boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
-                        animation: 'slideDown 0.25s ease',
-                    }}>
-                        <h3 style={{ color: '#22c55e', marginBottom: 22, fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.3rem', letterSpacing: '0.04em' }}>
-                            {t('addnewproduct')}
-                        </h3>
-                        <form onSubmit={handleCreate}>
-                            {/* Name */}
-                            <label style={lbl}>{t('productname')} *</label>
-                            <input style={inp} type="text" placeholder="e.g. Tomato, Rice, Wheat"
-                                value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-
-                            {/* Category */}
-                            <label style={lbl}>{t('category')} *</label>
-                            <select style={{ ...inp, cursor: 'pointer', appearance: 'auto' }} value={form.category}
-                                onChange={e => setForm({ ...form, category: e.target.value })} required>
-                                <option value="">{t('selectcategory')}</option>
-                                {CATEGORIES.map(c => (
-                                    <option key={c} value={c}>{t(c)}</option>
-                                ))}
-                            </select>
-
-                            {/* Qty + Unit side by side */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-                                <div>
-                                    <label style={lbl}>{t('availablequantity')} *</label>
-                                    <input style={{ ...inp, marginBottom: 0 }} type="number" min="1" placeholder="Amount"
-                                        value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} required />
-                                </div>
-                                <div>
-                                    <label style={lbl}>{t('unit')}</label>
-                                    <select style={{ ...inp, marginBottom: 0, appearance: 'auto', cursor: 'pointer' }}
-                                        value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })}>
-                                        <option value="kg">kg</option>
-                                        <option value="quintal">Quintal</option>
-                                        <option value="tonne">Tonne</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div style={{ height: 14 }} />
-
-                            {/* Price */}
-                            <label style={lbl}>{t('priceperkg')} *</label>
-                            <input style={inp} type="number" min="0" step="0.01" placeholder="Price"
-                                value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
-
-                            {/* Description */}
-                            <label style={lbl}>{t('description')}</label>
-                            <textarea rows={3} style={{ ...inp, resize: 'vertical' }} placeholder="Brief description of your produce…"
-                                value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-
-                            {/* Harvest Date */}
-                            <label style={lbl}>{t('harvestdate')}</label>
-                            <input style={inp} type="date"
-                                value={form.harvestDate} onChange={e => setForm({ ...form, harvestDate: e.target.value })} />
-
-                            {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginBottom: 12 }}>{error}</p>}
-
-                            <button type="submit" disabled={loading} style={{
-                                width: '100%', padding: '12px 0',
-                                background: loading ? '#166534' : 'linear-gradient(135deg,#16a34a,#22c55e)',
-                                color: '#fff', fontWeight: 700, fontSize: '0.95rem',
-                                border: 'none', borderRadius: 6, cursor: loading ? 'not-allowed' : 'pointer',
-                                textTransform: 'uppercase', letterSpacing: '0.08em',
-                                fontFamily: "'Barlow Condensed', sans-serif",
-                                boxShadow: '0 4px 16px rgba(34,197,94,0.3)',
-                            }}>
-                                {loading ? t('creating') : t('createListing')}
-                            </button>
-                        </form>
+            {/* ── Pending Requests Drawer ── */}
+            {showPending && (
+                <div className="mf-pending-drawer">
+                    <div className="mf-pending-drawer-header">
+                        <span>📋 Your Pending Requests — waiting for expert approval</span>
+                        <button className="mf-pending-close" onClick={() => setShowPending(false)}>✕</button>
                     </div>
+                    {myPending.length === 0 ? (
+                        <div className="mf-empty" style={{ padding: '20px 10px' }}>
+                            <p className="mf-empty-text">No pending listings. All your listings are approved! ✅</p>
+                        </div>
+                    ) : (
+                        <div className="mf-grid">
+                            {myPending.map(l => renderCard(l, true, true))}
+                        </div>
+                    )}
                 </div>
             )}
 
-            {/* Listings Grid */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                gap: 18,
-            }}>
-                {listings.length === 0 ? (
-                    <div style={{
-                        gridColumn: '1 / -1',
-                        textAlign: 'center', padding: '48px 24px',
-                        background: 'rgba(255,255,255,0.04)',
-                        borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)',
-                    }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 14 }}>🌾</div>
-                        <p style={{ color: '#888', fontSize: '0.95rem' }}>{t('nolistingsyet')}</p>
-                    </div>
-                ) : listings.map(l => {
-                    const mine = isOwner(l)
-                    const farmerName = l.farmerId?.name || l.farmerName || 'Farmer'
+            {/* ── Add Listing Form ── */}
+            {showForm && (
+                <div className="mf-form-wrap">
+                    <form className="mf-form" onSubmit={handleCreate}>
+                        <h3 className="mf-form-title">Add New Listing</h3>
 
-                    return (
-                        <div key={l._id} style={{
-                            background: 'rgba(255,255,255,0.06)',
-                            backdropFilter: 'blur(12px)',
-                            border: mine ? '1px solid rgba(34,197,94,0.35)' : '1px solid rgba(255,255,255,0.1)',
-                            borderTop: mine ? '3px solid #22c55e' : '3px solid rgba(255,255,255,0.2)',
-                            borderRadius: 12, padding: '20px 20px',
-                            transition: 'transform 0.2s',
-                            position: 'relative',
-                        }}
-                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-                            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-                        >
-                            {/* Owner badge */}
-                            {mine && (
-                                <span style={{
-                                    position: 'absolute', top: 10, right: 12,
-                                    padding: '2px 8px', borderRadius: 50,
-                                    fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase',
-                                    letterSpacing: '0.06em',
-                                    background: 'rgba(34,197,94,0.2)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.4)',
-                                }}>Your listing</span>
-                            )}
+                        <label className="mf-label">Produce Name *</label>
+                        <input className="mf-input" type="text" placeholder="e.g. Tomato, Rice, Wheat"
+                            value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
 
-                            {/* Category badge */}
-                            {l.category && (
-                                <span style={{
-                                    display: 'inline-block', padding: '2px 10px', borderRadius: 50,
-                                    fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase',
-                                    letterSpacing: '0.06em', marginBottom: 10,
-                                    background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)',
-                                }}>{t(l.category) || l.category}</span>
-                            )}
+                        <label className="mf-label">Category *</label>
+                        <select className="mf-input" value={form.category}
+                            onChange={e => setForm({ ...form, category: e.target.value })} required>
+                            <option value="">Select Category</option>
+                            {CATEGORIES.map(c => (
+                                <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                            ))}
+                        </select>
 
-                            {/* Status badge for pending/rejected (only owner sees) */}
-                            {mine && l.status !== 'approved' && (
-                                <span style={{
-                                    display: 'inline-block', padding: '2px 10px', borderRadius: 50,
-                                    fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase',
-                                    letterSpacing: '0.06em', marginLeft: 6,
-                                    background: l.status === 'pending' ? 'rgba(251,191,36,0.15)' : 'rgba(220,38,38,0.15)',
-                                    color: l.status === 'pending' ? '#fbbf24' : '#f87171',
-                                    border: `1px solid ${l.status === 'pending' ? 'rgba(251,191,36,0.3)' : 'rgba(220,38,38,0.3)'}`,
-                                }}>{l.status}</span>
-                            )}
-
-                            <h4 style={{ color: '#fff', marginBottom: 10, fontSize: '1rem' }}>{l.name}</h4>
-
-                            {/* Farmer name (for other farmers' listings) */}
-                            {!mine && (
-                                <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: 8, fontStyle: 'italic' }}>
-                                    by {farmerName}
-                                </p>
-                            )}
-
-                            <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: 4 }}>
-                                {t('quantity')}: <strong style={{ color: '#fff' }}>{l.quantity} {l.unit}</strong>
-                            </p>
-                            <p style={{ fontSize: '0.82rem', color: '#bbb', marginBottom: l.description ? 8 : 16 }}>
-                                {t('price')}: <strong style={{ color: '#22c55e' }}>₹{l.price}/{l.unit}</strong>
-                            </p>
-                            {l.description && (
-                                <p style={{ fontSize: '0.78rem', color: '#777', marginBottom: 16, lineHeight: 1.5 }}>
-                                    {l.description.substring(0, 80)}{l.description.length > 80 ? '…' : ''}
-                                </p>
-                            )}
-
-                            {/* Remove button — ONLY for owner */}
-                            {mine && (
-                                <>
-                                    {confirmId === l._id ? (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                                            <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontFamily: "'Inter', sans-serif" }}>Sure?</span>
-                                            <button onClick={() => confirmDelete(l._id)} style={{
-                                                padding: '6px 14px',
-                                                background: 'rgba(220,38,38,0.85)',
-                                                color: '#fff', border: 'none',
-                                                fontWeight: 700, fontSize: '0.75rem',
-                                                borderRadius: 5, cursor: 'pointer',
-                                                textTransform: 'uppercase', letterSpacing: '0.04em',
-                                                fontFamily: "'Barlow Condensed', sans-serif",
-                                            }}>Yes, Remove</button>
-                                            <button onClick={() => setConfirmId(null)} style={{
-                                                padding: '6px 12px',
-                                                background: 'rgba(255,255,255,0.1)',
-                                                color: '#ccc', border: '1px solid rgba(255,255,255,0.2)',
-                                                fontWeight: 600, fontSize: '0.75rem',
-                                                borderRadius: 5, cursor: 'pointer',
-                                                fontFamily: "'Barlow Condensed', sans-serif",
-                                            }}>Cancel</button>
-                                        </div>
-                                    ) : (
-                                        <button onClick={() => handleDelete(l._id)} style={{
-                                            padding: '7px 16px',
-                                            background: 'rgba(220,38,38,0.15)',
-                                            color: '#f87171', border: '1px solid rgba(220,38,38,0.3)',
-                                            fontWeight: 700, fontSize: '0.78rem',
-                                            borderRadius: 5, cursor: 'pointer',
-                                            textTransform: 'uppercase', letterSpacing: '0.04em',
-                                            fontFamily: "'Barlow Condensed', sans-serif",
-                                            transition: 'background 0.15s',
-                                        }}
-                                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,38,38,0.3)'}
-                                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(220,38,38,0.15)'}
-                                        >{t('remove')}</button>
-                                    )}
-                                </>
-                            )}
+                        <div className="mf-form-row">
+                            <div>
+                                <label className="mf-label">Quantity *</label>
+                                <input className="mf-input" type="number" min="1" placeholder="Amount"
+                                    value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} required />
+                            </div>
+                            <div>
+                                <label className="mf-label">Unit</label>
+                                <select className="mf-input" value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })}>
+                                    <option value="kg">kg</option>
+                                    <option value="quintal">Quintal</option>
+                                    <option value="tonne">Tonne</option>
+                                </select>
+                            </div>
                         </div>
-                    )
-                })}
+
+                        <label className="mf-label">Price (₹ per unit) *</label>
+                        <input className="mf-input" type="number" min="0" step="0.01" placeholder="Price"
+                            value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
+
+                        <label className="mf-label">Description</label>
+                        <textarea rows={3} className="mf-input" placeholder="Brief description of your produce…"
+                            value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+
+                        <label className="mf-label">Harvest Date (optional)</label>
+                        <input className="mf-input" type="date"
+                            value={form.harvestDate} onChange={e => setForm({ ...form, harvestDate: e.target.value })} />
+
+                        {error && <p className="mf-form-error">{error}</p>}
+
+                        <button type="submit" disabled={submitting} className="mf-submit-btn">
+                            {submitting ? 'Creating…' : 'Create Listing'}
+                        </button>
+                    </form>
+                </div>
+            )}
+
+            {/* ── Search / Filter / Sort ── */}
+            <div className="mf-controls">
+                <input type="text" className="mf-search" placeholder="🔍  Search produce…"
+                    value={search} onChange={e => setSearch(e.target.value)} />
+                <div className="mf-cat-tabs">
+                    {['all', ...CATEGORIES].map(c => (
+                        <button key={c}
+                            className={`mf-cat-tab ${activeCat === c ? 'mf-cat-tab--active' : ''}`}
+                            onClick={() => setActiveCat(c)}>
+                            {c === 'all' ? 'All' : c.charAt(0).toUpperCase() + c.slice(1)}
+                        </button>
+                    ))}
+                </div>
+                <select className="mf-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
             </div>
 
-            <style>{`
-                @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-16px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
+            {/* ── YOUR LISTINGS (approved only) ── */}
+            <div className="mf-section">
+                <div className="mf-section-header mf-section-header--mine">
+                    <span className="mf-section-icon">🌱</span>
+                    <h4 className="mf-section-title">Your Listings</h4>
+                    <span className="mf-section-count mf-section-count--mine">{myApproved.length}</span>
+                </div>
+
+                {filteredApproved.length > 0 ? (
+                    <div className="mf-grid">
+                        {filteredApproved.map(l => renderCard(l, true, false))}
+                    </div>
+                ) : (
+                    <div className="mf-empty">
+                        <span className="mf-empty-icon">🌾</span>
+                        <p className="mf-empty-text">
+                            {myApproved.length === 0
+                                ? myPending.length > 0
+                                    ? `You have ${myPending.length} listing(s) waiting for expert approval.`
+                                    : 'No approved listings yet. Click "+ Add New Listing" to get started!'
+                                : 'No approved listings match your current filter.'}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* ── OTHER FARMERS (all approved listings from others) ── */}
+            <div className="mf-section">
+                <div className="mf-section-header mf-section-header--others">
+                    <span className="mf-section-icon">🏪</span>
+                    <h4 className="mf-section-title">Other Farmers</h4>
+                    <span className="mf-section-count mf-section-count--others">{otherListings.length}</span>
+                </div>
+
+                {filteredOthers.length > 0 ? (
+                    <div className="mf-grid">
+                        {filteredOthers.map(l => renderCard(l, false, false))}
+                    </div>
+                ) : (
+                    <div className="mf-empty">
+                        <span className="mf-empty-icon">🏪</span>
+                        <p className="mf-empty-text">
+                            {otherListings.length === 0
+                                ? 'No other approved listings in the marketplace yet.'
+                                : 'No other listings match your current filter.'}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* ── Rejection Notifications (Bottom Right) ── */}
+            <div className="mf-rejection-widget">
+                <button className="mf-rejection-toggle" onClick={() => setShowRejections(!showRejections)}>
+                    💬 My Messages <span className="mf-rejection-badge">{myRejected.length}</span>
+                </button>
+
+                {showRejections && (
+                    <div className="mf-rejection-popup">
+                        <div className="mf-rejection-header">
+                            <h4>My Messages</h4>
+                            <button className="mf-rejection-close" onClick={() => setShowRejections(false)}>✕</button>
+                        </div>
+                        <div className="mf-rejection-list">
+                            {myRejected.length === 0 ? (
+                                <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontSize: '0.85rem' }}>
+                                    No rejected listings.
+                                </div>
+                            ) : (
+                                myRejected.map(l => (
+                                    <div key={l._id} className="mf-rejection-msg">
+                                        <div className="mf-rm-header">
+                                            {l.category && <span className="mf-rm-cat">{l.category}</span>}
+                                            <span className="mf-rm-status">REJECTED</span>
+                                        </div>
+                                        <div className="mf-rm-expert-info">
+                                            <span>Reviewed by: <strong>{l.rejectedByEmail || 'expert@agriconnect.com'}</strong></span>
+                                        </div>
+                                        <h5 className="mf-rm-title">{l.name}</h5>
+                                        <div className="mf-rm-details">
+                                            <span>Qty: <strong>{l.quantity} {l.unit}</strong></span>
+                                            <span>Price: <strong>₹{l.price}/{l.unit}</strong></span>
+                                        </div>
+                                        {l.description && (
+                                            <p className="mf-rm-desc">
+                                                {l.description.length > 60 ? l.description.slice(0, 60) + '…' : l.description}
+                                            </p>
+                                        )}
+                                        <div className="mf-rm-reason-box">
+                                            <span className="mf-rm-reason-label">Expert Reason:</span>
+                                            <p className="mf-rm-reason-text">{l.rejectionReason}</p>
+                                        </div>
+                                        <div className="mf-rm-actions">
+                                            {confirmId === l._id ? (
+                                                <>
+                                                    <span className="mf-confirm-label">Sure?</span>
+                                                    <button className="mf-btn mf-btn--confirm" onClick={() => confirmDelete(l._id)}>Yes</button>
+                                                    <button className="mf-btn mf-btn--cancel" onClick={() => setConfirmId(null)}>No</button>
+                                                </>
+                                            ) : (
+                                                <button className="mf-btn mf-btn--cancel mf-rm-btn" onClick={() => setConfirmId(l._id)}>
+                                                    Dismiss
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
         </PageLayout>
     )
 }

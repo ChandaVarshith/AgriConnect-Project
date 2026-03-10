@@ -1,0 +1,117 @@
+.farmer-loans-intro {
+    color: #aaa;
+    font-size: 0.88rem;
+    margin-bottom: 24px;
+}
+
+.farmer-loans-loading {
+    color: #aaa;
+}
+
+.farmer-loans-empty {
+    color: #aaa;
+}
+
+.farmer-loans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.farmer-loans-group {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.farmer-loans-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.farmer-loans-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+
+.farmer-loans-details {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+.farmer-loans-statuses {
+    display: flex;
+    gap: 8px;
+}
+
+.farmer-loans-status-badge {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.farmer-loans-apps-container {
+    padding: 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.farmer-loans-app-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.farmer-loans-app-title {
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.farmer-loans-app-meta {
+    color: #aaa;
+    font-size: 0.78rem;
+}
+
+.farmer-loans-app-purpose {
+    color: #999;
+    font-size: 0.76rem;
+    margin-top: 2px;
+}
+
+.farmer-loans-app-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.farmer-loans-app-date {
+    color: #666;
+    font-size: 0.76rem;
+}
+
+.farmer-loans-app-status {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}

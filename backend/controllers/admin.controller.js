@@ -60,6 +60,16 @@ exports.addFarmer = async (req, res) => {
     }
 }
 
+exports.deleteFarmer = async (req, res) => {
+    try {
+        const farmer = await Farmer.findByIdAndDelete(req.params.id)
+        if (!farmer) return res.status(404).json({ message: 'Farmer not found.' })
+        res.json({ message: 'Farmer deleted successfully.' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
 // ── Experts ───────────────────────────────────────────────────
 exports.getExperts = async (req, res) => {
     try {
@@ -144,8 +154,71 @@ exports.addFinancier = async (req, res) => {
         const exists = await Financier.findOne({ email })
         if (exists) return res.status(400).json({ message: 'Email already registered.' })
         const hashed = await bcrypt.hash(password, 10)
-        const financier = await Financier.create({ name, orgName, email, password: hashed, contact, location })
+        const financier = await Financier.create({ name, orgName, email, password: hashed, contact, location, status: 'approved' })
         res.status(201).json({ message: 'Financier added successfully.', financier })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+exports.approveFinancier = async (req, res) => {
+    try {
+        const financier = await Financier.findByIdAndUpdate(req.params.id, { status: 'approved' }, { new: true }).select('-password')
+        if (!financier) return res.status(404).json({ message: 'Financier not found.' })
+        res.json({ message: 'Financier approved.', financier })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+exports.rejectFinancier = async (req, res) => {
+    try {
+        const financier = await Financier.findByIdAndUpdate(req.params.id, { status: 'rejected' }, { new: true }).select('-password')
+        if (!financier) return res.status(404).json({ message: 'Financier not found.' })
+        res.json({ message: 'Financier rejected.', financier })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+exports.deleteFinancier = async (req, res) => {
+    try {
+        await Financier.findByIdAndDelete(req.params.id)
+        res.json({ message: 'Financier removed.' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+// ── Sectors ───────────────────────────────────────────────────
+const Sector = require('../models/Sector.model')
+
+exports.getSectors = async (req, res) => {
+    try {
+        const sectors = await Sector.find().sort({ createdAt: -1 })
+        res.json(sectors)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+exports.addSector = async (req, res) => {
+    try {
+        const { name } = req.body
+        if (!name) return res.status(400).json({ message: 'Sector name is required.' })
+        const exists = await Sector.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+        if (exists) return res.status(400).json({ message: 'Sector already exists.' })
+        const sector = await Sector.create({ name })
+        res.status(201).json({ message: 'Sector added successfully.', sector })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+exports.deleteSector = async (req, res) => {
+    try {
+        await Sector.findByIdAndDelete(req.params.id)
+        res.json({ message: 'Sector removed.' })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }

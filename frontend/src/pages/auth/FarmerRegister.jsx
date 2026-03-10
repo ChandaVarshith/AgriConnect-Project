@@ -1,42 +1,65 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import './FarmerRegister.css'
 
 const BG = 'https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?w=1400&auto=format&fit=crop&q=80'
 
-const inputStyle = {
-    width: '100%',
-    padding: '10px 14px',
-    background: 'rgba(255,255,255,0.12)',
-    border: '1px solid rgba(255,255,255,0.25)',
-    borderRadius: 6,
-    color: '#fff',
-    fontSize: '0.92rem',
-    outline: 'none',
-    boxSizing: 'border-box',
-}
-const labelStyle = {
-    display: 'block',
-    color: '#fff',
-    fontSize: '0.82rem',
-    fontWeight: 600,
-    marginBottom: 5,
-    letterSpacing: '0.03em',
+const EMPTY = {
+    name: '', phone: '', password: '', confirmPassword: '',
+    email: '', district: '', state: '',
+    farmSize: '', primaryCrops: '', preferredLanguage: 'en',
 }
 
+const LANGUAGES = [
+    ['en', 'English'], ['hi', 'Hindi'], ['te', 'Telugu'],
+    ['ta', 'Tamil'], ['mr', 'Marathi'], ['kn', 'Kannada'],
+]
+
 const FarmerRegister = () => {
-    const [form, setForm] = useState({ name: '', phone: '', password: '', location: '', language: 'en' })
+    const [form, setForm] = useState(EMPTY)
+    const [step, setStep] = useState(1) // 1 = account details, 2 = farm details
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
+    const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+    const goToStep2 = (e) => {
+        e.preventDefault()
+        setError('')
+        if (!form.name.trim()) return setError('Full name is required.')
+        if (!form.phone.trim()) return setError('Phone number is required.')
+        if (form.phone.trim().length < 10) return setError('Enter a valid 10-digit phone number.')
+        if (!form.password) return setError('Password is required.')
+        if (form.password.length < 6) return setError('Password must be at least 6 characters.')
+        if (form.password !== form.confirmPassword) return setError('Passwords do not match.')
+        setStep(2)
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
+        if (!form.district.trim()) return setError('District is required.')
+        if (!form.state.trim()) return setError('State is required.')
+        if (!form.farmSize.trim()) return setError('Farm size is required.')
+        if (!form.primaryCrops.trim()) return setError('Primary crops are required.')
+
         setLoading(true)
         try {
-            await authService.registerFarmer(form)
+            await authService.registerFarmer({
+                name: form.name,
+                phone: form.phone,
+                password: form.password,
+                email: form.email,
+                district: form.district,
+                state: form.state,
+                farmSize: form.farmSize,
+                primaryCrops: form.primaryCrops,
+                preferredLanguage: form.preferredLanguage,
+                language: form.preferredLanguage,
+            })
             setSuccess('Registration successful! Redirecting to sign in…')
             setTimeout(() => navigate('/login'), 1800)
         } catch (err) {
@@ -47,100 +70,118 @@ const FarmerRegister = () => {
     }
 
     return (
-        <div style={{ minHeight: '100vh', position: 'relative' }}>
-            <img src={BG} alt="farm bg" style={{
-                position: 'fixed', inset: 0, width: '100%', height: '100%',
-                objectFit: 'cover', filter: 'brightness(0.35)', zIndex: 0,
-            }} />
+        <div className="farmer-register-container">
+            <img src={BG} alt="farm bg" className="farmer-register-bg" />
 
             {/* Top bar */}
-            <nav style={{
-                position: 'fixed', top: 0, left: 0, right: 0, height: 56,
-                display: 'flex', alignItems: 'center', padding: '0 24px',
-                background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100,
-            }}>
-                <Link to="/" style={{ textDecoration: 'none', display: 'flex' }}>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#fff' }}>AGRI&nbsp;</span>
-                    <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: '1.35rem', color: '#e02020' }}>CONNECT</span>
+            <nav className="farmer-register-nav">
+                <Link to="/" className="farmer-register-logo-link">
+                    <span className="farmer-register-logo-1">AGRI&nbsp;</span>
+                    <span className="farmer-register-logo-2">CONNECT</span>
                 </Link>
             </nav>
 
-            <div style={{
-                position: 'relative', zIndex: 10,
-                minHeight: '100vh',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '80px 20px 40px',
-            }}>
-                <div style={{
-                    width: '100%', maxWidth: 420,
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(22px)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 14,
-                    padding: '36px 32px',
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-                }}>
-                    <h2 style={{
-                        color: '#fff', textAlign: 'center',
-                        fontFamily: "'Barlow Condensed',sans-serif",
-                        fontSize: '1.9rem', fontWeight: 800,
-                        marginBottom: 24, letterSpacing: '0.04em',
-                    }}>
-                        Farmer Sign Up
-                    </h2>
+            <div className="farmer-register-content">
+                <div className="farmer-register-card">
+                    <h2 className="farmer-register-title">Farmer Sign Up</h2>
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        <div>
-                            <label style={labelStyle}>Full Name</label>
-                            <input type="text" placeholder="Your full name" value={form.name}
-                                onChange={e => setForm({ ...form, name: e.target.value })} required style={inputStyle} />
+                    {/* Step indicator */}
+                    <div className="farmer-register-steps">
+                        <div className={`farmer-register-step ${step >= 1 ? 'active' : ''}`}>
+                            <span className="farmer-register-step-num">1</span>
+                            <span className="farmer-register-step-label">Account</span>
                         </div>
-                        <div>
-                            <label style={labelStyle}>Phone Number</label>
-                            <input type="tel" placeholder="10-digit mobile number" value={form.phone}
-                                onChange={e => setForm({ ...form, phone: e.target.value })} required style={inputStyle} />
+                        <div className="farmer-register-step-line" />
+                        <div className={`farmer-register-step ${step >= 2 ? 'active' : ''}`}>
+                            <span className="farmer-register-step-num">2</span>
+                            <span className="farmer-register-step-label">Farm Details</span>
                         </div>
-                        <div>
-                            <label style={labelStyle}>Password</label>
-                            <input type="password" placeholder="Create a password" value={form.password}
-                                onChange={e => setForm({ ...form, password: e.target.value })} required style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Location (District, State)</label>
-                            <input type="text" placeholder="e.g. Guntur, Andhra Pradesh" value={form.location}
-                                onChange={e => setForm({ ...form, location: e.target.value })} style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Preferred Language</label>
-                            <select value={form.language} onChange={e => setForm({ ...form, language: e.target.value })}
-                                style={{ ...inputStyle, cursor: 'pointer', appearance: 'auto' }}>
-                                {[['en', 'English'], ['hi', 'Hindi'], ['te', 'Telugu'], ['ta', 'Tamil'], ['mr', 'Marathi'], ['kn', 'Kannada']].map(([v, l]) => (
-                                    <option key={v} value={v} style={{ background: '#1a1a1a', color: '#fff' }}>{l}</option>
-                                ))}
-                            </select>
-                        </div>
+                    </div>
 
-                        {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', textAlign: 'center', margin: 0 }}>{error}</p>}
-                        {success && <p style={{ color: '#4caf50', fontSize: '0.85rem', textAlign: 'center', margin: 0 }}>{success}</p>}
+                    {/* ── STEP 1: Account details ── */}
+                    {step === 1 && (
+                        <form onSubmit={goToStep2} className="farmer-register-form">
+                            <div className="farmer-register-field-group">
+                                <div>
+                                    <label className="farmer-register-label">Full Name <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="text" placeholder="e.g. Ramesh Kumar" value={form.name} onChange={set('name')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Phone Number <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="tel" placeholder="10-digit mobile number" value={form.phone} onChange={set('phone')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Email (optional)</label>
+                                    <input className="farmer-register-input" type="email" placeholder="yourmail@example.com" value={form.email} onChange={set('email')} />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Password <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="password" placeholder="Min 6 characters" value={form.password} onChange={set('password')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Confirm Password <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={set('confirmPassword')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Preferred Language <span className="req">*</span></label>
+                                    <select className="farmer-register-input farmer-register-select" value={form.preferredLanguage} onChange={set('preferredLanguage')}>
+                                        {LANGUAGES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                                    </select>
+                                </div>
+                            </div>
 
-                        <button type="submit" disabled={loading} style={{
-                            width: '100%', padding: '12px 0',
-                            background: loading ? '#2d7a2d' : '#22c55e',
-                            color: '#000', fontWeight: 700, fontSize: '1rem',
-                            border: 'none', borderRadius: 6, cursor: loading ? 'not-allowed' : 'pointer',
-                            textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4,
-                        }}>
-                            {loading ? 'Registering…' : 'Create Account'}
-                        </button>
-                    </form>
+                            {error && <p className="farmer-register-error">{error}</p>}
 
-                    <p style={{ textAlign: 'center', marginTop: 16, fontSize: '0.85rem', color: '#ccc' }}>
+                            <button type="submit" className="farmer-register-btn farmer-register-btn-active">
+                                Next: Farm Details →
+                            </button>
+                        </form>
+                    )}
+
+                    {/* ── STEP 2: Farm details ── */}
+                    {step === 2 && (
+                        <form onSubmit={handleSubmit} className="farmer-register-form">
+                            <div className="farmer-register-field-group">
+                                <div>
+                                    <label className="farmer-register-label">District <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="text" placeholder="e.g. Guntur" value={form.district} onChange={set('district')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">State <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="text" placeholder="e.g. Andhra Pradesh" value={form.state} onChange={set('state')} required />
+                                </div>
+                                <div>
+                                    <label className="farmer-register-label">Farm Size (acres) <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="number" min="0.1" step="0.1" placeholder="e.g. 5" value={form.farmSize} onChange={set('farmSize')} required />
+                                </div>
+                                <div className="farmer-register-field-full">
+                                    <label className="farmer-register-label">Primary Crops <span className="req">*</span></label>
+                                    <input className="farmer-register-input" type="text" placeholder="e.g. Rice, Wheat, Tomato" value={form.primaryCrops} onChange={set('primaryCrops')} required />
+                                    <span className="farmer-register-hint">Separate multiple crops with commas</span>
+                                </div>
+                            </div>
+
+                            {error && <p className="farmer-register-error">{error}</p>}
+                            {success && <p className="farmer-register-success">{success}</p>}
+
+                            <div className="farmer-register-btn-row">
+                                <button type="button" onClick={() => { setStep(1); setError('') }} className="farmer-register-btn farmer-register-btn-back">
+                                    ← Back
+                                </button>
+                                <button type="submit" disabled={loading} className={`farmer-register-btn ${loading ? 'farmer-register-btn-loading' : 'farmer-register-btn-active'}`}>
+                                    {loading ? 'Registering…' : '✓ Create Account'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                    <p className="farmer-register-footer-text">
                         Already have an account?{' '}
-                        <Link to="/login" style={{ color: '#e02020', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
+                        <Link to="/login" className="farmer-register-link-primary">Sign In</Link>
                     </p>
-                    <p style={{ textAlign: 'center', marginTop: 8, fontSize: '0.85rem', color: '#ccc' }}>
+                    <p className="farmer-register-footer-text-secondary">
                         Not a farmer?{' '}
-                        <Link to="/register" style={{ color: '#f59e0b', fontWeight: 600, textDecoration: 'none' }}>Choose a different role</Link>
+                        <Link to="/register" className="farmer-register-link-secondary">Choose a different role</Link>
                     </p>
                 </div>
             </div>

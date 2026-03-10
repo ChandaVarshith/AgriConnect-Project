@@ -1,0 +1,147 @@
+.public-learn-header {
+    margin-bottom: 28px;
+}
+
+.public-learn-title {
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.6rem;
+    margin: 0 0 6px;
+}
+
+.public-learn-subtitle {
+    color: #aaa;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+.public-learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+}
+
+.public-learn-card {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 24px 22px;
+    transition: all 0.22s;
+}
+
+.public-learn-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.public-learn-card-icon {
+    font-size: 1.8rem;
+}
+
+.public-learn-card-title {
+    color: #fff;
+    margin: 0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+}
+
+.public-learn-card-list {
+    margin: 0;
+    padding: 0 0 0 18px;
+    list-style: none;
+}
+
+.public-learn-card-list-item {
+    color: #ccc;
+    font-size: 0.84rem;
+    line-height: 1.6;
+    margin-bottom: 7px;
+    padding-left: 0;
+    display: flex;
+    gap: 8px;
+}
+
+.public-learn-card-bullet {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* Themes */
+.public-learn-card.theme-green {
+    border: 1px solid #22c55e30;
+}
+
+.public-learn-card.theme-green:hover {
+    background: #22c55e14;
+    border-color: #22c55e70;
+}
+
+.public-learn-card.theme-green .public-learn-card-bullet {
+    color: #22c55e;
+}
+
+.public-learn-card.theme-blue {
+    border: 1px solid #3b82f630;
+}
+
+.public-learn-card.theme-blue:hover {
+    background: #3b82f614;
+    border-color: #3b82f670;
+}
+
+.public-learn-card.theme-blue .public-learn-card-bullet {
+    color: #3b82f6;
+}
+
+.public-learn-card.theme-orange {
+    border: 1px solid #f59e0b30;
+}
+
+.public-learn-card.theme-orange:hover {
+    background: #f59e0b14;
+    border-color: #f59e0b70;
+}
+
+.public-learn-card.theme-orange .public-learn-card-bullet {
+    color: #f59e0b;
+}
+
+.public-learn-card.theme-red {
+    border: 1px solid #ef444430;
+}
+
+.public-learn-card.theme-red:hover {
+    background: #ef444414;
+    border-color: #ef444470;
+}
+
+.public-learn-card.theme-red .public-learn-card-bullet {
+    color: #ef4444;
+}
+
+.public-learn-card.theme-purple {
+    border: 1px solid #a855f730;
+}
+
+.public-learn-card.theme-purple:hover {
+    background: #a855f714;
+    border-color: #a855f770;
+}
+
+.public-learn-card.theme-purple .public-learn-card-bullet {
+    color: #a855f7;
+}
+
+.public-learn-card.theme-pink {
+    border: 1px solid #ec489930;
+}
+
+.public-learn-card.theme-pink:hover {
+    background: #ec489914;
+    border-color: #ec489970;
+}
+
+.public-learn-card.theme-pink .public-learn-card-bullet {
+    color: #ec4899;
+}

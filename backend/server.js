@@ -3,8 +3,12 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const path = require('path')
+const session = require('express-session')
 
+// Load env vars FIRST before any module that reads process.env
 dotenv.config()
+
+const passport = require('./config/passport')
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -19,10 +23,21 @@ MONGO_URI_SET=${process.env.MONGO_URI ? 'yes' : 'no'}
 `)
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }))
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+app.options('*', cors())  // pre-flight for all routes
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
+// Session required for Passport (minimal, stateless JWT issued post-OAuth)
+app.use(session({ secret: process.env.JWT_SECRET || 'agriconnect-session-secret', resave: false, saveUninitialized: false }))
+app.use(passport.initialize())
 
 // ── Database Connection ───────────────────────────────────────────────────────
 require('./config/db')()
@@ -41,6 +56,7 @@ process.on('unhandledRejection', (reason) => {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth.routes'))
+app.use('/api/auth', require('./routes/google.routes'))
 app.use('/api/admin', require('./routes/admin.routes'))
 app.use('/api/farmer', require('./routes/farmer.routes'))
 app.use('/api/expert', require('./routes/expert.routes'))

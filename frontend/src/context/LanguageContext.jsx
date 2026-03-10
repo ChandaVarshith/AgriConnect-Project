@@ -1,20 +1,34 @@
-import React, { createContext, useContext, useState } from 'react'
-import { t as translate } from '../utils/translate'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import '../i18n' // Ensure to import to initialize i18n
 
 const LanguageContext = createContext(null)
 
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState(
-        localStorage.getItem('language') || 'en'
-    )
+    // We can use the useTranslation hook, and that triggers a re-render when language changes
+    const { t, i18n } = useTranslation()
+    const [language, setLanguage] = useState(i18n.language || localStorage.getItem('language') || 'en')
+
+    useEffect(() => {
+        const storedLang = localStorage.getItem('language');
+        if (storedLang && storedLang !== i18n.language) {
+            i18n.changeLanguage(storedLang);
+            setLanguage(storedLang);
+        }
+
+        const handleLanguageChange = (lng) => {
+            setLanguage(lng);
+        };
+        i18n.on('languageChanged', handleLanguageChange);
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange);
+        }
+    }, [i18n])
 
     const changeLanguage = (lang) => {
-        setLanguage(lang)
+        i18n.changeLanguage(lang)
         localStorage.setItem('language', lang)
     }
-
-    // Convenience helper — components can do: const { t } = useLanguage()
-    const t = (key) => translate(key, language)
 
     return (
         <LanguageContext.Provider value={{ language, changeLanguage, t }}>

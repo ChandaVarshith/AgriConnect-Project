@@ -1,0 +1,117 @@
+.all-loans-toast {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 11px 18px;
+    margin-bottom: 20px;
+    color: #fff;
+    font-size: 0.88rem;
+}
+
+.all-loans-sort-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.all-loans-sort-label {
+    color: #999;
+    font-size: 0.85rem;
+    align-self: center;
+}
+
+.all-loans-sort-btn {
+    padding: 6px 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.all-loans-loading {
+    color: #aaa;
+}
+
+.all-loans-table-wrapper {
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.all-loans-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.all-loans-tr-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.all-loans-th {
+    padding: 12px 18px;
+    color: #fff;
+    text-align: left;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+}
+
+.all-loans-empty-td {
+    text-align: center;
+    padding: 28px;
+    color: #666;
+}
+
+.all-loans-tr-body {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.all-loans-tr-body.even {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.all-loans-tr-body.odd {
+    background: transparent;
+}
+
+.all-loans-td-title {
+    padding: 12px 18px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.all-loans-td-type {
+    padding: 12px 18px;
+    color: #fff;
+    text-transform: capitalize;
+}
+
+.all-loans-td-amount {
+    padding: 12px 18px;
+    color: #4ade80;
+}
+
+.all-loans-td-general {
+    padding: 12px 18px;
+    color: #fff;
+}
+
+.all-loans-td-action {
+    padding: 12px 18px;
+}
+
+.all-loans-btn-remove {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 14px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    cursor: pointer;
+}

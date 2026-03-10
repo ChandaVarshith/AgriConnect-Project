@@ -1,0 +1,13 @@
+.community-content {
+    max-width: 720px;
+}
+
+.community-post-content {
+    color: var(--text);
+}
+
+.community-post-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}

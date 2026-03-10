@@ -12,11 +12,23 @@ const { sendEmail } = require('../utils/sendEmail')
 // ── Farmer Registration ───
 exports.registerFarmer = async (req, res) => {
     try {
-        const { name, phone, password, language, location } = req.body
+        const { name, phone, password, email, district, state, farmSize, primaryCrops, preferredLanguage, language, location } = req.body
+        if (!name || !phone || !password) return res.status(400).json({ message: 'Name, phone and password are required.' })
         const exists = await Farmer.findOne({ phone })
         if (exists) return res.status(400).json({ message: 'Phone already registered.' })
         const hashed = await bcrypt.hash(password, 10)
-        const farmer = await Farmer.create({ name, phone, password: hashed, language, location })
+        const computedLocation = location || [district, state].filter(Boolean).join(', ')
+        const farmer = await Farmer.create({
+            name, phone, password: hashed,
+            email: email || '',
+            district: district || '',
+            state: state || '',
+            location: computedLocation,
+            farmSize: farmSize || '',
+            primaryCrops: primaryCrops || '',
+            preferredLanguage: preferredLanguage || language || 'en',
+            language: preferredLanguage || language || 'en',
+        })
         res.status(201).json({ message: 'Farmer registered.', farmer })
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -29,8 +41,17 @@ exports.registerExpert = async (req, res) => {
         const { name, email, password, specialization } = req.body
         const exists = await Expert.findOne({ email })
         if (exists) return res.status(400).json({ message: 'Email already registered.' })
+
+        // Check if OTP was verified
+        const otpRecord = await OTP.findOne({ email, isVerified: true })
+        if (!otpRecord) return res.status(400).json({ message: 'Email not verified. Please verify OTP first.' })
+
         const hashed = await bcrypt.hash(password, 10)
         await Expert.create({ name, email, password: hashed, specialization })
+
+        // Clear the OTP record after successful registration
+        await OTP.findByIdAndDelete(otpRecord._id)
+
         res.status(201).json({ message: 'Expert registered. Awaiting admin approval.' })
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -43,8 +64,17 @@ exports.registerFinancier = async (req, res) => {
         const { orgName, email, password, contact } = req.body
         const exists = await Financier.findOne({ email })
         if (exists) return res.status(400).json({ message: 'Email already registered.' })
+
+        // Check if OTP was verified
+        const otpRecord = await OTP.findOne({ email, isVerified: true })
+        if (!otpRecord) return res.status(400).json({ message: 'Email not verified. Please verify OTP first.' })
+
         const hashed = await bcrypt.hash(password, 10)
         await Financier.create({ orgName, email, password: hashed, contact })
+
+        // Clear the OTP record after successful registration
+        await OTP.findByIdAndDelete(otpRecord._id)
+
         res.status(201).json({ message: 'Financier registered. Awaiting admin approval.' })
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -87,7 +117,15 @@ exports.loginExpert = async (req, res) => {
     res.json({ token, role: 'expert', user: expert })
 }
 exports.loginAdmin = (req, res) => loginHelper(Admin, req.body.identifier, 'email', req.body.password, 'admin', res)
-exports.loginFinancier = (req, res) => loginHelper(Financier, req.body.identifier, 'email', req.body.password, 'financier', res)
+exports.loginFinancier = async (req, res) => {
+    const fn = await Financier.findOne({ email: req.body.identifier })
+    if (!fn) return res.status(401).json({ message: 'User not found.' })
+    if (fn.status !== 'approved') return res.status(403).json({ message: 'Account not approved yet.' })
+    const match = await bcrypt.compare(req.body.password, fn.password)
+    if (!match) return res.status(401).json({ message: 'Invalid password.' })
+    const token = generateToken(fn._id, 'financier')
+    res.json({ token, role: 'financier', user: fn })
+}
 exports.loginPublicUser = (req, res) => loginHelper(PublicUser, req.body.identifier, 'email', req.body.password, 'public', res)
 
 // ── OTP ───────────────────
@@ -114,6 +152,11 @@ exports.verifyOTP = async (req, res) => {
             await OTP.findByIdAndDelete(record._id)
             return res.status(400).json({ message: 'OTP has expired.' })
         }
+
+        // Mark as verified
+        record.isVerified = true
+        await record.save()
+
         res.json({ message: 'OTP verified.' })
     } catch (err) {
         res.status(500).json({ message: err.message })

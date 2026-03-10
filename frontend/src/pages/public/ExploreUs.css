@@ -1,0 +1,43 @@
+.explore-us-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+
+.explore-us-filter-btn {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    text-transform: capitalize;
+    font-size: 0.8rem;
+}
+
+.explore-us-filter-btn.active {
+    background: #e02020;
+}
+
+.explore-us-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    filter: brightness(0.8);
+}
+
+.explore-us-card-title {
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.explore-us-card-author {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+.explore-us-card-summary {
+    font-size: 0.82rem;
+    color: #bbb;
+    line-height: 1.5;
+}

@@ -1,0 +1,73 @@
+.crop-map-subtext {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    max-width: 600px;
+}
+
+.crop-map-search {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    margin-bottom: 24px;
+    outline: none;
+}
+
+.crop-map-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.crop-map-empty {
+    color: #888;
+}
+
+.crop-map-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.crop-map-card-title {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 1.05rem;
+}
+
+.crop-map-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.crop-map-tags.open {
+    margin-bottom: 14px;
+}
+
+.crop-map-tag {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.crop-map-details {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+    margin-top: 4px;
+}
+
+.crop-map-detail-text {
+    color: #ccc;
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+}

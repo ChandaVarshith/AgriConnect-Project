@@ -1,0 +1,81 @@
+.add-loan-container {
+    max-width: 540px;
+}
+
+.add-loan-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 32px 30px;
+}
+
+.add-loan-label {
+    display: block;
+    color: #ccc;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.03em;
+}
+
+.add-loan-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+}
+
+.add-loan-select {
+    appearance: auto;
+    cursor: pointer;
+}
+
+.add-loan-option {
+    background: #1a1a1a;
+}
+
+.add-loan-textarea {
+    resize: vertical;
+}
+
+.add-loan-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.add-loan-success {
+    color: #4caf50;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.add-loan-submit-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #000;
+    transition: background 0.2s;
+}
+
+.add-loan-submit-btn:not(:disabled) {
+    background: #f59e0b;
+    cursor: pointer;
+}
+
+.add-loan-submit-btn:disabled {
+    background: #b06a00;
+    cursor: not-allowed;
+}
