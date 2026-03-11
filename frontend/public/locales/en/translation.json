@@ -130,5 +130,12 @@
     "learnfarming": "Learn Farming",
     "buyresources": "Buy Resources",
     "contactfarmer": "Contact Farmer",
-    "farmercontactrevealed": "Farmer Contact Revealed"
+    "farmercontactrevealed": "Farmer Contact Revealed",
+    "detectcropdisease": "Detect Crop Disease",
+    "uploadcropimage": "Upload Crop Image",
+    "analyzecrop": "Analyze Crop",
+    "analyzing": "Analyzing...",
+    "diseaseresult": "Disease Result",
+    "predictionconfidence": "Confidence Score",
+    "mockresultwarning": "Note: This is a mock result because the actual ML model file was not found on the server."
 }

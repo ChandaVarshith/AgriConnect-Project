@@ -2,3 +2,8 @@ node_modules
 .env
 dist
 .vite
+*.keras
+dataset/
+dataset_raw/
+dataset.zip
+temp_model_code*

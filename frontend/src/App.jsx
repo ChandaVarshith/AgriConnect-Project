@@ -36,6 +36,7 @@ import AddNewSector from './pages/admin/AddNewSector'
 
 // Farmer Pages
 import FarmerHome from './pages/farmer/FarmerHome'
+import CropDiseaseDetection from './pages/farmer/CropDiseaseDetection'
 import SubmitQuery from './pages/farmer/SubmitQuery'
 import MyResponsesFarmer from './pages/farmer/MyResponses'
 import BrowseLoans from './pages/farmer/BrowseLoans'
@@ -94,6 +95,7 @@ function App() {
 
                         {/* Farmer Routes */}
                         <Route path="/farmer" element={<ProtectedRoute role="farmer"><FarmerHome /></ProtectedRoute>} />
+                        <Route path="/farmer/disease-detection" element={<ProtectedRoute role="farmer"><CropDiseaseDetection /></ProtectedRoute>} />
                         <Route path="/farmer/query" element={<ProtectedRoute role="farmer"><SubmitQuery /></ProtectedRoute>} />
                         <Route path="/farmer/responses" element={<ProtectedRoute role="farmer"><MyResponsesFarmer /></ProtectedRoute>} />
                         <Route path="/farmer/loans" element={<ProtectedRoute role="farmer"><BrowseLoans /></ProtectedRoute>} />

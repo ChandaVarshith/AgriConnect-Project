@@ -10,6 +10,7 @@ const navItems = {
     ],
     farmer: [
         { to: '/farmer', icon: '🏠', label: 'Home' },
+        { to: '/farmer/disease-detection', icon: '🔍', label: 'Disease Detection' },
         { to: '/farmer/query', icon: '❓', label: 'Ask Expert' },
         { to: '/farmer/responses', icon: '💬', label: 'Responses' },
         { to: '/farmer/loans', icon: '🏦', label: 'Loans' },
