@@ -24,7 +24,11 @@ MONGO_URI_SET=${process.env.MONGO_URI ? 'yes' : 'no'}
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: [
+        process.env.CLIENT_URL, 
+        'http://localhost:3000', 
+        'https://agri-connect-project.vercel.app'
+    ].filter(Boolean),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

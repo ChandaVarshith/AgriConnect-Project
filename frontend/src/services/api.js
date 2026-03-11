@@ -1,7 +1,15 @@
 import axios from 'axios'
 
+// Automatically format the provided VITE_API_URL so it correctly appends /api
+let rawUrl = import.meta.env.VITE_API_URL || 'https://agriconnect-project-a44i.onrender.com/api';
+if (rawUrl.includes('your-render-app-url')) {
+    rawUrl = 'https://agriconnect-project-a44i.onrender.com/api';
+}
+if (rawUrl.endsWith('/')) rawUrl = rawUrl.slice(0, -1); // remove trailing slash
+if (!rawUrl.endsWith('/api')) rawUrl += '/api'; // force /api suffix
+
 const API = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+    baseURL: rawUrl,
 })
 
 // Attach JWT token to every request automatically

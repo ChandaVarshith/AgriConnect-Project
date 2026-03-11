@@ -34,7 +34,14 @@ const CropDiseaseDetection = () => {
         formData.append('image', selectedImage);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ml/predict-disease`, formData, {
+            let baseUrl = import.meta.env.VITE_API_URL || 'https://agriconnect-project-a44i.onrender.com/api';
+            if (baseUrl.includes('your-render-app-url')) {
+                baseUrl = 'https://agriconnect-project-a44i.onrender.com/api';
+            }
+            if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+            if (!baseUrl.endsWith('/api')) baseUrl += '/api';
+
+            const res = await axios.post(`${baseUrl}/ml/predict-disease`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
