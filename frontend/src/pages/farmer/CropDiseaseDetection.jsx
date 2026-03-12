@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
+import PageLayout from '../../components/PageLayout';
 import axios from 'axios';
 import './CropDiseaseDetection.css';
-
-const BG = 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1400&auto=format&fit=crop&q=80';
 
 const CropDiseaseDetection = ({ role = 'farmer' }) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -56,114 +53,105 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
     };
 
     return (
-        <div className="cdd-page">
-            {/* Fixed background image */}
-            <img src={BG} alt="background" className="cdd-bg-image" />
+        <PageLayout
+            role={role}
+            title="🔍 Crop Disease Detection"
+            bgUrl="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1400&auto=format&fit=crop&q=80"
+        >
+            <p className="cdd-subtitle">
+                Upload a clear image of your crop leaf for instant AI-powered disease detection
+            </p>
 
-            <Navbar role={role} />
+            <div className="cdd-content">
+                {/* Upload Card */}
+                <div className="cdd-card">
+                    <h2 className="cdd-card-title">📸 Upload Crop Image</h2>
 
-            <div className="cdd-wrapper">
-                <Sidebar role={role} />
+                    <div className="cdd-upload-zone">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            id="crop-image-upload"
+                            className="cdd-file-input"
+                        />
+                        <label htmlFor="crop-image-upload" className="cdd-upload-label">
+                            {previewUrl ? (
+                                <img src={previewUrl} alt="Selected crop" className="cdd-preview-img" />
+                            ) : (
+                                <div className="cdd-upload-placeholder">
+                                    <span className="cdd-upload-icon">🌿</span>
+                                    <span className="cdd-upload-text">Click to select a crop image</span>
+                                    <span className="cdd-upload-hint">Supports JPG, PNG, WEBP</span>
+                                </div>
+                            )}
+                        </label>
 
-                <main className="cdd-main">
-                    {/* Header strip */}
-                    <div className="cdd-header">
-                        <div className="cdd-header-accent" />
-                        <h1 className="cdd-header-title">🔍 Crop Disease Detection</h1>
-                        <p className="cdd-header-sub">Upload a clear image of your crop leaf for instant AI-powered disease detection</p>
+                        {previewUrl && (
+                            <label htmlFor="crop-image-upload" className="cdd-change-btn">
+                                Change Image
+                            </label>
+                        )}
                     </div>
 
-                    <div className="cdd-content">
-                        {/* Upload Card */}
-                        <div className="cdd-card">
-                            <h2 className="cdd-card-title">📸 Upload Crop Image</h2>
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={!selectedImage || loading}
+                        className="cdd-analyze-btn"
+                    >
+                        {loading ? (
+                            <><span className="cdd-spinner" />Analyzing...</>
+                        ) : (
+                            '⚡ Analyze Crop'
+                        )}
+                    </button>
 
-                            <div className="cdd-upload-zone">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    id="crop-image-upload"
-                                    className="cdd-file-input"
-                                />
-                                <label htmlFor="crop-image-upload" className="cdd-upload-label">
-                                    {previewUrl ? (
-                                        <img src={previewUrl} alt="Selected crop" className="cdd-preview-img" />
-                                    ) : (
-                                        <div className="cdd-upload-placeholder">
-                                            <span className="cdd-upload-icon">🌿</span>
-                                            <span className="cdd-upload-text">Click to select a crop image</span>
-                                            <span className="cdd-upload-hint">Supports JPG, PNG, WEBP</span>
-                                        </div>
-                                    )}
-                                </label>
+                    {error && (
+                        <div className="cdd-error">
+                            ⚠️ {error}
+                        </div>
+                    )}
+                </div>
 
-                                {previewUrl && (
-                                    <label htmlFor="crop-image-upload" className="cdd-change-btn">
-                                        Change Image
-                                    </label>
-                                )}
+                {/* Result Card */}
+                <div className="cdd-result-card-wrapper">
+                    {result ? (
+                        <div className={`cdd-result-card ${result.isHealthy ? 'healthy' : 'diseased'}`}>
+                            <div className="cdd-result-header">
+                                <span className="cdd-result-icon">{result.isHealthy ? '✅' : '⚠️'}</span>
+                                <h3 className="cdd-result-title">Analysis Result</h3>
                             </div>
 
-                            <button
-                                onClick={handleAnalyze}
-                                disabled={!selectedImage || loading}
-                                className="cdd-analyze-btn"
-                            >
-                                {loading ? (
-                                    <><span className="cdd-spinner" />Analyzing...</>
-                                ) : (
-                                    '⚡ Analyze Crop'
-                                )}
-                            </button>
+                            <div className="cdd-result-body">
+                                <div className="cdd-result-row">
+                                    <span className="cdd-result-label">Status</span>
+                                    <span className={`cdd-result-badge ${result.isHealthy ? 'badge-healthy' : 'badge-diseased'}`}>
+                                        {result.isHealthy ? 'Healthy Crop' : 'Disease Detected'}
+                                    </span>
+                                </div>
+                                <div className="cdd-result-row">
+                                    <span className="cdd-result-label">Detection</span>
+                                    <span className="cdd-result-value">{result.prediction}</span>
+                                </div>
+                                <div className="cdd-result-row cdd-result-row-col">
+                                    <span className="cdd-result-label">Confidence</span>
+                                    <div className="cdd-confidence-bar-wrap">
+                                        <div
+                                            className="cdd-confidence-bar"
+                                            style={{ width: `${result.confidence}%`, background: result.isHealthy ? '#22c55e' : '#ef4444' }}
+                                        />
+                                        <span className="cdd-confidence-pct">{result.confidence}%</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                            {error && (
-                                <div className="cdd-error">
-                                    ⚠️ {error}
+                            {result.mocked && (
+                                <div className="cdd-mock-badge">
+                                    ℹ️ Model file not found on server — showing mock result.
                                 </div>
                             )}
                         </div>
-
-                        {/* Result Card */}
-                        {result && (
-                            <div className={`cdd-result-card ${result.isHealthy ? 'healthy' : 'diseased'}`}>
-                                <div className="cdd-result-header">
-                                    <span className="cdd-result-icon">{result.isHealthy ? '✅' : '⚠️'}</span>
-                                    <h3 className="cdd-result-title">Analysis Result</h3>
-                                </div>
-
-                                <div className="cdd-result-body">
-                                    <div className="cdd-result-row">
-                                        <span className="cdd-result-label">Status</span>
-                                        <span className={`cdd-result-badge ${result.isHealthy ? 'badge-healthy' : 'badge-diseased'}`}>
-                                            {result.isHealthy ? 'Healthy Crop' : 'Disease Detected'}
-                                        </span>
-                                    </div>
-                                    <div className="cdd-result-row">
-                                        <span className="cdd-result-label">Detection</span>
-                                        <span className="cdd-result-value">{result.prediction}</span>
-                                    </div>
-                                    <div className="cdd-result-row">
-                                        <span className="cdd-result-label">Confidence</span>
-                                        <div className="cdd-confidence-bar-wrap">
-                                            <div
-                                                className="cdd-confidence-bar"
-                                                style={{ width: `${result.confidence}%`, background: result.isHealthy ? '#22c55e' : '#ef4444' }}
-                                            />
-                                            <span className="cdd-confidence-pct">{result.confidence}%</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {result.mocked && (
-                                    <div className="cdd-mock-badge">
-                                        ℹ️ Model file not found on server — showing mock result.
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Info Card */}
+                    ) : (
                         <div className="cdd-info-card">
                             <h3 className="cdd-info-title">📖 How it Works</h3>
                             <ul className="cdd-info-list">
@@ -173,10 +161,10 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
                                 <li>Supports 38+ common plant diseases across 14 crop types</li>
                             </ul>
                         </div>
-                    </div>
-                </main>
+                    )}
+                </div>
             </div>
-        </div>
+        </PageLayout>
     );
 };
 

@@ -1,65 +1,12 @@
-/* ── Page Shell ─────────────────────────────────────────────────────── */
-.cdd-page {
-    min-height: 100vh;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: #0d1a12;
-}
-
-.cdd-bg-image {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    filter: brightness(0.18) saturate(0.7);
-    z-index: 0;
-}
-
-.cdd-wrapper {
-    display: flex;
-    flex: 1;
-    position: relative;
-    z-index: 1;
-}
-
-/* ── Main area ───────────────────────────────────────────────────────── */
-.cdd-main {
-    flex: 1;
-    padding: 80px 32px 48px;
-    overflow-y: auto;
-}
-
-/* ── Header ──────────────────────────────────────────────────────────── */
-.cdd-header {
-    margin-bottom: 32px;
-}
-
-.cdd-header-accent {
-    width: 48px;
-    height: 4px;
-    background: #16a34a;
-    border-radius: 2px;
-    margin-bottom: 16px;
-}
-
-.cdd-header-title {
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 800;
-    color: #fff;
-    margin: 0 0 8px;
-    letter-spacing: -0.3px;
-}
-
-.cdd-header-sub {
-    color: rgba(255,255,255,0.55);
+/* ── Subtitle ────────────────────────────────────────────── */
+.cdd-subtitle {
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.95rem;
-    margin: 0;
+    margin: -16px 0 28px;
+    font-style: italic;
 }
 
-/* ── Content Grid ────────────────────────────────────────────────────── */
+/* ── Content Grid ──────────────────────────────────────── */
 .cdd-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -67,79 +14,79 @@
     align-items: start;
 }
 
-@media (max-width: 880px) {
+@media (max-width: 800px) {
     .cdd-content { grid-template-columns: 1fr; }
 }
 
-/* ── Cards ───────────────────────────────────────────────────────────── */
+/* ── Cards ─────────────────────────────────────────────── */
 .cdd-card, .cdd-result-card, .cdd-info-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
     padding: 26px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
 }
 
 .cdd-card-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 20px;
+    margin: 0 0 18px;
 }
 
-/* ── Upload Zone ─────────────────────────────────────────────────────── */
+/* ── Upload Zone ───────────────────────────────────────── */
+.cdd-upload-zone { margin-bottom: 16px; }
+
 .cdd-file-input { display: none; }
 
 .cdd-upload-label {
     display: block;
-    border: 2px dashed rgba(82,183,136,0.5);
+    border: 2px dashed rgba(82, 183, 136, 0.5);
     border-radius: 10px;
     cursor: pointer;
-    transition: border-color 0.25s, background 0.25s;
     overflow: hidden;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s, background 0.25s;
 }
-
 .cdd-upload-label:hover {
     border-color: #52b788;
-    background: rgba(82,183,136,0.06);
+    background: rgba(82, 183, 136, 0.06);
 }
 
 .cdd-upload-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 40px 20px;
+    gap: 8px;
+    padding: 36px 20px;
 }
-
-.cdd-upload-icon { font-size: 2.5rem; }
-.cdd-upload-text { color: #52b788; font-weight: 600; font-size: 0.95rem; }
-.cdd-upload-hint { color: rgba(255,255,255,0.35); font-size: 0.78rem; }
+.cdd-upload-icon { font-size: 2.2rem; }
+.cdd-upload-text { color: #52b788; font-weight: 600; font-size: 0.9rem; }
+.cdd-upload-hint { color: rgba(255, 255, 255, 0.3); font-size: 0.75rem; }
 
 .cdd-preview-img {
     width: 100%;
-    max-height: 280px;
+    max-height: 260px;
     object-fit: cover;
     display: block;
 }
 
 .cdd-change-btn {
     display: inline-block;
-    background: rgba(82,183,136,0.14);
+    background: rgba(82, 183, 136, 0.12);
     color: #52b788;
-    border: 1px solid rgba(82,183,136,0.35);
-    padding: 7px 18px;
+    border: 1px solid rgba(82, 183, 136, 0.3);
+    padding: 6px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     transition: background 0.2s;
 }
-.cdd-change-btn:hover { background: rgba(82,183,136,0.25); }
+.cdd-change-btn:hover { background: rgba(82, 183, 136, 0.22); }
 
-/* ── Analyze Button ──────────────────────────────────────────────────── */
+/* ── Analyze Button ────────────────────────────────────── */
 .cdd-analyze-btn {
     display: flex;
     align-items: center;
@@ -149,57 +96,56 @@
     background: linear-gradient(135deg, #16a34a, #15803d);
     color: #fff;
     border: none;
-    padding: 14px;
+    padding: 13px;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.25s;
-    letter-spacing: 0.3px;
 }
-
 .cdd-analyze-btn:hover:not(:disabled) {
     background: linear-gradient(135deg, #15803d, #166534);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
 }
-
 .cdd-analyze-btn:disabled {
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.3);
     cursor: not-allowed;
 }
 
 .cdd-spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Error ───────────────────────────────────────────────────────────── */
+/* ── Error ─────────────────────────────────────────────── */
 .cdd-error {
-    margin-top: 14px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.25);
+    margin-top: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: #f87171;
     padding: 10px 14px;
     border-radius: 7px;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
 }
 
-/* ── Result Card ─────────────────────────────────────────────────────── */
+/* ── Result Card ───────────────────────────────────────── */
+.cdd-result-card-wrapper { display: contents; }
+
 .cdd-result-card {
     animation: fadeUp 0.4s ease;
 }
-.cdd-result-card.healthy { border-color: rgba(34,197,94,0.3); }
-.cdd-result-card.diseased { border-color: rgba(239,68,68,0.3); }
+.cdd-result-card.healthy { border-color: rgba(34, 197, 94, 0.3); }
+.cdd-result-card.diseased { border-color: rgba(239, 68, 68, 0.3); }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -207,86 +153,83 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.cdd-result-icon { font-size: 1.8rem; }
-.cdd-result-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; }
+.cdd-result-icon { font-size: 1.6rem; }
+.cdd-result-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0; }
 
-.cdd-result-body { display: flex; flex-direction: column; gap: 14px; }
+.cdd-result-body { display: flex; flex-direction: column; gap: 12px; }
 
 .cdd-result-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0,0,0,0.25);
-    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 11px 14px;
     border-radius: 8px;
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 8px;
 }
+.cdd-result-row-col { flex-direction: column; align-items: flex-start; }
 
-.cdd-result-label { color: rgba(255,255,255,0.5); font-size: 0.85rem; font-weight: 500; }
-.cdd-result-value { color: #fff; font-weight: 600; font-size: 0.95rem; }
+.cdd-result-label { color: rgba(255, 255, 255, 0.45); font-size: 0.8rem; font-weight: 500; }
+.cdd-result-value { color: #fff; font-weight: 600; font-size: 0.9rem; text-align: right; }
 
 .cdd-result-badge {
     padding: 4px 12px;
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
 }
-.badge-healthy { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.badge-diseased { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.badge-healthy { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+.badge-diseased { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
 .cdd-confidence-bar-wrap {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex: 1;
-    max-width: 220px;
+    width: 100%;
 }
 .cdd-confidence-bar {
-    height: 8px;
-    border-radius: 4px;
-    min-width: 4px;
+    height: 6px;
+    border-radius: 3px;
     flex: 1;
     transition: width 0.5s ease;
 }
-.cdd-confidence-pct { color: #fff; font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+.cdd-confidence-pct { color: #fff; font-weight: 600; font-size: 0.88rem; white-space: nowrap; }
 
 .cdd-mock-badge {
-    margin-top: 14px;
-    padding: 10px 14px;
-    background: rgba(245,158,11,0.1);
-    border: 1px solid rgba(245,158,11,0.25);
+    margin-top: 12px;
+    padding: 9px 13px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
     color: #fbbf24;
     border-radius: 7px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
-/* ── Info Card ───────────────────────────────────────────────────────── */
-.cdd-info-card { grid-column: 1 / -1; }
+/* ── Info Card ─────────────────────────────────────────── */
 .cdd-info-title { color: #fff; font-size: 1rem; font-weight: 700; margin: 0 0 14px; }
 
 .cdd-info-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
-
 .cdd-info-list li {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: rgba(255,255,255,0.6);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 7px;
+    padding: 10px 14px 10px 28px;
+    color: rgba(255, 255, 255, 0.55);
     font-size: 0.85rem;
     position: relative;
-    padding-left: 28px;
 }
-
 .cdd-info-list li::before {
     content: '▸';
     position: absolute;
