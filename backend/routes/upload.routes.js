@@ -5,19 +5,19 @@ const { v2: cloudinary } = require('cloudinary');
 const auth = require('../middleware/auth.middleware');
 const streamifier = require('streamifier');
 
-// ── Cloudinary Config ─────────────────────────────────────────────────────────
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 // Use memory storage — we stream directly to Cloudinary
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // POST /api/upload/image  — returns { url }
 router.post('/image', auth, upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No image provided.' });
+
+    // Ensure Cloudinary is configured with the latest process.env vars
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
 
     const uploadStream = cloudinary.uploader.upload_stream(
         { folder: 'agriconnect/queries', resource_type: 'image' },
