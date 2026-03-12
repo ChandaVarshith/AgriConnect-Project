@@ -14,8 +14,10 @@ const getBaseUrl = () => {
 const FarmerRequests = () => {
     const [queries, setQ] = useState([])
     const [filtered, setFiltered] = useState([])
+    const [filterNameOrPhone, setFilterNameOrPhone] = useState('')
+    const [filterCropOrIssue, setFilterCropOrIssue] = useState('')
+    const [filterStatus, setFilterStatus] = useState('all')
     const [sortBy, setSortBy] = useState('date')
-    const [search, setSearch] = useState('')
     const [loading, setL] = useState(true)
     const [error, setError] = useState('')
 
@@ -30,32 +32,56 @@ const FarmerRequests = () => {
             .then(r => {
                 const data = Array.isArray(r.data) ? r.data : []
                 setQ(data)
-                applyFilterSort(data, '', 'date')
+                applyFilters(data, '', '', 'all', 'date')
             })
             .catch(() => setError('Failed to load farmer requests.'))
             .finally(() => setL(false))
     }, [])
 
-    const applyFilterSort = (data, term, sort) => {
+    const applyFilters = (data, namePhone, cropIssue, statusState, sortMode) => {
         let result = [...data]
-        if (term) {
-            const lower = term.toLowerCase()
+
+        if (namePhone) {
+            const lower = namePhone.toLowerCase()
+            result = result.filter(q =>
+                q.farmerId?.name?.toLowerCase().includes(lower) ||
+                q.farmerId?.phone?.toLowerCase().includes(lower)
+            )
+        }
+        if (cropIssue) {
+            const lower = cropIssue.toLowerCase()
             result = result.filter(q =>
                 q.cropType?.toLowerCase().includes(lower) ||
                 q.description?.toLowerCase().includes(lower) ||
-                q.location?.toLowerCase().includes(lower) ||
-                q.farmerId?.name?.toLowerCase().includes(lower)
+                q.location?.toLowerCase().includes(lower)
             )
         }
-        result.sort((a, b) =>
-            sort === 'date' ? new Date(b.createdAt) - new Date(a.createdAt)
-                : a.cropType?.localeCompare(b.cropType)
-        )
+        if (statusState !== 'all') {
+            result = result.filter(q => q.status === statusState)
+        }
+
+        result.sort((a, b) => {
+            if (sortMode === 'date') return new Date(b.createdAt) - new Date(a.createdAt)
+            if (sortMode === 'date_asc') return new Date(a.createdAt) - new Date(b.createdAt)
+            return a.cropType?.localeCompare(b.cropType)
+        })
+        
         setFiltered(result)
     }
 
-    const handleSearch = (val) => { setSearch(val); applyFilterSort(queries, val, sortBy) }
-    const handleSort = (key) => { setSortBy(key); applyFilterSort(queries, search, key) }
+    const handleFilterChange = (type, value) => {
+        let newNamePhone = filterNameOrPhone
+        let newCropIssue = filterCropOrIssue
+        let newStatus = filterStatus
+        let newSortBy = sortBy
+
+        if (type === 'nameOrPhone') { setFilterNameOrPhone(value); newNamePhone = value }
+        if (type === 'cropOrIssue') { setFilterCropOrIssue(value); newCropIssue = value }
+        if (type === 'status') { setFilterStatus(value); newStatus = value }
+        if (type === 'sort') { setSortBy(value); newSortBy = value }
+
+        applyFilters(queries, newNamePhone, newCropIssue, newStatus, newSortBy)
+    }
 
     // ── Run ML on a Cloudinary image URL via backend ─────────────────────────
     const handleScanImage = async (queryId, imageUrl) => {
@@ -81,22 +107,44 @@ const FarmerRequests = () => {
     return (
         <PageLayout role="expert" title="Farmer Incoming Requests">
 
-            {/* ── Search + Sort bar (AgriConnect-styled) ──────────── */}
-            <div className="farmer-req-toolbar">
-                <div className="farmer-req-search-wrap">
-                    <span className="farmer-req-search-icon">🔍</span>
-                    <input
-                        placeholder="Search by crop, location, farmer name…"
-                        value={search}
-                        onChange={e => handleSearch(e.target.value)}
-                        className="farmer-req-search-input"
-                    />
+            {/* ── Advanced Search + Filter Bar ──────────── */}
+            <div className="farmer-req-toolbar-advanced">
+                <div className="farmer-req-filters-row">
+                    <div className="farmer-req-search-box">
+                        <span className="farmer-req-search-icon">👤</span>
+                        <input
+                            placeholder="Farmer name or phone…"
+                            value={filterNameOrPhone}
+                            onChange={e => handleFilterChange('nameOrPhone', e.target.value)}
+                            className="farmer-req-search-input"
+                        />
+                    </div>
+                    <div className="farmer-req-search-box">
+                        <span className="farmer-req-search-icon">🌾</span>
+                        <input
+                            placeholder="Crop disease or issue…"
+                            value={filterCropOrIssue}
+                            onChange={e => handleFilterChange('cropOrIssue', e.target.value)}
+                            className="farmer-req-search-input"
+                        />
+                    </div>
+                    <select
+                        className="farmer-req-select"
+                        value={filterStatus}
+                        onChange={e => handleFilterChange('status', e.target.value)}
+                    >
+                        <option value="all">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
                 </div>
+                
                 <div className="farmer-req-sort-chips">
-                    {[{ k: 'date', l: 'Newest First' }, { k: 'crop', l: 'Crop Type' }].map(({ k, l }) => (
+                    <span style={{color: '#888', fontSize: '0.85rem', fontWeight: 600}}>Sort by:</span>
+                    {[{ k: 'date', l: 'Newest First' }, { k: 'date_asc', l: 'Oldest' }, { k: 'crop', l: 'Crop Name' }].map(({ k, l }) => (
                         <button
                             key={k}
-                            onClick={() => handleSort(k)}
+                            onClick={() => handleFilterChange('sort', k)}
                             className={`farmer-req-chip ${sortBy === k ? 'active' : ''}`}
                         >{l}</button>
                     ))}
