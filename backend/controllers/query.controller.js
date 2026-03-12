@@ -2,8 +2,8 @@ const Query = require('../models/Query.model')
 
 exports.createQuery = async (req, res) => {
     try {
-        const { cropType, location, description } = req.body
-        const query = await Query.create({ farmerId: req.user.id, cropType, location, description })
+        const { cropType, location, description, imageUrl } = req.body
+        const query = await Query.create({ farmerId: req.user.id, cropType, location, description, imageUrl: imageUrl || null })
         res.status(201).json(query)
     } catch (err) {
         res.status(500).json({ message: err.message })

@@ -7,6 +7,7 @@ const QuerySchema = new Schema({
     cropType: { type: String, required: true, trim: true },
     location: { type: String, trim: true },
     description: { type: String, required: true },
+    imageUrl: { type: String, default: null },  // optional Cloudinary image URL
     status: { type: String, enum: ['pending', 'resolved'], default: 'pending' },
 }, { timestamps: true })
 

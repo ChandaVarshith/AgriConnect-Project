@@ -77,4 +77,59 @@ router.post('/predict-disease', upload.single('image'), (req, res) => {
     }
 });
 
+router.post('/predict-from-url', async (req, res) => {
+    try {
+        const { imageUrl } = req.body;
+        if (!imageUrl) return res.status(400).json({ success: false, message: 'No image URL provided' });
+
+        const https = require('https');
+        const uploadDir = path.join(__dirname, '../uploads/ml');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        
+        const tempPath = path.join(uploadDir, 'url-img-' + Date.now() + '.jpg');
+
+        // Download the image
+        const file = fs.createWriteStream(tempPath);
+        https.get(imageUrl, (response) => {
+            response.pipe(file);
+            file.on('finish', () => {
+                file.close();
+
+                // Run Prediction
+                const scriptPath = path.join(__dirname, '../predict.py');
+                const pythonProcess = spawn('python', [scriptPath, tempPath]);
+                
+                let pythonData = '';
+                let pythonError = '';
+
+                pythonProcess.stdout.on('data', (data) => { pythonData += data.toString(); });
+                pythonProcess.stderr.on('data', (data) => { pythonError += data.toString(); });
+
+                pythonProcess.on('close', (code) => {
+                    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath); // cleanup
+
+                    try {
+                        if (!pythonData) {
+                            return res.status(500).json({ success: false, message: 'No output from python', error: pythonError });
+                        }
+                        const jsonMatch = pythonData.match(/\{.*\}/s);
+                        if (jsonMatch) return res.json(JSON.parse(jsonMatch[0]));
+                        
+                        return res.status(500).json({ success: false, message: 'Failed to parse result', rawOutput: pythonData });
+                    } catch (err) {
+                        return res.status(500).json({ success: false, message: 'Prediction failed', error: err.message });
+                    }
+                });
+            });
+        }).on('error', (err) => {
+            if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+            return res.status(500).json({ success: false, message: 'Failed to download image', error: err.message });
+        });
+
+    } catch (error) {
+        console.error('Error in predict-from-url:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 module.exports = router;

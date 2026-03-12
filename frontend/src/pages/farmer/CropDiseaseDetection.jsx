@@ -55,7 +55,7 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
     return (
         <PageLayout
             role={role}
-            title="🔍 Crop Disease Detection"
+            title="Crop Disease Detection"
             bgUrl="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1400&auto=format&fit=crop&q=80"
         >
             <p className="cdd-subtitle">
