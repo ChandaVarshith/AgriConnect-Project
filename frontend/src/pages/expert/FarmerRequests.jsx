@@ -17,6 +17,7 @@ const FarmerRequests = () => {
     const [filterNameOrPhone, setFilterNameOrPhone] = useState('')
     const [filterCropOrIssue, setFilterCropOrIssue] = useState('')
     const [filterStatus, setFilterStatus] = useState('all')
+    const [filterType, setFilterType] = useState('all')
     const [sortBy, setSortBy] = useState('date')
     const [loading, setL] = useState(true)
     const [error, setError] = useState('')
@@ -32,13 +33,13 @@ const FarmerRequests = () => {
             .then(r => {
                 const data = Array.isArray(r.data) ? r.data : []
                 setQ(data)
-                applyFilters(data, '', '', 'all', 'date')
+                applyFilters(data, '', '', 'all', 'all', 'date')
             })
             .catch(() => setError('Failed to load farmer requests.'))
             .finally(() => setL(false))
     }, [])
 
-    const applyFilters = (data, namePhone, cropIssue, statusState, sortMode) => {
+    const applyFilters = (data, namePhone, cropIssue, statusState, typeState, sortMode) => {
         let result = [...data]
 
         if (namePhone) {
@@ -59,6 +60,12 @@ const FarmerRequests = () => {
         if (statusState !== 'all') {
             result = result.filter(q => q.status === statusState)
         }
+        
+        if (typeState === 'disease') {
+            result = result.filter(q => !!q.imageUrl)
+        } else if (typeState === 'general') {
+            result = result.filter(q => !q.imageUrl)
+        }
 
         result.sort((a, b) => {
             if (sortMode === 'date') return new Date(b.createdAt) - new Date(a.createdAt)
@@ -73,14 +80,16 @@ const FarmerRequests = () => {
         let newNamePhone = filterNameOrPhone
         let newCropIssue = filterCropOrIssue
         let newStatus = filterStatus
+        let newType = filterType
         let newSortBy = sortBy
 
         if (type === 'nameOrPhone') { setFilterNameOrPhone(value); newNamePhone = value }
         if (type === 'cropOrIssue') { setFilterCropOrIssue(value); newCropIssue = value }
         if (type === 'status') { setFilterStatus(value); newStatus = value }
+        if (type === 'type') { setFilterType(value); newType = value }
         if (type === 'sort') { setSortBy(value); newSortBy = value }
 
-        applyFilters(queries, newNamePhone, newCropIssue, newStatus, newSortBy)
+        applyFilters(queries, newNamePhone, newCropIssue, newStatus, newType, newSortBy)
     }
 
     // ── Run ML on a Cloudinary image URL via backend ─────────────────────────
@@ -130,6 +139,16 @@ const FarmerRequests = () => {
                     </div>
                     <select
                         className="farmer-req-select"
+                        value={filterType}
+                        onChange={e => handleFilterChange('type', e.target.value)}
+                    >
+                        <option value="all">All Request Types</option>
+                        <option value="disease">Disease Scans Only</option>
+                        <option value="general">General Queries Only</option>
+                    </select>
+
+                    <select
+                        className="farmer-req-select"
                         value={filterStatus}
                         onChange={e => handleFilterChange('status', e.target.value)}
                     >
@@ -158,13 +177,21 @@ const FarmerRequests = () => {
                     {filtered.length === 0 && <p className="farmer-req-empty">No incoming requests found.</p>}
                     {filtered.map(q => {
                         const ml = mlResults[q._id]
+                        
+                        // Parse crop type for badge formatting
+                        const isDiseaseScan = q.cropType?.startsWith('[Disease Scan]');
+                        const rawCrop = isDiseaseScan ? q.cropType.replace('[Disease Scan] ', '') : q.cropType;
+
                         return (
                             <div key={q._id} className="farmer-req-card" style={{
                                 borderLeft: `4px solid ${q.status === 'resolved' ? '#4caf50' : '#f39c12'}`
                             }}>
                                 <div className="farmer-req-card-header">
                                     <div className="farmer-req-card-info">
-                                        <h4 className="farmer-req-crop">🌾 {q.cropType}</h4>
+                                        <h4 className="farmer-req-crop">
+                                            {isDiseaseScan && <span style={{ background: 'rgba(34,197,94,0.2)', color: '#4ade80', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', marginRight: '8px', border: '1px solid rgba(34,197,94,0.4)' }}>🦠 Disease Scan</span>}
+                                            🌾 {rawCrop}
+                                        </h4>
                                         {q.farmerId?.name && (
                                             <p className="farmer-req-farmer">
                                                 👤 {q.farmerId.name} {q.farmerId.phone ? `· 📱 ${q.farmerId.phone}` : ''}

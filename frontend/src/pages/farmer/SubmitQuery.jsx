@@ -73,7 +73,16 @@ const SubmitQuery = () => {
         setL(true)
         try {
             const location = `${form.district}, ${form.state}`
-            await queryService.submitQuery({ ...form, location, imageUrl: imageUrl || null })
+            const finalCropType = requestDiseaseCheck 
+                ? `[Disease Scan] ${form.cropType}` 
+                : form.cropType;
+
+            await queryService.submitQuery({ 
+                ...form, 
+                cropType: finalCropType,
+                location, 
+                imageUrl: imageUrl || null 
+            })
             setSubmitted(true)
             setTimeout(() => navigate('/farmer/responses'), 2200)
         } catch (err) {
