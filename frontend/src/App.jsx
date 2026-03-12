@@ -106,6 +106,7 @@ function App() {
 
                         {/* Expert Routes */}
                         <Route path="/expert" element={<ProtectedRoute role="expert"><ExpertHome /></ProtectedRoute>} />
+                        <Route path="/expert/disease-detection" element={<ProtectedRoute role="expert"><CropDiseaseDetection role="expert" /></ProtectedRoute>} />
                         <Route path="/expert/requests" element={<ProtectedRoute role="expert"><FarmerRequests /></ProtectedRoute>} />
                         <Route path="/expert/respond/:queryId" element={<ProtectedRoute role="expert"><RespondToQuery /></ProtectedRoute>} />
                         <Route path="/expert/responses" element={<ProtectedRoute role="expert"><MyResponsesExpert /></ProtectedRoute>} />

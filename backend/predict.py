@@ -2,82 +2,98 @@ import sys
 import os
 import json
 
-def get_class_names():
-    # Common 38 classes (PlantVillage) + 1 background class from the dataset typically used
-    return [
-       'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
-       'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Cherry_(including_sour)___healthy',
-       'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', 'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
-       'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
-       'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot', 'Peach___healthy',
-       'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy',
-       'Raspberry___healthy', 'Soybean___healthy', 'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
-       'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold', 'Tomato___Septoria_leaf_spot',
-       'Tomato___Spider_mites Two-spotted_spider_mite', 'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus', 'Tomato___healthy',
-       'Background_without_leaves'
-    ]
+# ============================================================
+# Hardcoded model path — this file (predict.py) lives in the
+# same folder as the model file in the backend/ directory.
+# We derive the folder from __file__ (reliable even when
+# spawned by Node.js) and build the full path explicitly.
+# ============================================================
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BACKEND_DIR, "plant_disease_recog_model_pwp.keras")
+
+# Log for debugging (Node.js captures stderr separately)
+print(f"[predict.py] BACKEND_DIR = {BACKEND_DIR}", file=sys.stderr)
+print(f"[predict.py] MODEL_PATH  = {MODEL_PATH}", file=sys.stderr)
+print(f"[predict.py] Model found = {os.path.exists(MODEL_PATH)}", file=sys.stderr)
+
+CLASS_NAMES = [
+    'Apple - Apple scab', 'Apple - Black rot', 'Apple - Cedar apple rust', 'Apple - Healthy',
+    'Blueberry - Healthy',
+    'Cherry - Powdery mildew', 'Cherry - Healthy',
+    'Corn - Cercospora leaf spot / Gray leaf spot', 'Corn - Common rust', 'Corn - Northern Leaf Blight', 'Corn - Healthy',
+    'Grape - Black rot', 'Grape - Esca (Black Measles)', 'Grape - Leaf blight (Isariopsis)', 'Grape - Healthy',
+    'Orange - Haunglongbing (Citrus greening)',
+    'Peach - Bacterial spot', 'Peach - Healthy',
+    'Pepper bell - Bacterial spot', 'Pepper bell - Healthy',
+    'Potato - Early blight', 'Potato - Late blight', 'Potato - Healthy',
+    'Raspberry - Healthy',
+    'Soybean - Healthy',
+    'Squash - Powdery mildew',
+    'Strawberry - Leaf scorch', 'Strawberry - Healthy',
+    'Tomato - Bacterial spot', 'Tomato - Early blight', 'Tomato - Late blight',
+    'Tomato - Leaf Mold', 'Tomato - Septoria leaf spot',
+    'Tomato - Spider mites / Two-spotted spider mite',
+    'Tomato - Target Spot', 'Tomato - Yellow Leaf Curl Virus', 'Tomato - Mosaic virus', 'Tomato - Healthy',
+    'Background (no leaf detected)'
+]
 
 def main(image_path):
-    model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plant_disease_recog_model_pwp.keras")
-    
-    if not os.path.exists(model_path):
-        # Mock prediction if model is not yet placed
-        import random
-        classes = get_class_names()
-        prediction = random.choice([c for c in classes if c != 'Background_without_leaves'])
-        
-        # Clean up the name for display
-        display_name = prediction.replace('___', ' - ').replace('_', ' ')
-        
+    if not os.path.exists(MODEL_PATH):
         print(json.dumps({
-            "success": True, 
-            "prediction": display_name, 
-            "confidence": round(random.uniform(75.0, 99.9), 2),
+            "success": False,
             "mocked": True,
-            "message": "Model not found. Showing mock result."
+            "prediction": "Model file not found",
+            "confidence": 0,
+            "message": f"Model not found at: {MODEL_PATH}"
         }))
         return
 
     try:
-        # Suppress TF logs
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         import tensorflow as tf
         import numpy as np
-        
+
+        if not os.path.exists(image_path):
+            print(json.dumps({"success": False, "error": f"Image not found: {image_path}"}))
+            return
+
         # Load model
-        model = tf.keras.models.load_model(model_path)
-        
-        # Preprocess image
-        # The model expects (160, 160, 3) image
+        model = tf.keras.models.load_model(MODEL_PATH)
+
+        # Preprocess image — same as training notebook (160x160)
         img = tf.keras.utils.load_img(image_path, target_size=(160, 160))
         img_array = tf.keras.utils.img_to_array(img)
-        img_array = tf.expand_dims(img_array, 0) # Create a batch
-        
+        img_array = tf.expand_dims(img_array, 0)  # create batch of 1
+
         predictions = model.predict(img_array, verbose=0)
-        
-        # Since prediction_layer used 'sigmoid', let's just find the max probability
-        score = predictions[0]
-        class_names = get_class_names()
-        
-        predicted_idx = np.argmax(score)
-        predicted_class = class_names[predicted_idx]
-        confidence = 100 * score[predicted_idx]
-        
-        display_name = predicted_class.replace('___', ' - ').replace('_', ' ')
-        
+        scores = predictions[0]
+
+        predicted_idx = int(np.argmax(scores))
+        confidence = float(scores[predicted_idx]) * 100
+
+        predicted_class = CLASS_NAMES[predicted_idx] if predicted_idx < len(CLASS_NAMES) else f"Unknown class {predicted_idx}"
+
+        # Determine if healthy or diseased
+        is_healthy = 'Healthy' in predicted_class or 'Background' in predicted_class
+
         print(json.dumps({
-            "success": True, 
-            "prediction": display_name,
-            "confidence": float(round(confidence, 2)),
+            "success": True,
+            "prediction": predicted_class,
+            "confidence": round(confidence, 2),
+            "isHealthy": is_healthy,
             "mocked": False
         }))
-        
+
     except Exception as e:
-        print(json.dumps({"success": False, "error": str(e)}))
+        import traceback
+        print(json.dumps({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(json.dumps({"success": False, "error": "No image path provided."}))
         sys.exit(1)
-    
     main(sys.argv[1])

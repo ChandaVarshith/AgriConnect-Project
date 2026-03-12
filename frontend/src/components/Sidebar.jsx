@@ -19,6 +19,7 @@ const navItems = {
     ],
     expert: [
         { to: '/expert', icon: '🏠', label: 'Dashboard' },
+        { to: '/expert/disease-detection', icon: '🔍', label: 'Disease Detection' },
         { to: '/expert/requests', icon: '📋', label: 'Farmer Queries' },
         { to: '/expert/responses', icon: '💬', label: 'My Responses' },
         { to: '/expert/article/create', icon: '✍️', label: 'Write Article' },
