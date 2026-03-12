@@ -2,98 +2,141 @@ import sys
 import os
 import json
 
-# ============================================================
-# Hardcoded model path — this file (predict.py) lives in the
-# same folder as the model file in the backend/ directory.
-# We derive the folder from __file__ (reliable even when
-# spawned by Node.js) and build the full path explicitly.
-# ============================================================
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+# ── Model Path ────────────────────────────────────────────────────────────────
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BACKEND_DIR, "plant_disease_recog_model_pwp.keras")
+MODEL_PATH  = os.path.join(BACKEND_DIR, "plant_disease_recog_model_pwp.keras")
 
-# Log for debugging (Node.js captures stderr separately)
-print(f"[predict.py] BACKEND_DIR = {BACKEND_DIR}", file=sys.stderr)
-print(f"[predict.py] MODEL_PATH  = {MODEL_PATH}", file=sys.stderr)
-print(f"[predict.py] Model found = {os.path.exists(MODEL_PATH)}", file=sys.stderr)
+sys.stderr.write(f"[predict.py] MODEL_PATH  : {MODEL_PATH}\n")
+sys.stderr.write(f"[predict.py] Model exists: {os.path.exists(MODEL_PATH)}\n")
 
+# ── PlantVillage 39-class labels (EXACT alphabetical folder order from dataset) ─
+# Index order MUST match what flow_from_directory / sorted(os.listdir) produces (alphabetical).
 CLASS_NAMES = [
-    'Apple - Apple scab', 'Apple - Black rot', 'Apple - Cedar apple rust', 'Apple - Healthy',
-    'Blueberry - Healthy',
-    'Cherry - Powdery mildew', 'Cherry - Healthy',
-    'Corn - Cercospora leaf spot / Gray leaf spot', 'Corn - Common rust', 'Corn - Northern Leaf Blight', 'Corn - Healthy',
-    'Grape - Black rot', 'Grape - Esca (Black Measles)', 'Grape - Leaf blight (Isariopsis)', 'Grape - Healthy',
-    'Orange - Haunglongbing (Citrus greening)',
-    'Peach - Bacterial spot', 'Peach - Healthy',
-    'Pepper bell - Bacterial spot', 'Pepper bell - Healthy',
-    'Potato - Early blight', 'Potato - Late blight', 'Potato - Healthy',
-    'Raspberry - Healthy',
-    'Soybean - Healthy',
-    'Squash - Powdery mildew',
-    'Strawberry - Leaf scorch', 'Strawberry - Healthy',
-    'Tomato - Bacterial spot', 'Tomato - Early blight', 'Tomato - Late blight',
-    'Tomato - Leaf Mold', 'Tomato - Septoria leaf spot',
-    'Tomato - Spider mites / Two-spotted spider mite',
-    'Tomato - Target Spot', 'Tomato - Yellow Leaf Curl Virus', 'Tomato - Mosaic virus', 'Tomato - Healthy',
-    'Background (no leaf detected)'
+    'Apple - Apple Scab',                          # 0  Apple___Apple_scab
+    'Apple - Black Rot',                           # 1  Apple___Black_rot
+    'Apple - Cedar Apple Rust',                    # 2  Apple___Cedar_apple_rust
+    'Apple - Healthy',                             # 3  Apple___healthy
+    'Background (No Leaf Detected)',               # 4  Background_without_leaves
+    'Blueberry - Healthy',                         # 5  Blueberry___healthy
+    'Cherry - Powdery Mildew',                     # 6  Cherry___Powdery_mildew
+    'Cherry - Healthy',                            # 7  Cherry___healthy
+    'Corn - Cercospora / Gray Leaf Spot',          # 8  Corn___Cercospora_leaf_spot Gray_leaf_spot
+    'Corn - Common Rust',                          # 9  Corn___Common_rust
+    'Corn - Northern Leaf Blight',                 # 10 Corn___Northern_Leaf_Blight
+    'Corn - Healthy',                              # 11 Corn___healthy
+    'Grape - Black Rot',                           # 12 Grape___Black_rot
+    'Grape - Esca (Black Measles)',                # 13 Grape___Esca_(Black_Measles)
+    'Grape - Isariopsis Leaf Spot',                # 14 Grape___Leaf_blight_(Isariopsis_Leaf_Spot)
+    'Grape - Healthy',                             # 15 Grape___healthy
+    'Orange - Haunglongbing (Citrus Greening)',    # 16 Orange___Haunglongbing_(Citrus_greening)
+    'Peach - Bacterial Spot',                      # 17 Peach___Bacterial_spot
+    'Peach - Healthy',                             # 18 Peach___healthy
+    'Pepper Bell - Bacterial Spot',                # 19 Pepper,_bell___Bacterial_spot
+    'Pepper Bell - Healthy',                       # 20 Pepper,_bell___healthy
+    'Potato - Early Blight',                       # 21 Potato___Early_blight
+    'Potato - Late Blight',                        # 22 Potato___Late_blight
+    'Potato - Healthy',                            # 23 Potato___healthy
+    'Raspberry - Healthy',                         # 24 Raspberry___healthy
+    'Soybean - Healthy',                           # 25 Soybean___healthy
+    'Squash - Powdery Mildew',                     # 26 Squash___Powdery_mildew
+    'Strawberry - Leaf Scorch',                    # 27 Strawberry___Leaf_scorch
+    'Strawberry - Healthy',                        # 28 Strawberry___healthy
+    'Tomato - Bacterial Spot',                     # 29 Tomato___Bacterial_spot
+    'Tomato - Early Blight',                       # 30 Tomato___Early_blight
+    'Tomato - Late Blight',                        # 31 Tomato___Late_blight
+    'Tomato - Leaf Mold',                          # 32 Tomato___Leaf_Mold
+    'Tomato - Septoria Leaf Spot',                 # 33 Tomato___Septoria_leaf_spot
+    'Tomato - Spider Mites',                       # 34 Tomato___Spider_mites Two-spotted_spider_mite
+    'Tomato - Target Spot',                        # 35 Tomato___Target_Spot
+    'Tomato - Yellow Leaf Curl Virus',             # 36 Tomato___Tomato_Yellow_Leaf_Curl_Virus
+    'Tomato - Mosaic Virus',                       # 37 Tomato___Tomato_mosaic_virus
+    'Tomato - Healthy',                            # 38 Tomato___healthy
 ]
 
-def main(image_path):
+HEALTHY_KEYWORDS = ('healthy', 'background')
+
+
+def is_healthy(name: str) -> bool:
+    return any(k in name.lower() for k in HEALTHY_KEYWORDS)
+
+
+def main(image_path: str):
+    # ── Guard: model must exist ───────────────────────────────────────────────
     if not os.path.exists(MODEL_PATH):
-        print(json.dumps({
+        sys.stdout.write(json.dumps({
             "success": False,
-            "mocked": True,
-            "prediction": "Model file not found",
-            "confidence": 0,
-            "message": f"Model not found at: {MODEL_PATH}"
+            "error": f"Trained model not found at: {MODEL_PATH}"
         }))
-        return
+        sys.exit(1)
+
+    # ── Guard: image must exist ───────────────────────────────────────────────
+    if not os.path.exists(image_path):
+        sys.stdout.write(json.dumps({
+            "success": False,
+            "error": f"Image not found: {image_path}"
+        }))
+        sys.exit(1)
 
     try:
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         import tensorflow as tf
         import numpy as np
 
-        if not os.path.exists(image_path):
-            print(json.dumps({"success": False, "error": f"Image not found: {image_path}"}))
-            return
-
-        # Load model
+        # Load trained model
         model = tf.keras.models.load_model(MODEL_PATH)
 
-        # Preprocess image — same as training notebook (160x160)
-        img = tf.keras.utils.load_img(image_path, target_size=(160, 160))
-        img_array = tf.keras.utils.img_to_array(img)
-        img_array = tf.expand_dims(img_array, 0)  # create batch of 1
+        # Pre-process exactly as during training: resize → array → EfficientNet scale
+        img   = tf.keras.utils.load_img(image_path, target_size=(160, 160))
+        arr   = tf.keras.utils.img_to_array(img)
+        arr   = tf.keras.applications.efficientnet.preprocess_input(arr)
+        batch = np.expand_dims(arr, axis=0)
 
-        predictions = model.predict(img_array, verbose=0)
-        scores = predictions[0]
+        # Run inference
+        preds = model.predict(batch, verbose=0)[0]   # shape (39,)
 
-        predicted_idx = int(np.argmax(scores))
-        confidence = float(scores[predicted_idx]) * 100
+        predicted_idx  = int(np.argmax(preds))
+        confidence_raw = float(preds[predicted_idx])   # 0–1 (softmax)
+        confidence_pct = round(confidence_raw * 100, 2)
 
-        predicted_class = CLASS_NAMES[predicted_idx] if predicted_idx < len(CLASS_NAMES) else f"Unknown class {predicted_idx}"
+        class_name = (
+            CLASS_NAMES[predicted_idx]
+            if predicted_idx < len(CLASS_NAMES)
+            else f"Unknown class #{predicted_idx}"
+        )
 
-        # Determine if healthy or diseased
-        is_healthy = 'Healthy' in predicted_class or 'Background' in predicted_class
+        healthy = is_healthy(class_name)
 
-        print(json.dumps({
-            "success": True,
-            "prediction": predicted_class,
-            "confidence": round(confidence, 2),
-            "isHealthy": is_healthy,
-            "mocked": False
+        # Friendly prediction label
+        if 'background' in class_name.lower():
+            display = "No Crop Leaf Detected in Image"
+            healthy = True
+        elif healthy:
+            display = "No Disease Detected — Crop is Healthy"
+        else:
+            display = class_name
+
+        sys.stdout.write(json.dumps({
+            "success":    True,
+            "prediction": display,
+            "rawClass":   class_name,
+            "confidence": confidence_pct,
+            "isHealthy":  healthy,
+            "mocked":     False
         }))
 
-    except Exception as e:
+    except Exception as exc:
         import traceback
-        print(json.dumps({
-            "success": False,
-            "error": str(e),
+        sys.stdout.write(json.dumps({
+            "success":   False,
+            "error":     str(exc),
             "traceback": traceback.format_exc()
         }))
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(json.dumps({"success": False, "error": "No image path provided."}))
+        sys.stdout.write(json.dumps({"success": False, "error": "Usage: predict.py <image_path>"}))
         sys.exit(1)
     main(sys.argv[1])
