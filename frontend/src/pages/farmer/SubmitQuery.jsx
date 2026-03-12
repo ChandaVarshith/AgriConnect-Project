@@ -2,19 +2,14 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageLayout from '../../components/PageLayout'
 import queryService from '../../services/queryService'
+import API from '../../services/api'
 import { useLanguage } from '../../context/LanguageContext'
-import axios from 'axios'
 import './SubmitQuery.css'
-
-const getBaseUrl = () => {
-    let url = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-    if (url.endsWith('/api')) url = url.slice(0, -4)
-    return url
-}
 
 const SubmitQuery = () => {
     const { t } = useLanguage()
     const [form, setForm] = useState({ cropType: '', description: '', district: '', state: '' })
+    const [requestDiseaseCheck, setRequestDiseaseCheck] = useState(false)
     const [imageFile, setImageFile] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
     const [imageUrl, setImageUrl] = useState('')
@@ -36,14 +31,14 @@ const SubmitQuery = () => {
         try {
             const formData = new FormData()
             formData.append('image', file)
-            const res = await axios.post(`${getBaseUrl()}/api/upload/image`, formData, {
+            // Use configured API instance so Auth token is attached automatically
+            const res = await API.post('/upload/image', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                withCredentials: true,
             })
             setImageUrl(res.data.url)
         } catch (err) {
             console.error('Image upload failed:', err)
-            setError('Image upload failed. You can still submit without an image.')
+            setError('Image upload failed. Please try again.')
             setImageFile(null)
             setImagePreview(null)
         } finally {
@@ -58,9 +53,23 @@ const SubmitQuery = () => {
         setError('')
     }
 
+    const handleToggleDiseaseCheck = (e) => {
+        const checked = e.target.checked;
+        setRequestDiseaseCheck(checked);
+        if (!checked) {
+            removeImage(); // clear image if turning off disease check
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
+        
+        if (requestDiseaseCheck && !imageUrl) {
+            setError('Please upload a crop image for disease detection.');
+            return;
+        }
+
         setL(true)
         try {
             const location = `${form.district}, ${form.state}`
@@ -102,48 +111,66 @@ const SubmitQuery = () => {
                             </div>
                         </div>
 
-                        {/* ── Optional Image Upload ──────────────────────────── */}
-                        <div className="submit-query-image-section">
-                            <label className="submit-query-label">
-                                📷 Crop Disease Image <span className="submit-query-optional">(optional)</span>
+                        {/* ── Conditional Disease Check Toggle ──────────────────────────── */}
+                        <div className="submit-query-disease-toggle">
+                            <label className="submit-query-checkbox-label">
+                                <input 
+                                    type="checkbox" 
+                                    checked={requestDiseaseCheck} 
+                                    onChange={handleToggleDiseaseCheck} 
+                                    className="submit-query-checkbox"
+                                />
+                                Request Crop Disease Detection?
                             </label>
                             <p className="submit-query-image-hint">
-                                Attach a photo of your crop so the expert can assess the disease visually.
+                                Check this box if you want our experts and AI to analyze a photo of your crop for diseases.
                             </p>
-
-                            {!imagePreview ? (
-                                <label htmlFor="query-image-upload" className="submit-query-image-dropzone">
-                                    <input
-                                        id="query-image-upload"
-                                        type="file"
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        onChange={handleImageChange}
-                                    />
-                                    <span className="submit-query-image-icon">🌿</span>
-                                    <span>Click to attach a crop image</span>
-                                </label>
-                            ) : (
-                                <div className="submit-query-image-preview-wrap">
-                                    <img src={imagePreview} alt="crop" className="submit-query-image-preview" />
-                                    {uploading && (
-                                        <div className="submit-query-image-uploading">⏳ Uploading…</div>
-                                    )}
-                                    {!uploading && imageUrl && (
-                                        <div className="submit-query-image-ready">✅ Image ready</div>
-                                    )}
-                                    <button type="button" className="submit-query-image-remove" onClick={removeImage}>
-                                        ✕ Remove
-                                    </button>
-                                </div>
-                            )}
                         </div>
+
+                        {/* ── Optional Image Upload (Visible if checked) ──────────────────────────── */}
+                        {requestDiseaseCheck && (
+                            <div className="submit-query-image-section">
+                                <label className="submit-query-label">
+                                    📷 Crop Disease Image <span className="submit-query-required">*</span>
+                                </label>
+                                <p className="submit-query-image-hint" style={{ marginTop: '-4px' }}>
+                                    Please attach a clear photo of the affected crop leaves. 
+                                </p>
+
+                                {!imagePreview ? (
+                                    <label htmlFor="query-image-upload" className="submit-query-image-dropzone">
+                                        <input
+                                            id="query-image-upload"
+                                            type="file"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                            onChange={handleImageChange}
+                                        />
+                                        <span className="submit-query-image-icon">🌿</span>
+                                        <span>Click to attach a crop image</span>
+                                    </label>
+                                ) : (
+                                    <div className="submit-query-image-preview-wrap">
+                                        <img src={imagePreview} alt="crop" className="submit-query-image-preview" />
+                                        {uploading && (
+                                            <div className="submit-query-image-uploading">⏳ Uploading…</div>
+                                        )}
+                                        {!uploading && imageUrl && (
+                                            <div className="submit-query-image-ready">✅ Image ready</div>
+                                        )}
+                                        <button type="button" className="submit-query-image-remove" onClick={removeImage}>
+                                            ✕ Remove
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {error && <p className="submit-query-error">{error}</p>}
 
                         <button
                             type="submit"
-                            disabled={loading || uploading}
+                            disabled={loading || uploading || (requestDiseaseCheck && !imageUrl && !uploading)}
                             className="submit-query-btn"
                         >
                             {loading ? t('submitting') : uploading ? 'Uploading image…' : t('submitrequest')}
