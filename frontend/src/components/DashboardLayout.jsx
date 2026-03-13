@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from './Navbar'
+import Footer from './Footer'
 
 /**
  * DashboardLayout — used ONLY for the home/landing page of each role.
@@ -85,6 +86,11 @@ const DashboardLayout = ({ role, photoUrl, welcomeText, subText, children }) => 
                     {children}
                 </div>
             )}
+
+            {/* Global Footer added safely at the bottom of the layout boundary */}
+            <div style={{ position: 'relative', zIndex: 10 }}>
+                <Footer />
+            </div>
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Leaf, ScanSearch, MessagesSquare, Landmark, BookOpen, Store } from 'lucide-react'
 import DashboardLayout from '../../components/DashboardLayout'
 import { useLanguage } from '../../context/LanguageContext'
 import './FarmerHome.css'
@@ -7,12 +8,12 @@ import './FarmerHome.css'
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
 
 const ACTIONS = [
-    { labelKey: 'sendcropsuggestionrequest', path: '/farmer/query', icon: '', color: '#16a34a' },
-    { labelKey: 'detectcropdisease', path: '/farmer/disease-detection', icon: '', color: '#0ea5e9' },
-    { labelKey: 'viewallresponses', path: '/farmer/responses', icon: '', color: '#2563eb' },
-    { labelKey: 'viewallloans', path: '/farmer/loans', icon: '🏦', color: '#d97706' },
-    { labelKey: 'explorefarmingcontent', path: '/farmer/articles', icon: '📰', color: '#7c3aed' },
-    { labelKey: 'sellyourproduce', path: '/farmer/marketplace', icon: '🛒', color: '#e02020' },
+    { labelKey: 'sendcropsuggestionrequest', path: '/farmer/query', icon: Leaf, color: '#16a34a' },
+    { labelKey: 'detectcropdisease', path: '/farmer/disease-detection', icon: ScanSearch, color: '#0ea5e9' },
+    { labelKey: 'viewallresponses', path: '/farmer/responses', icon: MessagesSquare, color: '#2563eb' },
+    { labelKey: 'viewallloans', path: '/farmer/loans', icon: Landmark, color: '#d97706' },
+    { labelKey: 'explorefarmingcontent', path: '/farmer/articles', icon: BookOpen, color: '#7c3aed' },
+    { labelKey: 'sellyourproduce', path: '/farmer/marketplace', icon: Store, color: '#e02020' },
 ]
 
 const FarmerHome = () => {
@@ -39,7 +40,9 @@ const FarmerHome = () => {
                             className="farmer-home-action-btn"
                             style={{ borderTop: `3px solid ${a.color}` }}
                         >
-                            <span className="farmer-home-action-icon">{a.icon}</span>
+                            <span className="farmer-home-action-icon" style={{ color: a.color }}>
+                                <a.icon size={26} strokeWidth={1.8} />
+                            </span>
                             <span className="farmer-home-action-label">
                                 {t(a.labelKey)}
                             </span>

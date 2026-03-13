@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { Sprout, UserRoundCog, Landmark, Users } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import './SignupSelector.css'
 
@@ -9,7 +10,7 @@ const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&
 const ROLES = [
     {
         id: 'farmer',
-        emoji: '',
+        icon: Sprout,
         title: 'Farmer',
         desc: 'Browse loans, submit queries, and explore expert articles.',
         path: '/register/farmer',
@@ -17,7 +18,7 @@ const ROLES = [
     },
     {
         id: 'expert',
-        emoji: '🧑‍🔬',
+        icon: UserRoundCog,
         title: 'Expert',
         desc: 'Answer farmer queries and publish agricultural articles.',
         path: '/register/expert',
@@ -25,7 +26,7 @@ const ROLES = [
     },
     {
         id: 'financier',
-        emoji: '🏦',
+        icon: Landmark,
         title: 'Financier',
         desc: 'Offer loan products and manage farmer loan requests.',
         path: '/register/financier',
@@ -33,7 +34,7 @@ const ROLES = [
     },
     {
         id: 'public',
-        emoji: '👤',
+        icon: Users,
         title: 'Public User',
         desc: 'Explore farming content, learn agriculture, and buy fresh produce.',
         path: '/register/public',
@@ -82,7 +83,9 @@ const SignupSelector = () => {
                                 e.currentTarget.style.boxShadow = 'none'
                             }}
                         >
-                            <div className="signup-selector-card-emoji">{r.emoji}</div>
+                            <div className="signup-selector-card-emoji" style={{ color: r.accent }}>
+                                <r.icon size={48} strokeWidth={1.5} />
+                            </div>
                             <div className="signup-selector-card-title">
                                 {r.title}
                             </div>

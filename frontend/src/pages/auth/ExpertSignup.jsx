@@ -193,7 +193,7 @@ const ExpertSignup = () => {
                                     title={!emailVerified ? 'Please verify your email first' : ''}
                                     className={`expert-signup-submit-btn ${!emailVerified ? 'expert-signup-submit-btn-disabled' : submitLoading ? 'expert-signup-submit-btn-loading' : 'expert-signup-submit-btn-active'}`}
                                 >
-                                    {submitLoading ? 'Sending Request…' : '🚀 Send Request to Admin'}
+                                    {submitLoading ? 'Sending Request…' : 'Send Request to Admin'}
                                 </button>
 
                                 {/* Helper hint */}

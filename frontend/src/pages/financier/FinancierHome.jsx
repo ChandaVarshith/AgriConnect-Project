@@ -1,15 +1,16 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { PlusCircle, FileText, Landmark, Users } from 'lucide-react'
 import DashboardLayout from '../../components/DashboardLayout'
 import './FinancierHome.css'
 
 const PHOTO = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop&q=80'
 
 const CARDS = [
-    { emoji: '➕', title: 'Add Loan', desc: 'Create a new loan product', path: '/financier/add-loan', accent: '#22c55e' },
-    { emoji: '📋', title: 'Loan Requests', desc: 'Review farmer applications', path: '/financier/loan-requests', accent: '#3b82f6' },
-    { emoji: '', title: 'All Loans', desc: 'View and manage all products', path: '/financier/all-loans', accent: '#f59e0b' },
-    { emoji: '', title: 'Farmer Portfolio', desc: 'Applications grouped by farmer', path: '/financier/farmer-loans', accent: '#a855f7' },
+    { icon: PlusCircle, title: 'Add Loan', desc: 'Create a new loan product', path: '/financier/add-loan', accent: '#22c55e' },
+    { icon: FileText, title: 'Loan Requests', desc: 'Review farmer applications', path: '/financier/loan-requests', accent: '#3b82f6' },
+    { icon: Landmark, title: 'All Loans', desc: 'View and manage all products', path: '/financier/all-loans', accent: '#f59e0b' },
+    { icon: Users, title: 'Farmer Portfolio', desc: 'Applications grouped by farmer', path: '/financier/farmer-loans', accent: '#a855f7' },
 ]
 
 const FinancierHome = () => {
@@ -34,7 +35,9 @@ const FinancierHome = () => {
                             e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
                             e.currentTarget.style.boxShadow = 'none'
                         }}>
-                        <div className="financier-home-emoji">{c.emoji}</div>
+                        <div className="financier-home-emoji" style={{ color: c.accent }}>
+                            <c.icon size={36} strokeWidth={1.5} />
+                        </div>
                         <div className="financier-home-title">{c.title}</div>
                         <div className="financier-home-desc">{c.desc}</div>
                     </div>

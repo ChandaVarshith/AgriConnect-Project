@@ -193,7 +193,7 @@ const FinancierSignup = () => {
                                     title={!emailVerified ? 'Please verify your email first' : ''}
                                     className={`financier-signup-submit-btn ${!emailVerified ? 'financier-signup-submit-btn-disabled' : submitLoading ? 'financier-signup-submit-btn-loading' : 'financier-signup-submit-btn-active'}`}
                                 >
-                                    {submitLoading ? 'Sending Request…' : '🚀 Send Request to Admin'}
+                                    {submitLoading ? 'Sending Request…' : 'Send Request to Admin'}
                                 </button>
 
                                 {/* Helper hint */}
