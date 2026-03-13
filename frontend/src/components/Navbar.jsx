@@ -39,6 +39,7 @@ const NAV_ITEMS = {
     ],
     public: [
         { to: '/public/home', label: 'My Home' },
+        { to: '/public/disease-detection', label: 'Crop Disease Detection' },
         { to: '/public/content', label: 'Explore Content' },
         { to: '/public/learn', label: 'Learn Farming' },
         { to: '/public/buy', label: 'Buy Resources' },
@@ -133,7 +134,7 @@ const Navbar = ({ role: roleProp, publicNav, logoOnly }) => {
                             </div>
                             
                             <NavLink to="/login" style={{ textDecoration: 'none', color: '#fff', fontWeight: 600, fontSize: '0.95rem', padding: '8px 12px', transition: 'color 0.2s', ':hover': { color: '#22c55e' }}}>{t('signin', language)}</NavLink>
-                            <NavLink to="/register/farmer" style={{ textDecoration: 'none', color: '#fff', fontWeight: 600, fontSize: '0.95rem', background: '#22c55e', padding: '8px 20px', borderRadius: '50px', transition: 'background 0.2s', ':hover': { background: '#16a34a' }}}>{t('register', language)}</NavLink>
+                            <NavLink to="/register" style={{ textDecoration: 'none', color: '#fff', fontWeight: 600, fontSize: '0.95rem', background: '#22c55e', padding: '8px 20px', borderRadius: '50px', transition: 'background 0.2s', ':hover': { background: '#16a34a' }}}>{t('register', language)}</NavLink>
                         </div>
                     ) : (
                         <>

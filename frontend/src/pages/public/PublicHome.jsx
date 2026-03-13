@@ -113,8 +113,8 @@ const PublicHome = () => {
                         {t('heroSubtext2', language)}
                     </p>
                     <div className="hero-actions">
-                        <Link to="/login" className="btn-solid-green">{t('getStarted', language)}</Link>
-                        <Link to="/register/farmer" className="btn-outline-glass">{t('joinAsFarmer', language)}</Link>
+                        <Link to="/public-demo/disease-detection" className="btn-solid-green">Crop Disease Inspection For Free</Link>
+                        <Link to="/register/farmer" className="btn-outline-glass">Join as Farmer</Link>
                     </div>
                 </div>
 
@@ -163,11 +163,20 @@ const PublicHome = () => {
                 </div>
             </section>
 
-            {/* --- CTA SECTION --- */}
+            {/* --- CALL TO ACTION --- */}
             <section className="cta-section">
-                <div className="cta-card">
-                    <h2 className="cta-headline">{t('ctaHeadline', language)}</h2>
-                    <Link to="/login" className="btn-solid-green pulse-effect">{t('ctaButton', language)}</Link>
+                <div className="cta-card glass-panel">
+                    <h2>READY TO TRANSFORM YOUR AGRICULTURAL JOURNEY?</h2>
+                    <div className="role-access-container">
+                        <div className="role-access-title">ROLE-BASED ACCESS TO ↓</div>
+                        <div className="role-pills-row">
+                            <Link to="/login" className="role-pill">ADMIN</Link>
+                            <Link to="/register/farmer" className="role-pill">FARMER</Link>
+                            <Link to="/register/expert" className="role-pill">EXPERT</Link>
+                            <Link to="/register/financier" className="role-pill">FINANCIER</Link>
+                            <Link to="/register/public" className="role-pill">PUBLIC</Link>
+                        </div>
+                    </div>
                 </div>
             </section>
 

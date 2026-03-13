@@ -20,6 +20,7 @@ import ExploreUs from './pages/public/ExploreUs'
 import Community from './pages/public/Community'
 import Marketplace from './pages/public/Marketplace'
 import FarmVisit from './pages/public/FarmVisit'
+import PublicDiseaseDetectionDemo from './pages/public/PublicDiseaseDetectionDemo'
 
 // Authenticated Public User Pages
 import PublicUserHome from './pages/public/PublicUserHome'
@@ -75,6 +76,7 @@ function App() {
                         <Route path="/community" element={<Community />} />
                         <Route path="/marketplace" element={<Marketplace />} />
                         <Route path="/farm-visit" element={<FarmVisit />} />
+                        <Route path="/public-demo/disease-detection" element={<PublicDiseaseDetectionDemo />} />
 
                         {/* Auth Routes */}
                         <Route path="/login" element={<Login />} />
@@ -125,6 +127,7 @@ function App() {
 
                         {/* Authenticated Public User Routes */}
                         <Route path="/public/home" element={<ProtectedRoute role="public"><PublicUserHome /></ProtectedRoute>} />
+                        <Route path="/public/disease-detection" element={<ProtectedRoute role="public"><CropDiseaseDetection role="public" /></ProtectedRoute>} />
                         <Route path="/public/content" element={<ProtectedRoute role="public"><PublicContent /></ProtectedRoute>} />
                         <Route path="/public/learn" element={<ProtectedRoute role="public"><PublicLearnFarming /></ProtectedRoute>} />
                         <Route path="/public/buy" element={<ProtectedRoute role="public"><PublicBuyResources /></ProtectedRoute>} />
