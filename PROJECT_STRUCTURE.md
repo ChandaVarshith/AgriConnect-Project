@@ -61,17 +61,15 @@ AgriConnect/
 ### 🔓 Public Landing Page (No Login Required)
 
 #### `PublicHome.jsx`
-The **first page** visitors see when they open the website.
+The **first page** visitors see when they open the website. Recently refactored to share the same styling and layout structure as the internal dashboards for total UI consistency.
 
-- Full-screen farm background image (Unsplash)
-- Hero section with the tagline **"Empowering Farmers for a Sustainable Future"**
-- Two call-to-action buttons: **Sign In** and **Register as Farmer**
-- Scroll-down button that animates to a second section
-- **Platform Overview section**: Two side-by-side cards showing:
-  - ⚠️ **The Problem** — 7 real farmer pain points (disconnection, finance gaps, language barriers, etc.)
-  - ✅ **AgriConnect Solution** — 7 matching solutions the platform provides
-- Role badges: Admin · Farmer · Expert · Financier · Public
-- "Get Started Today" CTA button
+- Full-page farm background spanning beneath the header (via custom CSS).
+- Central glassmorphism hero section featuring the tagline: **"Empowering Farmers for a Sustainable Future"**.
+- Action-oriented, responsive CTA (Call To Action) button group spanning: **Admin · Farmer · Expert · Financier · Public**.
+- Smooth-scroll indicator bouncing at the bottom of the hero section.
+- **Statistics Section**: Floating glass boxes showing platform statistics (e.g., Active Users, Districts Covered).
+- **Features Grid**: Responsive grid detailing platform solutions using professional vector SVG icons (Lucide-react).
+- **Global Footer**: A site-wide footer appended dynamically via `App.jsx`, providing quick links and the Nodemailer Help Center.
 
 ---
 
