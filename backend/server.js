@@ -75,6 +75,7 @@ app.use('/api/ai', require('./routes/ai.routes'))
 app.use('/api/weather', require('./routes/weather.routes'))
 app.use('/api/ml', require('./routes/ml.routes'))
 app.use('/api/upload', require('./routes/upload.routes'))
+app.use('/api/contact', require('./routes/contact.routes'))
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'AgriConnect API is running ✅' }))

@@ -113,8 +113,8 @@ const PublicHome = () => {
                         {t('heroSubtext2', language)}
                     </p>
                     <div className="hero-actions">
-                        <Link to="/public-demo/disease-detection" className="btn-solid-green">Crop Disease Inspection For Free</Link>
-                        <Link to="/register/farmer" className="btn-outline-glass">Join as Farmer</Link>
+                        <Link to="/public-demo/disease-detection" className="btn-solid-green">{t('cropDiseaseDemo', language)}</Link>
+                        <Link to="/register/farmer" className="btn-outline-glass">{t('joinAsFarmer', language)}</Link>
                     </div>
                 </div>
 
@@ -129,19 +129,19 @@ const PublicHome = () => {
                 <div className="stats-container">
                     <div className="stat-box">
                         <RollingNumber target={93} suffix="&nbsp;%" />
-                        <div className="stat-label">AI Disease Detection<br/>Accuracy</div>
+                        <div className="stat-label">{t('statAccuracy', language).split(' ').slice(0, 3).join(' ')}<br/>{t('statAccuracy', language).split(' ').slice(3).join(' ')}</div>
                     </div>
                     <div className="stat-box">
                         <RollingNumber target={39} suffix="+" />
-                        <div className="stat-label">Crop &amp; Disease Classes<br/>Supported</div>
+                        <div className="stat-label">{t('statClasses', language).split(' ').slice(0, 3).join(' ')}<br/>{t('statClasses', language).split(' ').slice(3).join(' ')}</div>
                     </div>
                     <div className="stat-box">
                         <RollingNumber target={24} suffix="/7" />
-                        <div className="stat-label">Real-Time Weather &amp;<br/>Market Access</div>
+                        <div className="stat-label">{t('statMarket', language).split(' ').slice(0, 3).join(' ')}<br/>{t('statMarket', language).split(' ').slice(3).join(' ')}</div>
                     </div>
                     <div className="stat-box">
                         <RollingNumber target={500} suffix="+" />
-                        <div className="stat-label">Certified Agricultural<br/>Experts</div>
+                        <div className="stat-label">{t('statExperts', language).split(' ').slice(0, 2).join(' ')}<br/>{t('statExperts', language).split(' ').slice(2).join(' ')}</div>
                     </div>
                 </div>
             </section>
@@ -166,15 +166,15 @@ const PublicHome = () => {
             {/* --- CALL TO ACTION --- */}
             <section className="cta-section">
                 <div className="cta-card glass-panel">
-                    <h2>READY TO TRANSFORM YOUR AGRICULTURAL JOURNEY?</h2>
+                    <h2>{t('ctaHeadline', language)}</h2>
                     <div className="role-access-container">
-                        <div className="role-access-title">ROLE-BASED ACCESS TO ↓</div>
+                        <div className="role-access-title">{t('roleAccessTitle', language)}</div>
                         <div className="role-pills-row">
-                            <Link to="/login" className="role-pill">ADMIN</Link>
-                            <Link to="/register/farmer" className="role-pill">FARMER</Link>
-                            <Link to="/register/expert" className="role-pill">EXPERT</Link>
-                            <Link to="/register/financier" className="role-pill">FINANCIER</Link>
-                            <Link to="/register/public" className="role-pill">PUBLIC</Link>
+                            <Link to="/login" className="role-pill">{t('roleAdmin', language)}</Link>
+                            <Link to="/register/farmer" className="role-pill">{t('roleFarmer', language)}</Link>
+                            <Link to="/register/expert" className="role-pill">{t('roleExpert', language)}</Link>
+                            <Link to="/register/financier" className="role-pill">{t('roleFinancier', language)}</Link>
+                            <Link to="/register/public" className="role-pill">{t('rolePublic', language)}</Link>
                         </div>
                     </div>
                 </div>

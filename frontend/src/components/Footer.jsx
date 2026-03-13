@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import axios from 'axios'
 import './Footer.css'
 
 const GithubIcon = () => (
@@ -14,10 +15,80 @@ const LinkedinIcon = () => (
 )
 
 const Footer = () => {
+    const [isHelpOpen, setIsHelpOpen] = useState(false)
+    const [formData, setFormData] = useState({
+        name: '', email: '', mobile: '', issueType: 'General Inquiry', description: ''
+    })
+    const [status, setStatus] = useState({ loading: false, success: false, error: '' })
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setStatus({ loading: true, success: false, error: '' })
+        try {
+            await axios.post('http://localhost:5000/api/contact', formData)
+            setStatus({ loading: false, success: true, error: '' })
+            setFormData({ name: '', email: '', mobile: '', issueType: 'General Inquiry', description: '' })
+            // Auto close after 3 seconds
+            setTimeout(() => {
+                setIsHelpOpen(false)
+                setStatus({ loading: false, success: false, error: '' })
+            }, 3000)
+        } catch (err) {
+            setStatus({ loading: false, success: false, error: err.response?.data?.message || 'Failed to send message' })
+        }
+    }
+
     return (
         <footer className="global-footer">
+            
+            {/* Sliding Help Center Form */}
+            <div className={`help-center-panel ${isHelpOpen ? 'open' : ''}`}>
+                <div className="help-center-header">
+                    <h4>AgriConnect Help Center</h4>
+                    <button className="close-help-btn" onClick={() => setIsHelpOpen(false)}>×</button>
+                </div>
+                
+                {status.success ? (
+                    <div className="help-success-state">
+                        <div className="success-icon">✓</div>
+                        <p>Message sent successfully!</p>
+                        <span>We will get back to you soon.</span>
+                    </div>
+                ) : (
+                    <form className="help-center-form" onSubmit={handleSubmit}>
+                        {status.error && <div className="help-error">{status.error}</div>}
+                        
+                        <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} required className="help-input" />
+                        <input type="tel" name="mobile" placeholder="Mobile Number (Reply via WhatsApp/Call)" value={formData.mobile} onChange={handleChange} required className="help-input" />
+                        <input type="email" name="email" placeholder="Email Address (Optional)" value={formData.email} onChange={handleChange} className="help-input" />
+                        
+                        <select name="issueType" value={formData.issueType} onChange={handleChange} className="help-input help-select">
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Technical Issue">Technical Issue</option>
+                            <option value="Expert Request">Expert Request</option>
+                            <option value="Feature Suggestion">Feature Suggestion</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <textarea name="description" placeholder="Describe your issue or request in detail..." value={formData.description} onChange={handleChange} required className="help-textarea" rows="4"></textarea>
+
+                        <button type="submit" className="help-submit-btn" disabled={status.loading}>
+                            {status.loading ? 'Sending...' : 'Send Request'}
+                        </button>
+                    </form>
+                )}
+            </div>
+
             <div className="footer-content">
-                <div className="footer-left"></div>
+                <div className="footer-left">
+                    <button className="help-center-toggle-btn" onClick={() => setIsHelpOpen(!isHelpOpen)}>
+                        <span className="help-icon">?</span> Help Center
+                    </button>
+                </div>
                 <div className="footer-socials">
                     <a href="https://github.com/ChandaVarshith/AgriConnect-Project" target="_blank" rel="noopener noreferrer" className="social-link">
                         <GithubIcon />
