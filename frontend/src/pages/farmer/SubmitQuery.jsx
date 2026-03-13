@@ -155,17 +155,17 @@ const SubmitQuery = () => {
                                             style={{ display: 'none' }}
                                             onChange={handleImageChange}
                                         />
-                                        <span className="submit-query-image-icon">🌿</span>
+                                        <span className="submit-query-image-icon"></span>
                                         <span>Click to attach a crop image</span>
                                     </label>
                                 ) : (
                                     <div className="submit-query-image-preview-wrap">
                                         <img src={imagePreview} alt="crop" className="submit-query-image-preview" />
                                         {uploading && (
-                                            <div className="submit-query-image-uploading">⏳ Uploading…</div>
+                                            <div className="submit-query-image-uploading"> Uploading…</div>
                                         )}
                                         {!uploading && imageUrl && (
-                                            <div className="submit-query-image-ready">✅ Image ready</div>
+                                            <div className="submit-query-image-ready">✓ Image ready</div>
                                         )}
                                         <button type="button" className="submit-query-image-remove" onClick={removeImage}>
                                             ✕ Remove
@@ -192,7 +192,7 @@ const SubmitQuery = () => {
             {submitted && (
                 <div className="submit-query-modal-overlay">
                     <div className="submit-query-modal-content">
-                        <div className="submit-query-modal-icon">✅</div>
+                        <div className="submit-query-modal-icon">✓</div>
                         <h3 className="submit-query-modal-title">Success!</h3>
                         <p className="submit-query-modal-text">{t('requestsubmittedsuccessfully')}</p>
                     </div>

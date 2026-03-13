@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './PublicRegister.css'
 
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
@@ -30,12 +31,7 @@ const PublicRegister = () => {
     return (
         <div className="public-register-container">
             <img src={BG} alt="farm bg" className="public-register-bg" />
-            <nav className="public-register-nav">
-                <Link to="/" className="public-register-logo-link">
-                    <span className="public-register-logo-1">AGRI&nbsp;</span>
-                    <span className="public-register-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
             <div className="public-register-content">
                 <div className="public-register-card">
                     <h2 className="public-register-title">Public User</h2>

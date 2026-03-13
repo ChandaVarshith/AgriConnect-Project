@@ -139,7 +139,7 @@ const LoanApplication = () => {
                         />
                         {files.length > 0 && (
                             <p className="loan-app-files-msg">
-                                ✓ {files.length} file{files.length > 1 ? 's' : ''} selected
+                                {files.length} file{files.length > 1 ? 's' : ''} selected
                             </p>
                         )}
                         <p className="loan-app-accepted-msg">
@@ -148,7 +148,7 @@ const LoanApplication = () => {
 
                         {error && (
                             <div className="loan-app-error">
-                                ⚠️ {error}
+                                ! {error}
                             </div>
                         )}
 
@@ -157,7 +157,7 @@ const LoanApplication = () => {
                             disabled={loading}
                             className="loan-app-submit-btn"
                         >
-                            {loading ? '⏳ Submitting…' : 'Submit Application'}
+                            {loading ? ' Submitting…' : 'Submit Application'}
                         </button>
                     </form>
                 </div>
@@ -167,7 +167,7 @@ const LoanApplication = () => {
             {applied && (
                 <div className="loan-app-modal-overlay">
                     <div className="loan-app-modal-content">
-                        <div className="loan-app-modal-icon">🎉</div>
+                        <div className="loan-app-modal-icon"></div>
                         <h3 className="loan-app-modal-title">
                             Application Submitted!
                         </h3>

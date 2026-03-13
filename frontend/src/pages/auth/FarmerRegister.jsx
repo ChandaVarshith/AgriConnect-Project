@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './FarmerRegister.css'
 
 const BG = 'https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?w=1400&auto=format&fit=crop&q=80'
@@ -74,12 +75,7 @@ const FarmerRegister = () => {
             <img src={BG} alt="farm bg" className="farmer-register-bg" />
 
             {/* Top bar */}
-            <nav className="farmer-register-nav">
-                <Link to="/" className="farmer-register-logo-link">
-                    <span className="farmer-register-logo-1">AGRI&nbsp;</span>
-                    <span className="farmer-register-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
 
             <div className="farmer-register-content">
                 <div className="farmer-register-card">
@@ -169,7 +165,7 @@ const FarmerRegister = () => {
                                     ← Back
                                 </button>
                                 <button type="submit" disabled={loading} className={`farmer-register-btn ${loading ? 'farmer-register-btn-loading' : 'farmer-register-btn-active'}`}>
-                                    {loading ? 'Registering…' : '✓ Create Account'}
+                                    {loading ? 'Registering…' : 'Create Account'}
                                 </button>
                             </div>
                         </form>

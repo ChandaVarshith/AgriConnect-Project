@@ -25,7 +25,7 @@ const FarmVisit = () => {
     }
 
     return (
-        <PageLayout role="public" publicNav title="🚜 Book a Farm Visit">
+        <PageLayout role="public" publicNav title=" Book a Farm Visit">
             <div className="farm-visit-content">
                 <p className="mb-3" style={{ color: '#ccc', fontSize: '1.1rem' }}>Experience farming first-hand. Register for an immersive farm visit experience.</p>
                 <div className="card">
@@ -53,7 +53,7 @@ const FarmVisit = () => {
                         {success && <p className="mb-2 farm-visit-success">{success}</p>}
                         {error && <p className="mb-2 farm-visit-error">{error}</p>}
                         <button className="btn btn-primary" type="submit" disabled={loading}>
-                            {loading ? 'Submitting…' : '🚜 Register for Farm Visit'}
+                            {loading ? 'Submitting…' : ' Register for Farm Visit'}
                         </button>
                     </form>
                 </div>

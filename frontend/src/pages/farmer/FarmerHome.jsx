@@ -7,9 +7,9 @@ import './FarmerHome.css'
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
 
 const ACTIONS = [
-    { labelKey: 'sendcropsuggestionrequest', path: '/farmer/query', icon: '🌾', color: '#16a34a' },
-    { labelKey: 'detectcropdisease', path: '/farmer/disease-detection', icon: '🔍', color: '#0ea5e9' },
-    { labelKey: 'viewallresponses', path: '/farmer/responses', icon: '💬', color: '#2563eb' },
+    { labelKey: 'sendcropsuggestionrequest', path: '/farmer/query', icon: '', color: '#16a34a' },
+    { labelKey: 'detectcropdisease', path: '/farmer/disease-detection', icon: '', color: '#0ea5e9' },
+    { labelKey: 'viewallresponses', path: '/farmer/responses', icon: '', color: '#2563eb' },
     { labelKey: 'viewallloans', path: '/farmer/loans', icon: '🏦', color: '#d97706' },
     { labelKey: 'explorefarmingcontent', path: '/farmer/articles', icon: '📰', color: '#7c3aed' },
     { labelKey: 'sellyourproduce', path: '/farmer/marketplace', icon: '🛒', color: '#e02020' },

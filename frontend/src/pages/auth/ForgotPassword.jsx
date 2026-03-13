@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './ForgotPassword.css'
 
 const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&auto=format&fit=crop&q=80'
 
 const ROLES = [
-    { value: 'farmer', label: '🌾 Farmer', identifierType: 'phone', placeholder: 'Registered phone number' },
+    { value: 'farmer', label: ' Farmer', identifierType: 'phone', placeholder: 'Registered phone number' },
     { value: 'expert', label: '🧑‍🔬 Expert', identifierType: 'email', placeholder: 'Registered email address' },
     { value: 'financier', label: '🏦 Financier', identifierType: 'email', placeholder: 'Registered email address' },
-    { value: 'admin', label: '🛡️ Admin', identifierType: 'email', placeholder: 'Admin email address' },
-    { value: 'public', label: '🌐 Public User', identifierType: 'email', placeholder: 'Registered email address' },
+    { value: 'admin', label: ' Admin', identifierType: 'email', placeholder: 'Admin email address' },
+    { value: 'public', label: ' Public User', identifierType: 'email', placeholder: 'Registered email address' },
 ]
 
 const ForgotPassword = () => {
@@ -74,12 +75,7 @@ const ForgotPassword = () => {
         <div className="fp-container">
             <img src={BG} alt="farm" className="fp-bg" />
 
-            <nav className="fp-nav">
-                <Link to="/" className="fp-logo-link">
-                    <span className="fp-logo-1">AGRI&nbsp;</span>
-                    <span className="fp-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
 
             <div className="fp-content">
                 <div className="fp-card">
@@ -88,7 +84,7 @@ const ForgotPassword = () => {
                     <div className="fp-steps">
                         {['Identify', 'Verify OTP', 'New Password'].map((label, i) => (
                             <div key={i} className={`fp-step ${step === i + 1 ? 'fp-step--active' : step > i + 1 ? 'fp-step--done' : ''}`}>
-                                <span className="fp-step-num">{step > i + 1 ? '✓' : i + 1}</span>
+                                <span className="fp-step-num">{step > i + 1 ? '' : i + 1}</span>
                                 <span className="fp-step-label">{label}</span>
                             </div>
                         ))}
@@ -153,7 +149,7 @@ const ForgotPassword = () => {
                             {error && <p className="fp-error">{error}</p>}
 
                             <button type="submit" disabled={loading || otp.length < 4} className="fp-btn fp-btn-primary">
-                                {loading ? 'Verifying…' : '✅ Verify OTP'}
+                                {loading ? 'Verifying…' : 'Verify OTP'}
                             </button>
                             <button type="button" onClick={goBack} className="fp-btn fp-btn-secondary">
                                 ← Back

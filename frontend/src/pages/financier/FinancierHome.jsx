@@ -8,8 +8,8 @@ const PHOTO = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=12
 const CARDS = [
     { emoji: '➕', title: 'Add Loan', desc: 'Create a new loan product', path: '/financier/add-loan', accent: '#22c55e' },
     { emoji: '📋', title: 'Loan Requests', desc: 'Review farmer applications', path: '/financier/loan-requests', accent: '#3b82f6' },
-    { emoji: '📊', title: 'All Loans', desc: 'View and manage all products', path: '/financier/all-loans', accent: '#f59e0b' },
-    { emoji: '👨‍🌾', title: 'Farmer Portfolio', desc: 'Applications grouped by farmer', path: '/financier/farmer-loans', accent: '#a855f7' },
+    { emoji: '', title: 'All Loans', desc: 'View and manage all products', path: '/financier/all-loans', accent: '#f59e0b' },
+    { emoji: '', title: 'Farmer Portfolio', desc: 'Applications grouped by farmer', path: '/financier/farmer-loans', accent: '#a855f7' },
 ]
 
 const FinancierHome = () => {

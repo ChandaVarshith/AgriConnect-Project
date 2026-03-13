@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './ExpertSignup.css'
 
 const BG = 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1400&auto=format&fit=crop&q=80'
@@ -62,12 +63,7 @@ const ExpertSignup = () => {
         <div className="expert-signup-container">
             <img src={BG} alt="farm bg" className="expert-signup-bg" />
 
-            <nav className="expert-signup-nav">
-                <Link to="/" className="expert-signup-logo-link">
-                    <span className="expert-signup-logo-1">AGRI&nbsp;</span>
-                    <span className="expert-signup-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
 
             <div className="expert-signup-content">
                 <div className="expert-signup-card">
@@ -75,7 +71,7 @@ const ExpertSignup = () => {
                     {/* ── SUCCESS SCREEN ── */}
                     {success ? (
                         <div className="expert-signup-success-container">
-                            <div className="expert-signup-success-icon">🎉</div>
+                            <div className="expert-signup-success-icon"></div>
                             <h2 className="expert-signup-success-title">Request Sent!</h2>
                             <p className="expert-signup-success-text">
                                 Your expert registration request has been sent to the admin.<br />
@@ -120,7 +116,7 @@ const ExpertSignup = () => {
                                         {/* Verified badge OR Send OTP button */}
                                         {emailVerified ? (
                                             <div className="expert-signup-verified-badge">
-                                                ✅ Verified
+                                                Verified
                                             </div>
                                         ) : (
                                             <button

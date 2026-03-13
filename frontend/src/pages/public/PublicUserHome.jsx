@@ -8,7 +8,7 @@ const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&
 
 const ACTIONS = [
     { label: 'Explore Content', path: '/public/content', icon: '📰', color: '#2563eb' },
-    { label: 'Learn Farming', path: '/public/learn', icon: '🌱', color: '#16a34a' },
+    { label: 'Learn Farming', path: '/public/learn', icon: '', color: '#16a34a' },
     { label: 'Buy Resources', path: '/public/buy', icon: '🛒', color: '#e02020' },
 ]
 

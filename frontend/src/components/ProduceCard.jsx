@@ -4,7 +4,7 @@ const ProduceCard = ({ produce, showBuy, showActions, onDelete }) => {
     return (
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ background: 'rgba(82,183,136,0.08)', borderRadius: 6, padding: '20px', textAlign: 'center', fontSize: '2.5rem' }}>
-                🌿
+                
             </div>
             <h4 style={{ color: 'var(--white)' }}>{produce.name}</h4>
             <p style={{ color: 'var(--primary-light)', fontSize: '1.2rem', fontWeight: 700 }}>
@@ -25,7 +25,7 @@ const ProduceCard = ({ produce, showBuy, showActions, onDelete }) => {
                 {showActions && (
                     <button className="btn btn-danger" style={{ padding: '6px 12px', fontSize: '0.82rem' }}
                         onClick={() => onDelete && onDelete(produce._id)}>
-                        🗑️ Remove
+                        Delete Remove
                     </button>
                 )}
             </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import t from '../utils/translate'
 
 const NAV_ITEMS = {
     admin: [
@@ -57,7 +58,7 @@ const LANGUAGES = [
     { label: 'French', code: 'fr' },
 ]
 
-const Navbar = ({ role: roleProp, publicNav }) => {
+const Navbar = ({ role: roleProp, publicNav, logoOnly }) => {
     const { user, role: authRole, logout } = useAuth()
     const { language, changeLanguage } = useLanguage()
     const navigate = useNavigate()
@@ -94,74 +95,122 @@ const Navbar = ({ role: roleProp, publicNav }) => {
                 </NavLink>
 
                 <div className="nav-right">
-                    {/* Globe language selector */}
-                    {user && role === 'farmer' && (
-                        <div style={{ position: 'relative' }} ref={langRef}>
-                            <button className="globe-btn" onClick={() => setLangOpen(!langOpen)}
-                                title="Change Language">
-                                🌐
-                            </button>
-                            {langOpen && (
-                                <div style={{
-                                    position: 'absolute', right: 0, top: '38px',
-                                    background: '#fff', color: '#111', borderRadius: 4,
-                                    minWidth: 140, boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                                    zIndex: 700, overflow: 'hidden',
-                                }}>
-                                    {LANGUAGES.map(lang => (
-                                        <div key={lang.code}
-                                            onClick={() => { changeLanguage(lang.code); setLangOpen(false) }}
-                                            style={{
-                                                padding: '10px 16px',
-                                                fontWeight: language === lang.code ? 700 : 400,
-                                                background: language === lang.code ? '#4caf50' : 'transparent',
-                                                color: language === lang.code ? '#fff' : '#111',
-                                                cursor: 'pointer',
-                                                borderBottom: '1px solid #eee',
-                                                transition: 'background 0.15s',
-                                            }}
-                                        >
-                                            {lang.label}
+                    {/* Navigation items based on role */}
+                    {logoOnly ? null : role === '_landing' ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            {/* Globe language selector for Public Home */}
+                            <div style={{ position: 'relative' }} ref={langRef}>
+                                <button className="globe-btn" onClick={() => setLangOpen(!langOpen)} style={{ padding: '8px', cursor: 'pointer', background: 'transparent', border: 'none', fontSize: '1.2rem'}}
+                                    title="Change Language">
+                                    🌐
+                                </button>
+                                {langOpen && (
+                                    <div style={{
+                                        position: 'absolute', right: 0, top: '40px',
+                                        background: '#fff', color: '#111', borderRadius: 6,
+                                        minWidth: 140, boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+                                        zIndex: 700, overflow: 'hidden',
+                                    }}>
+                                        {LANGUAGES.map(lang => (
+                                            <div key={lang.code}
+                                                onClick={() => { changeLanguage(lang.code); setLangOpen(false) }}
+                                                style={{
+                                                    padding: '12px 18px',
+                                                    fontWeight: language === lang.code ? 700 : 400,
+                                                    background: language === lang.code ? '#16a34a' : 'transparent',
+                                                    color: language === lang.code ? '#fff' : '#111',
+                                                    cursor: 'pointer',
+                                                    borderBottom: '1px solid #f0f0f0',
+                                                    transition: 'all 0.2s ease',
+                                                    fontSize: '0.95rem'
+                                                }}
+                                            >
+                                                {lang.label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <NavLink to="/login" style={{ textDecoration: 'none', color: '#fff', fontWeight: 600, fontSize: '0.95rem', padding: '8px 12px', transition: 'color 0.2s', ':hover': { color: '#22c55e' }}}>{t('signin', language)}</NavLink>
+                            <NavLink to="/register/farmer" style={{ textDecoration: 'none', color: '#fff', fontWeight: 600, fontSize: '0.95rem', background: '#22c55e', padding: '8px 20px', borderRadius: '50px', transition: 'background 0.2s', ':hover': { background: '#16a34a' }}}>{t('register', language)}</NavLink>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Globe language selector for logged-in farmers */}
+                            {user && roleProp === 'farmer' && (
+                                <div style={{ position: 'relative' }} ref={langRef}>
+                                    <button className="globe-btn" onClick={() => setLangOpen(!langOpen)}
+                                        title="Change Language">
+                                        🌐
+                                    </button>
+                                    {langOpen && (
+                                        <div style={{
+                                            position: 'absolute', right: 0, top: '38px',
+                                            background: '#fff', color: '#111', borderRadius: 4,
+                                            minWidth: 140, boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                                            zIndex: 700, overflow: 'hidden',
+                                        }}>
+                                            {LANGUAGES.map(lang => (
+                                                <div key={lang.code}
+                                                    onClick={() => { changeLanguage(lang.code); setLangOpen(false) }}
+                                                    style={{
+                                                        padding: '10px 16px',
+                                                        fontWeight: language === lang.code ? 700 : 400,
+                                                        background: language === lang.code ? '#4caf50' : 'transparent',
+                                                        color: language === lang.code ? '#fff' : '#111',
+                                                        cursor: 'pointer',
+                                                        borderBottom: '1px solid #eee',
+                                                        transition: 'background 0.15s',
+                                                    }}
+                                                >
+                                                    {lang.label}
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
                             )}
-                        </div>
-                    )}
 
-                    {/* Hamburger / Close */}
-                    <button
-                        className={`hamburger-btn${menuOpen ? ' open' : ''}`}
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        aria-label="Toggle menu">
-                        <span /><span /><span />
-                    </button>
+                            {/* Hamburger / Close */}
+                            <button
+                                className={`hamburger-btn${menuOpen ? ' open' : ''}`}
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                aria-label="Toggle menu">
+                                <span /><span /><span />
+                            </button>
 
-                    {/* Logout — only inside dashboards, not on landing page */}
-                    {user && role !== '_landing' && (
-                        <button className="btn-logout" onClick={handleLogout}>Logout</button>
+                            {/* Logout — only inside dashboards, not on landing page */}
+                            {user && (
+                                <button className="btn-logout" onClick={handleLogout}>Logout</button>
+                            )}
+                        </>
                     )}
                 </div>
             </nav>
 
             {/* ── Slide-in Side Menu ─────── */}
-            <div className={`side-menu-overlay${menuOpen ? ' open' : ''}`}
-                onClick={() => setMenuOpen(false)} />
+            {!logoOnly && (
+                <>
+                    <div className={`side-menu-overlay${menuOpen ? ' open' : ''}`}
+                        onClick={() => setMenuOpen(false)} />
 
-            <div className={`side-menu${menuOpen ? ' open' : ''}`}>
-                {items.map((item, idx) => (
-                    <NavLink
-                        key={idx}
-                        to={item.to}
-                        className={({ isActive }) => isActive ? 'active' : ''}
-                        onClick={() => setMenuOpen(false)}>
-                        {item.label}
-                    </NavLink>
-                ))}
-                {!user && (
-                    <NavLink to="/login" onClick={() => setMenuOpen(false)}>Sign In</NavLink>
-                )}
-            </div>
+                    <div className={`side-menu${menuOpen ? ' open' : ''}`}>
+                        {items.map((item, idx) => (
+                            <NavLink
+                                key={idx}
+                                to={item.to}
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                                onClick={() => setMenuOpen(false)}>
+                                {item.label}
+                            </NavLink>
+                        ))}
+                        {!user && (
+                            <NavLink to="/login" onClick={() => setMenuOpen(false)}>Sign In</NavLink>
+                        )}
+                    </div>
+                </>
+            )}
         </>
     )
 }

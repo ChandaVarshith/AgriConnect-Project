@@ -3,33 +3,33 @@ import { NavLink } from 'react-router-dom'
 
 const navItems = {
     admin: [
-        { to: '/admin', icon: '📊', label: 'Dashboard' },
-        { to: '/admin/farmers', icon: '🌾', label: 'Farmers' },
-        { to: '/admin/experts', icon: '👨‍🔬', label: 'Experts' },
+        { to: '/admin', icon: '', label: 'Dashboard' },
+        { to: '/admin/farmers', icon: '', label: 'Farmers' },
+        { to: '/admin/experts', icon: '[Expert]', label: 'Experts' },
         { to: '/admin/financiers', icon: '🏦', label: 'Financiers' },
     ],
     farmer: [
         { to: '/farmer', icon: '🏠', label: 'Home' },
-        { to: '/farmer/disease-detection', icon: '🔍', label: 'Disease Detection' },
-        { to: '/farmer/query', icon: '❓', label: 'Ask Expert' },
-        { to: '/farmer/responses', icon: '💬', label: 'Responses' },
+        { to: '/farmer/disease-detection', icon: '', label: 'Disease Detection' },
+        { to: '/farmer/query', icon: '?', label: 'Ask Expert' },
+        { to: '/farmer/responses', icon: '', label: 'Responses' },
         { to: '/farmer/loans', icon: '🏦', label: 'Loans' },
         { to: '/farmer/articles', icon: '📰', label: 'Articles' },
         { to: '/farmer/marketplace', icon: '🛒', label: 'My Produce' },
     ],
     expert: [
         { to: '/expert', icon: '🏠', label: 'Dashboard' },
-        { to: '/expert/disease-detection', icon: '🔍', label: 'Disease Detection' },
+        { to: '/expert/disease-detection', icon: '', label: 'Disease Detection' },
         { to: '/expert/requests', icon: '📋', label: 'Farmer Queries' },
-        { to: '/expert/responses', icon: '💬', label: 'My Responses' },
+        { to: '/expert/responses', icon: '', label: 'My Responses' },
         { to: '/expert/article/create', icon: '✍️', label: 'Write Article' },
-        { to: '/expert/crop-map', icon: '🗺️', label: 'Crop Map' },
+        { to: '/expert/crop-map', icon: '', label: 'Crop Map' },
     ],
     financier: [
         { to: '/financier', icon: '🏠', label: 'Dashboard' },
         { to: '/financier/add-loan', icon: '➕', label: 'Add Loan' },
         { to: '/financier/loan-requests', icon: '📋', label: 'Applications' },
-        { to: '/financier/all-loans', icon: '📊', label: 'All Loans' },
+        { to: '/financier/all-loans', icon: '', label: 'All Loans' },
     ],
 }
 
@@ -43,7 +43,7 @@ const Sidebar = ({ role }) => {
         }}>
             <div style={{ padding: '0 20px 20px', borderBottom: '1px solid var(--border)', marginBottom: 16 }}>
                 <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-light)' }}>
-                    🌾 AgriConnect
+                     AgriConnect
                 </span>
                 <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginTop: 4 }}>{role}</p>
             </div>

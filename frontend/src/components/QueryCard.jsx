@@ -8,7 +8,7 @@ const QueryCard = ({ query, role }) => {
                 <div>
                     <h4 style={{ marginBottom: 4 }}>{query.cropType}</h4>
                     <p style={{ fontSize: '0.82rem' }}>{query.description?.slice(0, 100)}…</p>
-                    {query.location && <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>📍 {query.location}</p>}
+                    {query.location && <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}> {query.location}</p>}
                 </div>
                 <span className={`badge badge-${query.status === 'resolved' ? 'success' : 'warning'}`}>{query.status}</span>
             </div>

@@ -67,14 +67,14 @@ const ExpertAllContent = () => {
                 </div>
                 <div className="expert-content-actions">
                     <button onClick={() => setExpanded(null)} className="expert-content-back-btn">← Back to All Content</button>
-                    <button onClick={() => setConfirmDelete(a._id)} className="expert-content-delete-btn">🗑 Delete Article</button>
+                    <button onClick={() => setConfirmDelete(a._id)} className="expert-content-delete-btn">Delete Delete Article</button>
                 </div>
 
                 {/* Confirm delete modal */}
                 {confirmDelete === a._id && (
                     <div className="expert-content-modal-overlay">
                         <div className="expert-content-modal">
-                            <div className="expert-content-modal-icon">🗑️</div>
+                            <div className="expert-content-modal-icon">Delete</div>
                             <h3 className="expert-content-modal-title">Delete Article?</h3>
                             <p className="expert-content-modal-text">
                                 "{a.title}" will be permanently removed. This cannot be undone.
@@ -93,7 +93,7 @@ const ExpertAllContent = () => {
     return (
         <PageLayout role="expert" title="All Farming Content">
             <div className="expert-content-header">
-                <input placeholder="🔍  Search articles…" value={search}
+                <input placeholder="  Search articles…" value={search}
                     onChange={e => { setSearch(e.target.value); setPage(1) }}
                     className="expert-content-search" />
                 <button onClick={() => navigate('/expert/article/create')} className="expert-content-create-btn">+ Create Content</button>
@@ -128,7 +128,7 @@ const ExpertAllContent = () => {
                                                 <button onClick={() => setConfirmDelete(null)} className="expert-content-card-cancel">Cancel</button>
                                             </div>
                                         ) : (
-                                            <button onClick={() => setConfirmDelete(a._id)} className="expert-content-card-del-btn">🗑</button>
+                                            <button onClick={() => setConfirmDelete(a._id)} className="expert-content-card-del-btn">Delete</button>
                                         )}
                                     </div>
                                 </div>

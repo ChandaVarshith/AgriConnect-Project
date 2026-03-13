@@ -55,7 +55,7 @@ const MarketplaceFarmer = () => {
             setShowForm(false)
             setShowPending(true)   // auto-open pending drawer so farmer sees their new listing
             setForm({ name: '', category: '', quantity: '', price: '', unit: 'kg', description: '', harvestDate: '' })
-            showToast('✅ Listing submitted! Waiting for expert approval.')
+            showToast('Listing submitted! Waiting for expert approval.')
             loadListings()
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to create listing.')
@@ -67,7 +67,7 @@ const MarketplaceFarmer = () => {
         setConfirmId(null)
         try {
             await marketplaceService.deleteListing(id)
-            showToast('🗑 Listing removed.')
+            showToast('Delete Listing removed.')
         } catch { loadListings() }
     }
 
@@ -117,7 +117,7 @@ const MarketplaceFarmer = () => {
                 <h4 className="mf-card-title">{l.name}</h4>
 
                 {!isOwner && (
-                    <p className="mf-card-farmer">🌿 {farmerName}{farmerPhone ? ` · ${farmerPhone}` : ''}</p>
+                    <p className="mf-card-farmer"> {farmerName}{farmerPhone ? ` · ${farmerPhone}` : ''}</p>
                 )}
 
                 <p className="mf-card-row">Qty: <strong>{l.quantity} {l.unit}</strong></p>
@@ -131,7 +131,7 @@ const MarketplaceFarmer = () => {
 
                 {l.status === 'rejected' && l.rejectionReason && (
                     <p className="mf-rejection-reason">
-                        ❌ Reason: {l.rejectionReason}
+                        Reason: {l.rejectionReason}
                     </p>
                 )}
 
@@ -178,7 +178,7 @@ const MarketplaceFarmer = () => {
                         className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
                         onClick={() => { setShowForm(v => !v); setError('') }}
                     >
-                        {showForm ? '✕  Cancel' : '+ Add New Listing'}
+                        {showForm ? ' Cancel' : '+ Add New Listing'}
                     </button>
                 </div>
             </div>
@@ -188,11 +188,11 @@ const MarketplaceFarmer = () => {
                 <div className="mf-pending-drawer">
                     <div className="mf-pending-drawer-header">
                         <span>📋 Your Pending Requests — waiting for expert approval</span>
-                        <button className="mf-pending-close" onClick={() => setShowPending(false)}>✕</button>
+                        <button className="mf-pending-close" onClick={() => setShowPending(false)}></button>
                     </div>
                     {myPending.length === 0 ? (
                         <div className="mf-empty" style={{ padding: '20px 10px' }}>
-                            <p className="mf-empty-text">No pending listings. All your listings are approved! ✅</p>
+                            <p className="mf-empty-text">No pending listings. All your listings are approved! </p>
                         </div>
                     ) : (
                         <div className="mf-grid">
@@ -260,7 +260,7 @@ const MarketplaceFarmer = () => {
 
             {/* ── Search / Filter / Sort ── */}
             <div className="mf-controls">
-                <input type="text" className="mf-search" placeholder="🔍  Search produce…"
+                <input type="text" className="mf-search" placeholder="  Search produce…"
                     value={search} onChange={e => setSearch(e.target.value)} />
                 <div className="mf-cat-tabs">
                     {['all', ...CATEGORIES].map(c => (
@@ -279,7 +279,7 @@ const MarketplaceFarmer = () => {
             {/* ── YOUR LISTINGS (approved only) ── */}
             <div className="mf-section">
                 <div className="mf-section-header mf-section-header--mine">
-                    <span className="mf-section-icon">🌱</span>
+                    <span className="mf-section-icon"></span>
                     <h4 className="mf-section-title">Your Listings</h4>
                     <span className="mf-section-count mf-section-count--mine">{myApproved.length}</span>
                 </div>
@@ -290,7 +290,7 @@ const MarketplaceFarmer = () => {
                     </div>
                 ) : (
                     <div className="mf-empty">
-                        <span className="mf-empty-icon">🌾</span>
+                        <span className="mf-empty-icon"></span>
                         <p className="mf-empty-text">
                             {myApproved.length === 0
                                 ? myPending.length > 0
@@ -329,14 +329,14 @@ const MarketplaceFarmer = () => {
             {/* ── Rejection Notifications (Bottom Right) ── */}
             <div className="mf-rejection-widget">
                 <button className="mf-rejection-toggle" onClick={() => setShowRejections(!showRejections)}>
-                    💬 My Messages <span className="mf-rejection-badge">{myRejected.length}</span>
+                     My Messages <span className="mf-rejection-badge">{myRejected.length}</span>
                 </button>
 
                 {showRejections && (
                     <div className="mf-rejection-popup">
                         <div className="mf-rejection-header">
                             <h4>My Messages</h4>
-                            <button className="mf-rejection-close" onClick={() => setShowRejections(false)}>✕</button>
+                            <button className="mf-rejection-close" onClick={() => setShowRejections(false)}></button>
                         </div>
                         <div className="mf-rejection-list">
                             {myRejected.length === 0 ? (

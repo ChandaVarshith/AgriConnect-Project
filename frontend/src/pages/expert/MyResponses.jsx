@@ -22,10 +22,10 @@ const ExpertMyResponses = () => {
                         <div key={r._id} className="expert-my-resp-card">
                             {/* Heading: show query topic, not the response text */}
                             <h4 className="expert-my-resp-title">
-                                🌾 Query: {r.queryId?.cropType || 'Farming Query'}
+                                 Query: {r.queryId?.cropType || 'Farming Query'}
                                 {r.queryId?.location && (
                                     <span className="expert-my-resp-location">
-                                        📍 {r.queryId.location}
+                                         {r.queryId.location}
                                     </span>
                                 )}
                             </h4>

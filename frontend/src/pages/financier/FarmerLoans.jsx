@@ -29,10 +29,10 @@ const FarmerLoans = () => {
                             <div className="farmer-loans-header">
                                 <div>
                                     <div className="farmer-loans-name">
-                                        👨‍🌾 {g.farmer?.name || 'Unknown Farmer'}
+                                         {g.farmer?.name || 'Unknown Farmer'}
                                     </div>
                                     <div className="farmer-loans-details">
-                                        📞 {g.farmer?.phone || '—'} · {g.farmer?.email || '—'} · {g.farmer?.location || '—'}
+                                         {g.farmer?.phone || '—'} · {g.farmer?.email || '—'} · {g.farmer?.location || '—'}
                                     </div>
                                 </div>
                                 <div className="farmer-loans-statuses">

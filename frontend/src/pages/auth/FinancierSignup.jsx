@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './FinancierSignup.css'
 
 const BG = 'https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?w=1400&auto=format&fit=crop&q=80'
@@ -62,12 +63,7 @@ const FinancierSignup = () => {
         <div className="financier-signup-container">
             <img src={BG} alt="finance bg" className="financier-signup-bg" />
 
-            <nav className="financier-signup-nav">
-                <Link to="/" className="financier-signup-logo-link">
-                    <span className="financier-signup-logo-1">AGRI&nbsp;</span>
-                    <span className="financier-signup-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
 
             <div className="financier-signup-content">
                 <div className="financier-signup-card">
@@ -75,7 +71,7 @@ const FinancierSignup = () => {
                     {/* ── SUCCESS SCREEN ── */}
                     {success ? (
                         <div className="financier-signup-success-container">
-                            <div className="financier-signup-success-icon">🎉</div>
+                            <div className="financier-signup-success-icon"></div>
                             <h2 className="financier-signup-success-title">Request Sent!</h2>
                             <p className="financier-signup-success-text">
                                 Your financier registration request has been sent to the admin.<br />
@@ -120,7 +116,7 @@ const FinancierSignup = () => {
                                         {/* Verified badge OR Send OTP button */}
                                         {emailVerified ? (
                                             <div className="financier-signup-verified-badge">
-                                                ✅ Verified
+                                                Verified
                                             </div>
                                         ) : (
                                             <button

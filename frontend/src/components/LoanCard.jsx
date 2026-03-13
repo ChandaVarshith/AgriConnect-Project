@@ -11,10 +11,10 @@ const LoanCard = ({ loan, showManage }) => {
                 </span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
-                💰 Up to <strong>₹{Number(loan.amount).toLocaleString('en-IN')}</strong>
+                 Up to <strong>₹{Number(loan.amount).toLocaleString('en-IN')}</strong>
             </p>
             <p style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
-                📈 Interest: <strong>{loan.interestRate}% p.a.</strong>
+                 Interest: <strong>{loan.interestRate}% p.a.</strong>
             </p>
             <p style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
                 📅 Tenure: <strong>{loan.tenure} months</strong>

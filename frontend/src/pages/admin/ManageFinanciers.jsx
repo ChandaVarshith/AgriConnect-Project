@@ -59,12 +59,12 @@ const ManageFinanciers = () => {
         setSaving(true)
         try {
             await API.post('/admin/financiers', form)
-            showToast('✅ Financier added and approved!')
+            showToast('Financier added and approved!')
             setForm(EMPTY)
             setShowForm(false)
             load()
         } catch (err) {
-            showToast('❌ ' + (err.response?.data?.message || 'Failed to add financier.'))
+            showToast('' + (err.response?.data?.message || 'Failed to add financier.'))
         } finally {
             setSaving(false)
         }
@@ -112,7 +112,7 @@ const ManageFinanciers = () => {
                     <input
                         type="text"
                         className="mf-search"
-                        placeholder="🔍 Search organization, location, email…"
+                        placeholder=" Search organization, location, email…"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -136,7 +136,7 @@ const ManageFinanciers = () => {
                     onClick={() => setShowForm(!showForm)}
                     className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
                 >
-                    {showForm ? '✕ Cancel' : '+ Add Financier'}
+                    {showForm ? 'Cancel' : '+ Add Financier'}
                 </button>
             </div>
 

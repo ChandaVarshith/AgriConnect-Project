@@ -31,7 +31,7 @@ const MyResponsesFarmer = () => {
                 {/* ── Farmer's Query Card (matches image 3 style) ── */}
                 <div className="my-resp-query-card">
                     <h3 className="my-resp-query-title">
-                        🌾 My Query
+                         My Query
                     </h3>
                     {row('Crop Type:', q.cropType)}
                     {row('Request Details:', q.description)}
@@ -44,7 +44,7 @@ const MyResponsesFarmer = () => {
                 {isResolved ? (
                     <div className="my-resp-resolved-card">
                         <h3 className="my-resp-resolved-title">
-                            ✅ Expert's Response
+                            Expert's Response
                         </h3>
                         {row('Expert Email:', q.expertEmail, '#4ade80')}
                         <div className="my-resp-response-box">
@@ -56,7 +56,7 @@ const MyResponsesFarmer = () => {
                     </div>
                 ) : (
                     <div className="my-resp-pending-card">
-                        <span className="my-resp-pending-icon">⏳</span>
+                        <span className="my-resp-pending-icon"></span>
                         <div>
                             <h4 className="my-resp-pending-title">
                                 Awaiting Expert Response
@@ -116,7 +116,7 @@ const MyResponsesFarmer = () => {
                                         <td className="my-resp-td my-resp-td-text">
                                             {q.responseText
                                                 ? <span className="my-resp-text-resolved">{q.responseText.slice(0, 80)}{q.responseText.length > 80 ? '…' : ''}</span>
-                                                : <span className="my-resp-text-pending">⏳ {t('awaitingresponse')}</span>
+                                                : <span className="my-resp-text-pending"> {t('awaitingresponse')}</span>
                                             }
                                         </td>
                                         <td className="my-resp-td">

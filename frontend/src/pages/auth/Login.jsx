@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import authService from '../../services/authService'
+import Navbar from '../../components/Navbar'
 import './Login.css'
 
 // Misty rice paddy farm – matches image 3 reference
@@ -50,13 +51,8 @@ const Login = () => {
             {/* Full-page background */}
             <img src={BG} alt="farm bg" className="login-bg-img" />
 
-            {/* Minimal top bar — logo + hamburger only (no user, public page) */}
-            <nav className="login-top-nav">
-                <Link to="/" className="login-logo-link">
-                    <span className="login-logo-text-1">AGRI&nbsp;</span>
-                    <span className="login-logo-text-2">CONNECT</span>
-                </Link>
-            </nav>
+            {/* Minimal top bar — logo only */}
+            <Navbar logoOnly />
 
             {/* Centered card */}
             <div className="login-content-wrapper">

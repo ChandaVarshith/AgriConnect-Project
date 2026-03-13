@@ -52,7 +52,7 @@ const CreateArticle = () => {
         return (
             <PageLayout role="expert" title="Create Farming Content">
                 <div className="create-article-success-container">
-                    <div className="create-article-success-icon">✅</div>
+                    <div className="create-article-success-icon"></div>
                     <h2 className="create-article-success-title">
                         Content Saved Successfully!
                     </h2>

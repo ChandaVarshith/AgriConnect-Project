@@ -52,10 +52,10 @@ const ExpertMarketplace = () => {
     const approve = async (id) => {
         try {
             await API.put(`/marketplace/${id}/approve`)
-            showToast('✅ Approved! Listing is now live on the marketplace.')
+            showToast('Approved! Listing is now live on the marketplace.')
             load()
         } catch (err) {
-            showToast(`❌ Failed to approve: ${err.response?.data?.message || err.message}`)
+            showToast(`Failed to approve: ${err.response?.data?.message || err.message}`)
         }
     }
 
@@ -65,21 +65,21 @@ const ExpertMarketplace = () => {
         if (!rejectReason.trim()) return
         try {
             await API.put(`/marketplace/${id}/reject`, { rejectionReason: rejectReason.trim() })
-            showToast('🚫 Listing rejected and removed from database.')
+            showToast('Listing rejected and removed from database.')
             setRejectId(null); setRejectReason('')
             load()
         } catch (err) {
-            showToast(`❌ Failed to reject: ${err.response?.data?.message || err.message}`)
+            showToast(`Failed to reject: ${err.response?.data?.message || err.message}`)
         }
     }
 
     const remove = async (id) => {
         try {
             await API.delete(`/marketplace/${id}/expert-remove`)
-            showToast('🗑 Removed from marketplace.')
+            showToast('Delete Removed from marketplace.')
             load()
         } catch (err) {
-            showToast(`❌ Failed to remove: ${err.response?.data?.message || err.message}`)
+            showToast(`Failed to remove: ${err.response?.data?.message || err.message}`)
         }
     }
 
@@ -133,7 +133,7 @@ const ExpertMarketplace = () => {
             {/* Load error */}
             {loadError && (
                 <div className="emp-error-box">
-                    <strong>⚠️ Error Loading Data</strong>
+                    <strong>! Error Loading Data</strong>
                     <p>{loadError}</p>
                     <button className="emp-retry-btn" onClick={load}>↺ Retry</button>
                 </div>
@@ -150,7 +150,7 @@ const ExpertMarketplace = () => {
                     {(pending.length > 0 || approved.length > 0) && (
                         <div className="emp-controls-bar">
                             <div className="emp-search-wrap">
-                                <span className="emp-search-icon">🔍</span>
+                                <span className="emp-search-icon"></span>
                                 <input type="text" className="emp-search"
                                     placeholder="Search by farmer name, phone, or produce…"
                                     value={approvedSearch}
@@ -183,7 +183,7 @@ const ExpertMarketplace = () => {
 
                     {/* ── PENDING APPROVAL ── */}
                     <section className="emp-section">
-                        <SectionTitle icon="⏳" label="Pending Approval" count={sortedPending.length} color="#f59e0b" />
+                        <SectionTitle icon="" label="Pending Approval" count={sortedPending.length} color="#f59e0b" />
                         {sortedPending.length === 0 ? (
                             <div className="emp-empty-box">
                                 <p>No pending listings match your search.</p>
@@ -207,12 +207,12 @@ const ExpertMarketplace = () => {
                                                 </div>
                                                 {item.description && <div className="emp-desc">{item.description}</div>}
                                                 <div className="emp-farmer-row">
-                                                    👨‍🌾 <strong>{item.farmerName || item.farmerId?.name || '—'}</strong>
-                                                    &nbsp;·&nbsp; 📞 <strong>{item.farmerPhone || item.farmerId?.phone || '—'}</strong>
+                                                     <strong>{item.farmerName || item.farmerId?.name || '—'}</strong>
+                                                    &nbsp;·&nbsp;  <strong>{item.farmerPhone || item.farmerId?.phone || '—'}</strong>
                                                 </div>
                                                 {item.harvestDate && (
                                                     <div className="emp-harvest-row">
-                                                        🌾 Harvest: {new Date(item.harvestDate).toLocaleDateString('en-IN')}
+                                                         Harvest: {new Date(item.harvestDate).toLocaleDateString('en-IN')}
                                                     </div>
                                                 )}
                                             </div>
@@ -236,8 +236,8 @@ const ExpertMarketplace = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="emp-actions-row">
-                                                        <button className="emp-btn emp-btn--approve" onClick={() => approve(item._id)}>✓ Approve</button>
-                                                        <button className="emp-btn emp-btn--reject" onClick={() => openReject(item._id)}>✕ Reject</button>
+                                                        <button className="emp-btn emp-btn--approve" onClick={() => approve(item._id)}>Approve</button>
+                                                        <button className="emp-btn emp-btn--reject" onClick={() => openReject(item._id)}>Reject</button>
                                                     </div>
                                                 )}
                                             </div>
@@ -250,7 +250,7 @@ const ExpertMarketplace = () => {
 
                     {/* ── ALL ACTIVE LISTINGS ── */}
                     <section className="emp-section">
-                        <SectionTitle icon="✅" label="All Active Listings" count={sortedApproved.length} color="#22c55e" />
+                        <SectionTitle icon="" label="All Active Listings" count={sortedApproved.length} color="#22c55e" />
                         {sortedApproved.length === 0 ? (
                             <div className="emp-empty-box">
                                 <p>{approved.length === 0 ? 'No live listings yet.' : 'No listings match your search.'}</p>
@@ -273,11 +273,11 @@ const ExpertMarketplace = () => {
                                             </div>
                                             {item.description && <div className="emp-desc emp-desc--sm">{item.description.slice(0, 80)}{item.description.length > 80 ? '…' : ''}</div>}
                                             <div className="emp-farmer-row">
-                                                👨‍🌾 <strong>{item.farmerName || item.farmerId?.name || '—'}</strong>
-                                                &nbsp;·&nbsp; 📞 <strong>{item.farmerPhone || item.farmerId?.phone || '—'}</strong>
+                                                 <strong>{item.farmerName || item.farmerId?.name || '—'}</strong>
+                                                &nbsp;·&nbsp;  <strong>{item.farmerPhone || item.farmerId?.phone || '—'}</strong>
                                             </div>
                                         </div>
-                                        <button className="emp-btn emp-btn--remove" onClick={() => remove(item._id)}>🗑 Remove</button>
+                                        <button className="emp-btn emp-btn--remove" onClick={() => remove(item._id)}>Delete Remove</button>
                                     </div>
                                 ))}
                             </div>

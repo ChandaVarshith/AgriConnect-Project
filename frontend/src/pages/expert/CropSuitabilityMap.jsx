@@ -61,7 +61,7 @@ const CropSuitabilityMap = () => {
                             }}
                         >
                             <h4 className="crop-map-card-title">
-                                📍 {item.region}
+                                 {item.region}
                             </h4>
 
                             {/* Crop tags */}

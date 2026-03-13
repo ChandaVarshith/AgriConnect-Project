@@ -15,6 +15,18 @@
 }
 
 :root {
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --bg-dark: #060806;
+  --font-head: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+* {
   /* Palette */
   --black: #0a0a0a;
   --black-soft: #111111;
@@ -114,7 +126,7 @@ a {
 }
 
 .logo .connect {
-  color: var(--red);
+  color: #22c55e !important;
 }
 
 /* ── Top Navbar ────────────────────────────────────────────── */
@@ -127,8 +139,11 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
-  background: transparent;
+  padding: 10px 24px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .top-nav .nav-right {

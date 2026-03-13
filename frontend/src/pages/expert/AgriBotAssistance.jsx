@@ -45,7 +45,7 @@ const AgriBotAssistance = () => {
         try {
             const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
             if (!apiKey) {
-                setMessages(prev => [...prev, { role: 'assistant', text: '⚠️ API key not configured. Please set VITE_OPENROUTER_API_KEY in the .env file.' }])
+                setMessages(prev => [...prev, { role: 'assistant', text: '! API key not configured. Please set VITE_OPENROUTER_API_KEY in the .env file.' }])
                 return
             }
 
@@ -77,7 +77,7 @@ const AgriBotAssistance = () => {
             setMessages(prev => [...prev, { role: 'assistant', text: reply }])
         } catch (err) {
             const errText = err.message || 'Failed to connect to OpenRouter API.'
-            setMessages(prev => [...prev, { role: 'assistant', text: `❌ ${errText}` }])
+            setMessages(prev => [...prev, { role: 'assistant', text: `${errText}` }])
             setError(errText)
         } finally {
             setLoading(false)
@@ -90,14 +90,14 @@ const AgriBotAssistance = () => {
     }
 
     return (
-        <PageLayout role="expert" title="🌱 AgriBot — AI Farming Assistant">
+        <PageLayout role="expert" title=" AgriBot — AI Farming Assistant">
             <div className="gemini-assist-container">
 
                 {/* ── Suggestion chips (shown only when no messages) ── */}
                 {messages.length === 0 && (
                     <div className="gemini-assist-suggestions-header">
                         <p className="gemini-assist-suggestions-title">
-                            💡 Quick Questions
+                             Quick Questions
                         </p>
                         <div className="gemini-assist-suggestions-grid">
                             {SUGGESTIONS.map(s => (
@@ -127,7 +127,7 @@ const AgriBotAssistance = () => {
                     <div className="gemini-assist-messages">
                         {messages.length === 0 && (
                             <div className="gemini-assist-empty">
-                                <div className="gemini-assist-empty-icon">🌾</div>
+                                <div className="gemini-assist-empty-icon"></div>
                                 <p className="gemini-assist-empty-text">
                                     Ask me anything about farming, crops, irrigation, soil, or agricultural schemes!
                                 </p>
@@ -137,7 +137,7 @@ const AgriBotAssistance = () => {
                         {messages.map((m, i) => (
                             <div key={i} className={`gemini-assist-msg-row ${m.role}`}>
                                 {m.role === 'assistant' && (
-                                    <div className="gemini-assist-avatar-bot">🌿</div>
+                                    <div className="gemini-assist-avatar-bot"></div>
                                 )}
                                 <div className={`gemini-assist-bubble ${m.role}`}>
                                     {m.role === 'user' ? m.text : m.text}
@@ -150,7 +150,7 @@ const AgriBotAssistance = () => {
 
                         {loading && (
                             <div className="gemini-assist-loading-row">
-                                <div className="gemini-assist-avatar-bot">🌿</div>
+                                <div className="gemini-assist-avatar-bot"></div>
                                 <div className="gemini-assist-loading-bubble">
                                     <span className="gemini-assist-dot">●</span>
                                     <span className="gemini-assist-dot">●</span>

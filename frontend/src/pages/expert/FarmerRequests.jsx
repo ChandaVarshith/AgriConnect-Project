@@ -129,7 +129,7 @@ const FarmerRequests = () => {
                         />
                     </div>
                     <div className="farmer-req-search-box">
-                        <span className="farmer-req-search-icon">🌾</span>
+                        <span className="farmer-req-search-icon"></span>
                         <input
                             placeholder="Crop disease or issue…"
                             value={filterCropOrIssue}
@@ -190,7 +190,7 @@ const FarmerRequests = () => {
                                     <div className="farmer-req-card-info">
                                         <h4 className="farmer-req-crop">
                                             {isDiseaseScan && <span style={{ background: 'rgba(34,197,94,0.2)', color: '#4ade80', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', marginRight: '8px', border: '1px solid rgba(34,197,94,0.4)' }}>🦠 Disease Scan</span>}
-                                            🌾 {rawCrop}
+                                             {rawCrop}
                                         </h4>
                                         {q.farmerId?.name && (
                                             <p className="farmer-req-farmer">
@@ -201,7 +201,7 @@ const FarmerRequests = () => {
                                             {q.description?.substring(0, 150)}{q.description?.length > 150 ? '…' : ''}
                                         </p>
                                         <p className="farmer-req-meta">
-                                            📍 {q.location || 'N/A'} · {new Date(q.createdAt).toLocaleDateString()}
+                                             {q.location || 'N/A'} · {new Date(q.createdAt).toLocaleDateString()}
                                         </p>
 
                                         {/* ── Attached image row ──────────────────── */}
@@ -219,14 +219,14 @@ const FarmerRequests = () => {
                                                         className="farmer-req-open-img-btn"
                                                         onClick={() => setActiveImage(q.imageUrl)}
                                                     >
-                                                        🔍 View Image
+                                                         View Image
                                                     </button>
                                                     <button
                                                         className="farmer-req-scan-btn"
                                                         onClick={() => handleScanImage(q._id, q.imageUrl)}
                                                         disabled={mlLoading[q._id]}
                                                     >
-                                                        {mlLoading[q._id] ? '⏳ Scanning…' : '⚡ Scan for Disease'}
+                                                        {mlLoading[q._id] ? ' Scanning…' : '⚡ Scan for Disease'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -237,11 +237,11 @@ const FarmerRequests = () => {
                                             <div className={`farmer-req-ml-result ${ml.success && ml.isHealthy ? 'healthy' : 'diseased'}`}>
                                                 {ml.success ? (
                                                     <>
-                                                        <span>{ml.isHealthy ? '✅' : '⚠️'}</span>
+                                                        <span>{ml.isHealthy ? '' : '!'}</span>
                                                         <span><strong>{ml.prediction}</strong> — {ml.confidence}% confidence</span>
                                                     </>
                                                 ) : (
-                                                    <span>❌ {ml.error || 'Analysis failed.'}</span>
+                                                    <span>{ml.error || 'Analysis failed.'}</span>
                                                 )}
                                             </div>
                                         )}
@@ -268,7 +268,7 @@ const FarmerRequests = () => {
                 <div className="farmer-req-lightbox" onClick={() => setActiveImage(null)}>
                     <div className="farmer-req-lightbox-inner" onClick={e => e.stopPropagation()}>
                         <img src={activeImage} alt="Crop" className="farmer-req-lightbox-img" />
-                        <button className="farmer-req-lightbox-close" onClick={() => setActiveImage(null)}>✕ Close</button>
+                        <button className="farmer-req-lightbox-close" onClick={() => setActiveImage(null)}>Close</button>
                     </div>
                 </div>
             )}

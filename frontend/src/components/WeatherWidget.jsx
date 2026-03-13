@@ -41,7 +41,7 @@ const WeatherWidget = ({ location }) => {
             <img src={icon} alt={desc} style={{ width: 64, height: 64 }} />
             <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--white)' }}>{temp}°C</p>
             <p style={{ color: 'var(--text-muted)', textTransform: 'capitalize' }}>{desc}</p>
-            <p style={{ fontSize: '0.82rem', color: 'var(--accent)', marginTop: 4 }}>📍 {city}</p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--accent)', marginTop: 4 }}> {city}</p>
             <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>💧 {weather.main.humidity}% Humidity</span>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>🌬️ {weather.wind.speed} m/s Wind</span>

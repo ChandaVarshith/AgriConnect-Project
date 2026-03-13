@@ -32,7 +32,7 @@ const ExploreArticles = () => {
         <PageLayout role="farmer" title={t('allfarmingcontent')}>
             {/* Search */}
             <input
-                placeholder={`🔍  ${t('search')} by title or crop…`}
+                placeholder={`  ${t('search')} by title or crop…`}
                 value={search}
                 onChange={e => { setS(e.target.value); setPage(1) }}
                 className="explore-articles-search"
@@ -46,7 +46,7 @@ const ExploreArticles = () => {
                             <img src={imgSrc(a.imageUrl)} alt={a.title} className="explore-articles-card-img" />
                         ) : (
                             <div className="explore-articles-card-img-placeholder">
-                                🌱
+                                
                             </div>
                         )}
                         <div className="explore-articles-card-content">

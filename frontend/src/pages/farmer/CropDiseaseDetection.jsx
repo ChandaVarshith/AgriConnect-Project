@@ -65,7 +65,7 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
             <div className="cdd-content">
                 {/* Upload Card */}
                 <div className="cdd-card">
-                    <h2 className="cdd-card-title">📸 Upload Crop Image</h2>
+                    <h2 className="cdd-card-title"> Upload Crop Image</h2>
 
                     <div className="cdd-upload-zone">
                         <input
@@ -80,7 +80,7 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
                                 <img src={previewUrl} alt="Selected crop" className="cdd-preview-img" />
                             ) : (
                                 <div className="cdd-upload-placeholder">
-                                    <span className="cdd-upload-icon">🌿</span>
+                                    <span className="cdd-upload-icon"></span>
                                     <span className="cdd-upload-text">Click to select a crop image</span>
                                     <span className="cdd-upload-hint">Supports JPG, PNG, WEBP</span>
                                 </div>
@@ -108,7 +108,7 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
 
                     {error && (
                         <div className="cdd-error">
-                            ⚠️ {error}
+                            ! {error}
                         </div>
                     )}
                 </div>
@@ -118,7 +118,7 @@ const CropDiseaseDetection = ({ role = 'farmer' }) => {
                     {result ? (
                         <div className={`cdd-result-card ${result.isHealthy ? 'healthy' : 'diseased'}`}>
                             <div className="cdd-result-header">
-                                <span className="cdd-result-icon">{result.isHealthy ? '✅' : '⚠️'}</span>
+                                <span className="cdd-result-icon">{result.isHealthy ? '' : '!'}</span>
                                 <h3 className="cdd-result-title">Analysis Result</h3>
                             </div>
 

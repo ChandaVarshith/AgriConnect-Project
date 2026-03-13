@@ -39,10 +39,10 @@ const LoanRequests = () => {
     const updateStatus = async (id, status) => {
         try {
             await API.patch(`/loans/applications/${id}`, { status })
-            showToast(`✅ Application ${status === 'approved' ? 'approved' : 'rejected'}.`)
+            showToast(`Application ${status === 'approved' ? 'approved' : 'rejected'}.`)
             load()
         } catch {
-            showToast('❌ Failed to update status.')
+            showToast('Failed to update status.')
         }
     }
 
@@ -90,7 +90,7 @@ const LoanRequests = () => {
                     <input
                         type="text"
                         className="lr-search"
-                        placeholder="🔍 Search farmer, phone, or loan…"
+                        placeholder=" Search farmer, phone, or loan…"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />

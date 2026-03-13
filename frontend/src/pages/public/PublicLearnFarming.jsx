@@ -4,7 +4,7 @@ import './PublicLearnFarming.css'
 
 const TOPICS = [
     {
-        icon: '🌾', title: 'Seasonal Farming Guide',
+        icon: '', title: 'Seasonal Farming Guide',
         tips: [
             'Kharif (June–Nov): Paddy, Maize, Sorghum, Cotton, Groundnut',
             'Rabi (Nov–Apr): Wheat, Barley, Mustard, Chickpea, Lentil',
@@ -24,7 +24,7 @@ const TOPICS = [
         theme: 'blue',
     },
     {
-        icon: '🌱', title: 'Soil Health & Nutrients',
+        icon: '', title: 'Soil Health & Nutrients',
         tips: [
             'Test your soil every 2–3 years for NPK and pH levels.',
             'Compost and green manure improve organic matter.',
@@ -44,7 +44,7 @@ const TOPICS = [
         theme: 'red',
     },
     {
-        icon: '🤝', title: 'Government Schemes',
+        icon: '', title: 'Government Schemes',
         tips: [
             'PM-Kisan: ₹6,000/year direct income support for farmers.',
             'Fasal Bima Yojana: Crop insurance against natural calamities.',
@@ -54,7 +54,7 @@ const TOPICS = [
         theme: 'purple',
     },
     {
-        icon: '📈', title: 'Market & Pricing',
+        icon: '', title: 'Market & Pricing',
         tips: [
             'Check MSP (Minimum Support Price) before selling.',
             'eNAM (National Agriculture Market) offers online trading.',
@@ -70,7 +70,7 @@ const PublicLearnFarming = () => {
         <PageLayout role="public" title="Learn Farming">
             <div className="public-learn-header">
                 <h2 className="public-learn-title">
-                    Agricultural Learning Hub 🌾
+                    Agricultural Learning Hub 
                 </h2>
                 <p className="public-learn-subtitle">
                     Curated knowledge on modern farming practices, government schemes, and market insights.

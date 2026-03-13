@@ -46,7 +46,7 @@ const Marketplace = () => {
 
                 {/* ── Search / Filter / Sort ── */}
                 <div className="marketplace-controls">
-                    <input type="text" className="marketplace-search" placeholder="🔍  Search produce…"
+                    <input type="text" className="marketplace-search" placeholder="  Search produce…"
                         value={search} onChange={e => setSearch(e.target.value)} />
 
                     <div className="marketplace-cat-tabs">

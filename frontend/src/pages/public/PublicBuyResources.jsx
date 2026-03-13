@@ -69,7 +69,7 @@ const PublicBuyResources = () => {
             </div>
 
             <div className="marketplace-controls">
-                <input type="text" className="marketplace-search" placeholder="🔍  Search produce…"
+                <input type="text" className="marketplace-search" placeholder="  Search produce…"
                     value={search} onChange={e => setSearch(e.target.value)} />
 
                 <div className="marketplace-cat-tabs">
@@ -117,13 +117,13 @@ const PublicBuyResources = () => {
 
                                     {inq.revealed ? (
                                         <div className="public-buy-resources-farmer-info">
-                                            <p className="public-buy-resources-farmer-info-title">✓ Farmer Contact Revealed</p>
+                                            <p className="public-buy-resources-farmer-info-title">Farmer Contact Revealed</p>
                                             <p className="public-buy-resources-farmer-info-text">👤 {inq.farmerName}</p>
-                                            <p className="public-buy-resources-farmer-info-text">📞 {inq.farmerPhone}</p>
+                                            <p className="public-buy-resources-farmer-info-text"> {inq.farmerPhone}</p>
                                         </div>
                                     ) : (
                                         <button onClick={() => handleInquiry(l._id)} disabled={inq.submitting} className={`public-buy-resources-contact-btn ${inq.submitting ? 'public-buy-resources-contact-btn-loading' : 'public-buy-resources-contact-btn-active'}`}>
-                                            {inq.submitting ? 'Processing…' : '📞 Contact Farmer'}
+                                            {inq.submitting ? 'Processing…' : ' Contact Farmer'}
                                         </button>
                                     )}
                                 </div>

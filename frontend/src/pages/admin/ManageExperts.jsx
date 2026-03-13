@@ -55,12 +55,12 @@ const ManageExperts = () => {
         setSaving(true)
         try {
             await API.post('/admin/experts', form)
-            showToast('✅ Expert added and approved!')
+            showToast('Expert added and approved!')
             setForm(EMPTY)
             setShowForm(false)
             fetchExperts()
         } catch (err) {
-            showToast('❌ ' + (err.response?.data?.message || 'Failed to add expert.'))
+            showToast('' + (err.response?.data?.message || 'Failed to add expert.'))
         } finally {
             setSaving(false)
         }
@@ -107,7 +107,7 @@ const ManageExperts = () => {
                     <input
                         type="text"
                         className="mf-search"
-                        placeholder="🔍 Search name, email, specialization…"
+                        placeholder=" Search name, email, specialization…"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -131,7 +131,7 @@ const ManageExperts = () => {
                     onClick={() => setShowForm(!showForm)}
                     className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
                 >
-                    {showForm ? '✕ Cancel' : '+ Add Expert'}
+                    {showForm ? 'Cancel' : '+ Add Expert'}
                 </button>
             </div>
 
@@ -196,7 +196,7 @@ const ManageExperts = () => {
                     </div>
                 ) : (
                     <div className="mf-empty">
-                        <span className="mf-empty-icon">🤝</span>
+                        <span className="mf-empty-icon"></span>
                         <p className="mf-empty-text">No experts found matching your criteria.</p>
                     </div>
                 )

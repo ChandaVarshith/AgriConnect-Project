@@ -32,11 +32,11 @@ const AllLoansFinancier = () => {
     const removeLoan = async (id) => {
         try {
             await API.delete(`/loans/${id}`)
-            setToast('🗑 Loan removed.')
+            setToast('Delete Loan removed.')
             load()
             setTimeout(() => setToast(''), 3000)
         } catch {
-            setToast('❌ Failed to remove loan.')
+            setToast('Failed to remove loan.')
             setTimeout(() => setToast(''), 3000)
         }
     }

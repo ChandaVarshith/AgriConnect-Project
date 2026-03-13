@@ -64,7 +64,7 @@ const RespondToQuery = () => {
         return (
             <PageLayout role="expert" title="Response Submitted">
                 <div className="resp-query-success-box">
-                    <div className="resp-query-success-icon">✅</div>
+                    <div className="resp-query-success-icon"></div>
                     <h2 className="resp-query-success-title">Response Submitted Successfully!</h2>
                     <p className="resp-query-success-text">The farmer will see your advice immediately.</p>
                     <button onClick={() => navigate('/expert/requests')} className="resp-query-btn-primary">← Back to Requests</button>
@@ -96,7 +96,7 @@ const RespondToQuery = () => {
                                 {Math.round(weather.main?.temp)}°C
                             </h2>
                             <p className="resp-query-weather-loc">
-                                📍 {weather.name}, {weather.sys?.country}
+                                 {weather.name}, {weather.sys?.country}
                             </p>
                             <p className="resp-query-weather-desc">
                                 {weather.weather?.[0]?.description}
@@ -134,7 +134,7 @@ const RespondToQuery = () => {
                 <div className="resp-query-grid">
                     {/* Query details */}
                     <div className="resp-query-details-card">
-                        <h4 className="resp-query-details-title">🌾 Farmer's Query</h4>
+                        <h4 className="resp-query-details-title"> Farmer's Query</h4>
                         <p className="resp-query-detail-row">
                             <strong className="resp-query-detail-strong">Name:</strong> {query.farmerId?.name || '—'}
                         </p>
@@ -167,7 +167,7 @@ const RespondToQuery = () => {
                     {/* Response form — only shown for PENDING queries */}
                     {query.status === 'resolved' ? (
                         <div className="resp-query-resolved-card">
-                            <span className="resp-query-resolved-icon">✅</span>
+                            <span className="resp-query-resolved-icon"></span>
                             <div>
                                 <h4 className="resp-query-resolved-title">
                                     Query Already Resolved

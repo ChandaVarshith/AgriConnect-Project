@@ -35,7 +35,7 @@ const PublicContent = () => {
 
     return (
         <PageLayout role="public" title="Explore Content">
-            <input placeholder="🔍  Search articles…" value={search}
+            <input placeholder="  Search articles…" value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1) }}
                 className="public-content-search" />
 

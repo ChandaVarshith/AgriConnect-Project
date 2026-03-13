@@ -26,11 +26,11 @@ const AppliedLoans = () => {
     const getStatusStyles = (status) => {
         switch ((status || '').toLowerCase()) {
             case 'approved':
-                return { bg: 'rgba(34,197,94,0.15)', text: '#4ade80', icon: '✅' }
+                return { bg: 'rgba(34,197,94,0.15)', text: '#4ade80', icon: '' }
             case 'rejected':
-                return { bg: 'rgba(239,68,68,0.15)', text: '#fca5a5', icon: '❌' }
+                return { bg: 'rgba(239,68,68,0.15)', text: '#fca5a5', icon: '' }
             default:
-                return { bg: 'rgba(234,179,8,0.15)', text: '#fde047', icon: '⏳' }
+                return { bg: 'rgba(234,179,8,0.15)', text: '#fde047', icon: '' }
         }
     }
 

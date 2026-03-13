@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import Navbar from '../../components/Navbar'
 import './SignupSelector.css'
 
 // Farm field at dusk — consistent with the overall auth page theme
@@ -8,7 +9,7 @@ const BG = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&
 const ROLES = [
     {
         id: 'farmer',
-        emoji: '🌾',
+        emoji: '',
         title: 'Farmer',
         desc: 'Browse loans, submit queries, and explore expert articles.',
         path: '/register/farmer',
@@ -50,12 +51,7 @@ const SignupSelector = () => {
             <img src={BG} alt="farm bg" className="signup-selector-bg" />
 
             {/* Minimal top bar */}
-            <nav className="signup-selector-nav">
-                <Link to="/" className="signup-selector-logo-link">
-                    <span className="signup-selector-logo-1">AGRI&nbsp;</span>
-                    <span className="signup-selector-logo-2">CONNECT</span>
-                </Link>
-            </nav>
+            <Navbar logoOnly />
 
             {/* Content */}
             <div className="signup-selector-content">

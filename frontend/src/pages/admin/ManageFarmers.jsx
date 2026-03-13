@@ -40,12 +40,12 @@ const ManageFarmers = () => {
         setSaving(true)
         try {
             await API.post('/admin/farmers', form)
-            showToast('✅ Farmer added successfully!')
+            showToast('Farmer added successfully!')
             setForm(EMPTY)
             setShowForm(false)
             fetchFarmers()
         } catch (err) {
-            showToast('❌ ' + (err.response?.data?.message || 'Failed to add farmer.'))
+            showToast('' + (err.response?.data?.message || 'Failed to add farmer.'))
         } finally {
             setSaving(false)
         }
@@ -55,12 +55,12 @@ const ManageFarmers = () => {
         if (!window.confirm(`Remove farmer "${farmer.name}"? This cannot be undone.`)) return
         try {
             await API.delete(`/admin/farmers/${farmer._id}`)
-            showToast(`🗑️ ${farmer.name} removed successfully.`)
+            showToast(`Delete ${farmer.name} removed successfully.`)
             fetchFarmers()
         } catch (err) {
             const status = err.response?.status
             const msg = err.response?.data?.message || err.message || 'Request failed'
-            showToast(`❌ [${status || 'NET'}] ${msg}`)
+            showToast(`[${status || 'NET'}] ${msg}`)
             console.error('Delete farmer error:', { status, data: err.response?.data, err })
         }
     }
@@ -89,7 +89,7 @@ const ManageFarmers = () => {
     return (
         <PageLayout role="admin" title="Manage Farmers">
             {toast && (
-                <div className={`mf-toast ${toast.startsWith('❌') ? 'mf-toast--error' : ''}`}>{toast}</div>
+                <div className={`mf-toast ${toast.startsWith('') ? 'mf-toast--error' : ''}`}>{toast}</div>
             )}
 
             <div className="mf-controls">
@@ -97,7 +97,7 @@ const ManageFarmers = () => {
                     <input
                         type="text"
                         className="mf-search"
-                        placeholder="🔍 Search name, phone, district, crop…"
+                        placeholder=" Search name, phone, district, crop…"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -109,7 +109,7 @@ const ManageFarmers = () => {
                     onClick={() => setShowForm(!showForm)}
                     className={`mf-add-btn ${showForm ? 'mf-add-btn--cancel' : ''}`}
                 >
-                    {showForm ? '✕ Cancel' : '+ Add Farmer'}
+                    {showForm ? 'Cancel' : '+ Add Farmer'}
                 </button>
             </div>
 
@@ -163,18 +163,18 @@ const ManageFarmers = () => {
                             {/* ── Top badges row ── */}
                             <div className="mf-card-top">
                                 <span className="mf-badge-lang">
-                                    🌐 {LANG_LABELS[f.preferredLanguage || f.language] || 'English'}
+                                     {LANG_LABELS[f.preferredLanguage || f.language] || 'English'}
                                 </span>
                                 {f.farmSize && (
                                     <span className="mf-badge-farm">
-                                        🌿 {f.farmSize} ac
+                                         {f.farmSize} ac
                                     </span>
                                 )}
                             </div>
 
                             {/* ── Name & phone ── */}
                             <h4 className="mf-card-title">{f.name}</h4>
-                            <p className="mf-card-phone">📞 {f.phone}</p>
+                            <p className="mf-card-phone"> {f.phone}</p>
 
                             {/* ── Divider ── */}
                             <div className="mf-card-divider" />
@@ -183,28 +183,28 @@ const ManageFarmers = () => {
                             <div className="mf-card-details">
                                 {f.email && (
                                     <div className="mf-detail-row">
-                                        <span className="mf-detail-label">✉️ Email</span>
+                                        <span className="mf-detail-label"> Email</span>
                                         <span className="mf-detail-value">{f.email}</span>
                                     </div>
                                 )}
                                 <div className="mf-detail-row">
-                                    <span className="mf-detail-label">📍 District</span>
+                                    <span className="mf-detail-label"> District</span>
                                     <span className="mf-detail-value">{f.district || '—'}</span>
                                 </div>
                                 <div className="mf-detail-row">
-                                    <span className="mf-detail-label">🗺️ State</span>
+                                    <span className="mf-detail-label"> State</span>
                                     <span className="mf-detail-value">{f.state || '—'}</span>
                                 </div>
                                 <div className="mf-detail-row">
-                                    <span className="mf-detail-label">📐 Farm Size</span>
+                                    <span className="mf-detail-label"> Farm Size</span>
                                     <span className="mf-detail-value">{f.farmSize ? `${f.farmSize} acres` : '—'}</span>
                                 </div>
                                 <div className="mf-detail-row">
-                                    <span className="mf-detail-label">🌾 Crops</span>
+                                    <span className="mf-detail-label"> Crops</span>
                                     <span className="mf-detail-value">{f.primaryCrops || '—'}</span>
                                 </div>
                                 <div className="mf-detail-row">
-                                    <span className="mf-detail-label">🗓️ Joined</span>
+                                    <span className="mf-detail-label"> Joined</span>
                                     <span className="mf-detail-value">
                                         {f.createdAt
                                             ? new Date(f.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -216,7 +216,7 @@ const ManageFarmers = () => {
                             {/* ── Actions ── */}
                             <div className="mf-actions-row">
                                 <button onClick={() => handleDelete(f)} className="mf-btn mf-btn-remove">
-                                    🗑️ Remove Farmer
+                                    Delete Remove Farmer
                                 </button>
                             </div>
                         </div>
@@ -224,7 +224,7 @@ const ManageFarmers = () => {
                 </div>
             ) : (
                 <div className="mf-empty">
-                    <span className="mf-empty-icon">🌾</span>
+                    <span className="mf-empty-icon"></span>
                     <p className="mf-empty-text">No farmers found matching your criteria.</p>
                 </div>
             )}

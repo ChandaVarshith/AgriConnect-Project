@@ -35,12 +35,12 @@ const AddNewSector = () => {
         setSaving(true)
         try {
             await API.post('/admin/sectors', { name: name.trim() })
-            setToast('✅ Sector created successfully!')
+            setToast('Sector created successfully!')
             setName('')
             loadSectors()
             setTimeout(() => setToast(''), 3000)
         } catch (err) {
-            setToast('❌ ' + (err.response?.data?.message || 'Failed to create sector.'))
+            setToast('' + (err.response?.data?.message || 'Failed to create sector.'))
             setTimeout(() => setToast(''), 3500)
         } finally {
             setSaving(false)
@@ -52,11 +52,11 @@ const AddNewSector = () => {
 
         try {
             await API.delete(`/admin/sectors/${id}`)
-            setToast(`✅ Sector "${sectorName}" removed.`)
+            setToast(`Sector "${sectorName}" removed.`)
             loadSectors()
             setTimeout(() => setToast(''), 3000)
         } catch (err) {
-            setToast('❌ Failed to remove sector.')
+            setToast('Failed to remove sector.')
             setTimeout(() => setToast(''), 3500)
         }
     }
@@ -67,7 +67,7 @@ const AddNewSector = () => {
         <PageLayout role="admin" title="Add New Sectors">
             <div className="add-sector-container">
                 {toast && (
-                    <div className={`add-sector-alert ${toast.startsWith('✅') ? 'add-sector-alert-success' : 'add-sector-alert-error'}`}>
+                    <div className={`add-sector-alert ${toast.startsWith('') ? 'add-sector-alert-success' : 'add-sector-alert-error'}`}>
                         {toast}
                     </div>
                 )}
@@ -112,7 +112,7 @@ const AddNewSector = () => {
                                                 onClick={() => handleDelete(sector._id, sector.name)}
                                                 title="Delete sector"
                                             >
-                                                ✕
+                                                
                                             </button>
                                         )}
                                     </div>
