@@ -40,3 +40,11 @@
     color: #aaa;
     font-size: 0.78rem;
 }
+
+/* Responsive Fixes */
+@media (max-width: 480px) {
+    .expert-home-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}

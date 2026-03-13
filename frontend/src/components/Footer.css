@@ -66,12 +66,19 @@
         flex-direction: column;
         gap: 1.5rem;
         text-align: center;
+        padding-bottom: 2rem;
     }
     
     .footer-left,
-    .footer-right {
+    .footer-right, .footer-socials {
         justify-content: center;
         width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .footer-socials {
+        order: -1;
+        margin-bottom: 1rem;
     }
 }
 

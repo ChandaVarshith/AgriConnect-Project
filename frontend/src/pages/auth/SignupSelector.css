@@ -145,3 +145,24 @@
     font-weight: 600;
     text-decoration: none;
 }
+
+/* Responsive Fixes */
+@media (max-width: 600px) {
+    .signup-selector-content {
+        padding: 80px 16px 40px;
+    }
+    
+    .signup-selector-title {
+        font-size: 1.8rem;
+    }
+    
+    .signup-selector-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .signup-selector-card {
+        width: 100%;
+        max-width: 320px;
+    }
+}
