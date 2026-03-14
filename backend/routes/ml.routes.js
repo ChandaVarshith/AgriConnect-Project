@@ -5,8 +5,12 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-// On Linux (Render) Python 3 is 'python3'; on Windows it's 'python'
-const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
+// On Render (Linux): use Miniconda Python 3.11 which has TensorFlow installed
+// On Windows (local dev): use system python
+const PYTHON = process.platform === 'win32'
+    ? 'python'
+    : '/opt/render/project/src/.conda/bin/python3';
+
 
 // Configure multer for temp file storage
 const storage = multer.diskStorage({
