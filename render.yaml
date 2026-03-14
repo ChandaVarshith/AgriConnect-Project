@@ -1,10 +1,9 @@
 services:
   - type: web
     name: agriconnect-backend
-    runtime: node
-    rootDir: backend
-    buildCommand: npm install && pip install -r requirements.txt
-    startCommand: node server.js
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     envVars:
       - key: NODE_ENV
         value: production
