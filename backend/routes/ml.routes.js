@@ -33,6 +33,7 @@ function runPythonScript(scriptPath, imagePath) {
         const pythonProcess = spawn(PYTHON, [scriptPath, imagePath]);
         
         let pythonData = '';
+        let pythonError = '';
         // 90 second timeout - TF import still takes up to ~30s on Render, though the TFLite inference is fast
         const timeout = setTimeout(() => {
             pythonProcess.kill();
