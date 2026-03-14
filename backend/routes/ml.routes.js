@@ -5,6 +5,9 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// On Linux (Render) Python 3 is 'python3'; on Windows it's 'python'
+const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
+
 // Configure multer for temp file storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -31,7 +34,7 @@ router.post('/predict-disease', upload.single('image'), (req, res) => {
         const scriptPath = path.join(__dirname, '../predict.py');
         
         // Spawn Python process
-        const pythonProcess = spawn('python', [scriptPath, imagePath]);
+        const pythonProcess = spawn(PYTHON, [scriptPath, imagePath]);
         
         let pythonData = '';
         let pythonError = '';
@@ -97,7 +100,7 @@ router.post('/predict-from-url', async (req, res) => {
 
                 // Run Prediction
                 const scriptPath = path.join(__dirname, '../predict.py');
-                const pythonProcess = spawn('python', [scriptPath, tempPath]);
+                const pythonProcess = spawn(PYTHON, [scriptPath, tempPath]);
                 
                 let pythonData = '';
                 let pythonError = '';

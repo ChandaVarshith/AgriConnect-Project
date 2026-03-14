@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: agriconnect-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && pip install -r requirements.txt
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
