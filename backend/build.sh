@@ -18,10 +18,7 @@ else
   echo "==> Miniconda installed at $CONDA_DIR"
 fi
 
-echo "==> Installing Python packages (tensorflow-cpu, numpy, Pillow)..."
-"$CONDA_DIR/bin/conda" run -n base pip install --no-cache-dir \
-  tensorflow-cpu==2.15.0 \
-  "numpy>=1.23.0,<2.0.0" \
-  Pillow
+echo "==> Installing Python packages from requirements.txt..."
+"$CONDA_DIR/bin/pip" install --no-cache-dir -r requirements.txt
 
 echo "==> Build complete ✅"
