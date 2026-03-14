@@ -4,7 +4,6 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const path = require('path')
 const session = require('express-session')
-const { spawn } = require('child_process')
 
 // Load env vars FIRST before any module that reads process.env
 dotenv.config()
@@ -13,31 +12,6 @@ const passport = require('./config/passport')
 
 const app = express()
 const PORT = process.env.PORT || 5000
-
-// ── Start the Python prediction server (loads TF model once) ─────────────────
-const PYTHON = process.platform === 'win32'
-    ? 'python'
-    : '/opt/render/project/src/.conda/bin/python3';
-
-const predictServerScript = path.join(__dirname, 'predict_server.py')
-
-if (require('fs').existsSync(predictServerScript)) {
-    console.log('[server] Starting Python prediction server...')
-    const pyServer = spawn(PYTHON, [predictServerScript], {
-        cwd: __dirname,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: { ...process.env, PREDICT_SERVER_PORT: '5050' },
-    })
-    pyServer.stdout.on('data', d => console.log(d.toString().trim()))
-    pyServer.stderr.on('data', d => console.error('[predict_server]', d.toString().trim()))
-    pyServer.on('close', code => console.log(`[server] Prediction server exited with code ${code}`))
-    // Ensure prediction server is killed when Node exits
-    process.on('exit', () => pyServer.kill())
-    process.on('SIGTERM', () => { pyServer.kill(); process.exit(0) })
-} else {
-    console.warn('[server] ⚠ predict_server.py not found, ML predictions will not work')
-}
-
 
 // Log key startup info
 console.log(`

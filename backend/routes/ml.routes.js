@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const http = require('http');
+const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const PREDICT_SERVER_PORT = process.env.PREDICT_SERVER_PORT || 5050;
+// On Render (Linux): use Miniconda Python 3.11 which has TensorFlow installed
+// On Windows (local dev): use system python
+const PYTHON = process.platform === 'win32'
+    ? 'python'
+    : '/opt/render/project/src/.conda/bin/python3';
+
 
 // Configure multer for temp file storage
 const storage = multer.diskStorage({
@@ -23,48 +28,51 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-/**
- * Call the persistent Python prediction server via HTTP
- */
-function callPredictServer(imagePath) {
+function runPythonScript(scriptPath, imagePath) {
     return new Promise((resolve, reject) => {
-        const payload = JSON.stringify({ image_path: imagePath });
+        const pythonProcess = spawn(PYTHON, [scriptPath, imagePath]);
+        
+        let pythonData = '';
+        let pythonError = '';
 
-        const options = {
-            hostname: '127.0.0.1',
-            port: PREDICT_SERVER_PORT,
-            path: '/predict',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(payload),
-            },
-            timeout: 120000, // 2 min max
-        };
+        // 90 second timeout for Render cold-starts (TF loading takes 40-60s)
+        const timeout = setTimeout(() => {
+            pythonProcess.kill();
+            reject(new Error('Prediction timed out after 90 seconds (model loading too slow on free tier)'));
+        }, 90000);
 
-        const req = http.request(options, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-                try {
-                    resolve(JSON.parse(data));
-                } catch (e) {
-                    reject(new Error('Failed to parse prediction response'));
+        pythonProcess.stdout.on('data', (data) => {
+            pythonData += data.toString();
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+            pythonError += data.toString();
+            console.error(`Python stderr: ${data}`);
+        });
+
+        pythonProcess.on('close', (code) => {
+            clearTimeout(timeout);
+            try {
+                if (!pythonData) {
+                    return reject(new Error(pythonError || 'No output from prediction script'));
                 }
-            });
-        });
 
-        req.on('error', (err) => {
-            reject(new Error(`Prediction server unavailable: ${err.message}`));
+                // Extract json from python stdout (in case TF logged other stuff)
+                const jsonMatch = pythonData.match(/\{.*\}/s);
+                if (jsonMatch) {
+                    resolve(JSON.parse(jsonMatch[0]));
+                } else {
+                    reject(new Error('Failed to parse prediction result: ' + pythonData));
+                }
+            } catch (err) {
+                reject(err);
+            }
         });
-
-        req.on('timeout', () => {
-            req.destroy();
-            reject(new Error('Prediction server timed out'));
+        
+        pythonProcess.on('error', (err) => {
+            clearTimeout(timeout);
+            reject(err);
         });
-
-        req.write(payload);
-        req.end();
     });
 }
 
@@ -75,16 +83,16 @@ router.post('/predict-disease', upload.single('image'), async (req, res) => {
         }
 
         const imagePath = req.file.path;
-
+        const scriptPath = path.join(__dirname, '../predict.py');
+        
         try {
-            const result = await callPredictServer(imagePath);
-            // Cleanup temp file
+            const result = await runPythonScript(scriptPath, imagePath);
             if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
             return res.json(result);
         } catch (err) {
             if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-            console.error('Prediction error:', err.message);
-            return res.status(500).json({ success: false, message: err.message });
+            console.error("Error parsing python output:", err);
+            return res.status(500).json({ success: false, message: 'Prediction failed', error: err.message });
         }
 
     } catch (error) {
@@ -110,13 +118,15 @@ router.post('/predict-from-url', async (req, res) => {
             response.pipe(file);
             file.on('finish', async () => {
                 file.close();
+                
+                const scriptPath = path.join(__dirname, '../predict.py');
                 try {
-                    const result = await callPredictServer(tempPath);
+                    const result = await runPythonScript(scriptPath, tempPath);
                     if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
                     return res.json(result);
                 } catch (err) {
                     if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-                    return res.status(500).json({ success: false, message: err.message });
+                    return res.status(500).json({ success: false, message: 'Prediction failed', error: err.message });
                 }
             });
         }).on('error', (err) => {
