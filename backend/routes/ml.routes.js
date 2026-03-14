@@ -35,11 +35,11 @@ function runPythonScript(scriptPath, imagePath) {
         let pythonData = '';
         let pythonError = '';
 
-        // 90 second timeout for Render cold-starts (TF loading takes 40-60s)
+        // 30 second timeout - TFLite cold start is very fast (2-3s)
         const timeout = setTimeout(() => {
             pythonProcess.kill();
-            reject(new Error('Prediction timed out after 90 seconds (model loading too slow on free tier)'));
-        }, 90000);
+            reject(new Error('Prediction timed out after 30 seconds'));
+        }, 30000);
 
         pythonProcess.stdout.on('data', (data) => {
             pythonData += data.toString();

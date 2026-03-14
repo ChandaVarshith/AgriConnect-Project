@@ -6,7 +6,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # ── Model Path ────────────────────────────────────────────────────────────────
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH  = os.path.join(BACKEND_DIR, "plant_disease_recog_model_pwp.keras")
+MODEL_PATH  = os.path.join(BACKEND_DIR, "plant_disease_recog_model_pwp.tflite")
 
 sys.stderr.write(f"[predict.py] MODEL_PATH  : {MODEL_PATH}\n")
 sys.stderr.write(f"[predict.py] Model exists: {os.path.exists(MODEL_PATH)}\n")
@@ -80,23 +80,45 @@ def main(image_path: str):
         sys.exit(1)
 
     try:
-        import tensorflow as tf
         import numpy as np
+        from PIL import Image
 
-        # Load trained model
-        model = tf.keras.models.load_model(MODEL_PATH)
+        try:
+            import tflite_runtime.interpreter as tflite
+        except ImportError:
+            import tensorflow.lite as tflite
 
-        # Pre-process exactly as during training: resize → array → EfficientNet scale
-        img   = tf.keras.utils.load_img(image_path, target_size=(160, 160))
-        arr   = tf.keras.utils.img_to_array(img)
-        arr   = tf.keras.applications.efficientnet.preprocess_input(arr)
+        # Load TFLite model and allocate tensors
+        interpreter = tflite.Interpreter(model_path=MODEL_PATH)
+        interpreter.allocate_tensors()
+
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        # Load and prep image using PIL
+        img = Image.open(image_path).convert('RGB')
+        
+        # Determine input shape from the model, usually [1, 160, 160, 3]
+        input_shape = input_details[0]['shape']
+        target_size = (input_shape[1], input_shape[2]) if len(input_shape) == 4 else (160, 160)
+        
+        img = img.resize(target_size)
+        
+        input_dtype = input_details[0]['dtype']
+        arr = np.array(img, dtype=input_dtype)
+
+        # Add batch dimension
         batch = np.expand_dims(arr, axis=0)
 
+        # Set tensor and invoke
+        interpreter.set_tensor(input_details[0]['index'], batch)
+        interpreter.invoke()
+
         # Run inference
-        preds = model.predict(batch, verbose=0)[0]   # shape (39,)
+        preds = interpreter.get_tensor(output_details[0]['index'])[0]
 
         predicted_idx  = int(np.argmax(preds))
-        confidence_raw = float(preds[predicted_idx])   # 0–1 (softmax)
+        confidence_raw = float(preds[predicted_idx])
         confidence_pct = round(confidence_raw * 100, 2)
 
         class_name = (
