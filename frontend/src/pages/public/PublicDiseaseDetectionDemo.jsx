@@ -53,6 +53,7 @@ const PublicDiseaseDetectionDemo = () => {
 
             const res = await axios.post(`${baseUrl}/ml/predict-disease`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 120000, // 2 min timeout for cold starts
             });
 
             if (res.data.success) {
