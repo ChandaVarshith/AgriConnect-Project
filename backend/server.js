@@ -9,9 +9,13 @@ const session = require('express-session')
 dotenv.config()
 
 const passport = require('./config/passport')
+const ensureModelExists = require('./utils/downloadModel')
 
 const app = express()
 const PORT = process.env.PORT || 5000
+
+// Download ML model from Google Drive if not present (handles Render cold deploys)
+ensureModelExists().catch(err => console.error('[server] Model download error:', err))
 
 // Log key startup info
 console.log(`
