@@ -33,13 +33,11 @@ function runPythonScript(scriptPath, imagePath) {
         const pythonProcess = spawn(PYTHON, [scriptPath, imagePath]);
         
         let pythonData = '';
-        let pythonError = '';
-
-        // 30 second timeout - TFLite cold start is very fast (2-3s)
+        // 90 second timeout - TF import still takes up to ~30s on Render, though the TFLite inference is fast
         const timeout = setTimeout(() => {
             pythonProcess.kill();
-            reject(new Error('Prediction timed out after 30 seconds'));
-        }, 30000);
+            reject(new Error('Prediction timed out after 90 seconds (TF import too slow on free tier)'));
+        }, 90000);
 
         pythonProcess.stdout.on('data', (data) => {
             pythonData += data.toString();

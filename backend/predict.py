@@ -82,11 +82,7 @@ def main(image_path: str):
     try:
         import numpy as np
         from PIL import Image
-
-        try:
-            import tflite_runtime.interpreter as tflite
-        except ImportError:
-            import tensorflow.lite as tflite
+        import tensorflow.lite as tflite
 
         # Load TFLite model and allocate tensors
         interpreter = tflite.Interpreter(model_path=MODEL_PATH)
