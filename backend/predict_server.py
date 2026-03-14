@@ -67,32 +67,51 @@ def is_healthy(name):
     return any(k in name.lower() for k in HEALTHY_KEYWORDS)
 
 
-# ── Load model ONCE at startup ────────────────────────────────────────────────
+# ── Load model in background ──────────────────────────────────────────────────
+import threading
+
 model = None
 tf = None
 np = None
+model_status = 'loading' # 'loading', 'ready', 'error'
+model_error_msg = ''
 
-def load_model():
-    global model, tf, np
+def load_model_background():
+    global model, tf, np, model_status, model_error_msg
     if not os.path.exists(MODEL_PATH):
         print(f"[predict_server] ⚠ Model not found at {MODEL_PATH}", flush=True)
-        return False
-    print(f"[predict_server] Loading TensorFlow...", flush=True)
-    import tensorflow as _tf
-    import numpy as _np
-    tf = _tf
-    np = _np
-    print(f"[predict_server] Loading model from {MODEL_PATH}...", flush=True)
-    model = tf.keras.models.load_model(MODEL_PATH)
-    # Warm up with a dummy prediction
-    dummy = np.zeros((1, 160, 160, 3), dtype=np.float32)
-    model.predict(dummy, verbose=0)
-    print(f"[predict_server] ✅ Model loaded and warmed up!", flush=True)
-    return True
+        model_status = 'error'
+        model_error_msg = 'Model file missing'
+        return
+    
+    try:
+        print(f"[predict_server] Loading TensorFlow in background...", flush=True)
+        import tensorflow as _tf
+        import numpy as _np
+        global tf, np
+        tf = _tf
+        np = _np
+        print(f"[predict_server] Loading model from {MODEL_PATH}...", flush=True)
+        model = tf.keras.models.load_model(MODEL_PATH)
+        # Warm up with a dummy prediction
+        dummy = np.zeros((1, 160, 160, 3), dtype=np.float32)
+        model.predict(dummy, verbose=0)
+        print(f"[predict_server] ✅ Model loaded and warmed up!", flush=True)
+        model_status = 'ready'
+    except Exception as exc:
+        import traceback
+        traceback.print_exc()
+        model_status = 'error'
+        model_error_msg = str(exc)
+        print(f"[predict_server] ❌ Error loading model: {exc}", flush=True)
 
 
 def predict(image_path):
     """Run prediction on a single image. Returns dict."""
+    if model_status == 'loading':
+        return {"success": False, "error": "AI Model is starting up (takes ~60s on Render free tier). Please wait a moment and click Analyze again."}
+    if model_status == 'error':
+        return {"success": False, "error": f"Model failed to load: {model_error_msg}"}
     if model is None:
         return {"success": False, "error": "Model not loaded"}
     if not os.path.exists(image_path):
@@ -152,8 +171,13 @@ class PredictHandler(BaseHTTPRequestHandler):
                 image_path = ''
 
             result = predict(image_path)
+            
+            # If the model is busy loading, we can return 503 so the frontend knows it was not a fatal prediction error,
+            # or just 200 with success=False. Since our Node.js expects 200 with success: False, we keep it simple:
+            status_code = 503 if result.get('error', '').startswith('AI Model is starting') else 200
+            
             response = json.dumps(result).encode()
-            self.send_response(200)
+            self.send_response(status_code)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(response))
             self.end_headers()
@@ -164,7 +188,7 @@ class PredictHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/health':
-            result = json.dumps({"status": "ok", "model_loaded": model is not None}).encode()
+            result = json.dumps({"status": "ok", "model_status": model_status}).encode()
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
@@ -180,10 +204,11 @@ class PredictHandler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     print(f"[predict_server] Starting prediction server on port {PORT}...", flush=True)
-    loaded = load_model()
-    if not loaded:
-        print("[predict_server] ⚠ Server starting WITHOUT model (predictions will fail)", flush=True)
+    
+    # Start loading model in background thread
+    threading.Thread(target=load_model_background, daemon=True).start()
 
-    server = HTTPServer(('127.0.0.1', PORT), PredictHandler)
-    print(f"[predict_server] ✅ Prediction server running on http://127.0.0.1:{PORT}", flush=True)
+    from http.server import ThreadingHTTPServer
+    server = ThreadingHTTPServer(('127.0.0.1', PORT), PredictHandler)
+    print(f"[predict_server] ✅ Prediction server running on http://127.0.0.1:{PORT} (Model loading in background)", flush=True)
     server.serve_forever()
