@@ -172,9 +172,9 @@ class PredictHandler(BaseHTTPRequestHandler):
 
             result = predict(image_path)
             
-            # If the model is busy loading, we can return 503 so the frontend knows it was not a fatal prediction error,
-            # or just 200 with success=False. Since our Node.js expects 200 with success: False, we keep it simple:
-            status_code = 503 if result.get('error', '').startswith('AI Model is starting') else 200
+            # We return 200 even for errors/loading because Axios throws an exception
+            # on 500/503 and we want the frontend to gracefully parse our JSON error message.
+            status_code = 200
             
             response = json.dumps(result).encode()
             self.send_response(status_code)
